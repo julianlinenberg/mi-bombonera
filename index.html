@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Mi Bombonera</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;min-height:100vh;}
+.app{max-width:430px;margin:0 auto;background:#fff;min-height:100vh;padding-bottom:80px;}
+
+/* HEADER */
+.header{background:#1a3a6b;color:#fff;padding:16px;position:sticky;top:0;z-index:10;}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.escudo{width:40px;height:40px;border-radius:50%;background:#f5c518;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.header h1{font-size:17px;font-weight:600;color:#fff;}
+.header p{font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.stat{background:rgba(255,255,255,0.12);border-radius:8px;padding:8px;text-align:center;}
+.stat-num{font-size:20px;font-weight:600;color:#fff;}
+.stat-label{font-size:10px;color:rgba(255,255,255,0.65);margin-top:2px;}
+
+/* SYNC STATUS */
+.sync-bar{background:#1a3a6b;border-top:1px solid rgba(255,255,255,0.1);padding:4px 16px;font-size:11px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:6px;}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+.sync-dot.syncing{background:#f5c518;animation:pulse2 1s infinite;}
+.sync-dot.error{background:#ef4444;}
+@keyframes pulse2{0%,100%{opacity:0.4}50%{opacity:1}}
+
+/* FILTERS */
+.filters{padding:12px 16px;display:flex;gap:8px;overflow-x:auto;background:#fff;border-bottom:1px solid #e5e7eb;scrollbar-width:none;}
+.filters::-webkit-scrollbar{display:none;}
+.filter-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #d1d5db;background:#fff;font-size:13px;color:#6b7280;cursor:pointer;white-space:nowrap;}
+.filter-btn.active{background:#1a3a6b;color:#fff;border-color:#1a3a6b;}
+
+/* YEAR SECTION */
+.year-header{padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;}
+.year-header span{font-size:13px;font-weight:600;color:#374151;}
+.year-badge{font-size:12px;color:#9ca3af;}
+
+/* MATCH CARD */
+.match-card{padding:14px 16px;border-bottom:1px solid #f3f4f6;background:#fff;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:background 0.15s;}
+.match-card:active{background:#f9fafb;}
+.match-card.attended{background:#f0fdf4;}
+
+.attendance-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid #d1d5db;background:#f9fafb;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;margin-top:2px;transition:all 0.15s;}
+.attendance-btn.yes{background:#22c55e;border-color:#22c55e;}
+.attendance-btn svg{width:16px;height:16px;}
+
+.match-body{flex:1;min-width:0;}
+.match-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.match-rival{font-size:15px;font-weight:600;color:#111827;}
+.score-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+.score-g{background:#dcfce7;color:#15803d;}
+.score-e{background:#fef9c3;color:#854d0e;}
+.score-p{background:#fee2e2;color:#b91c1c;}
+
+.match-meta{font-size:12px;color:#6b7280;margin-bottom:3px;}
+.match-torneo{font-size:11px;color:#9ca3af;}
+
+/* EXPANDED DETAIL */
+.match-detail{margin-top:10px;padding:10px;background:#f9fafb;border-radius:8px;font-size:12px;color:#374151;}
+.match-detail-row{display:flex;gap:8px;margin-bottom:5px;align-items:flex-start;}
+.match-detail-row:last-child{margin-bottom:0;}
+.detail-label{color:#9ca3af;flex-shrink:0;width:64px;font-size:11px;padding-top:1px;}
+.detail-val{color:#374151;flex:1;}
+.loading-pill{display:inline-block;height:12px;border-radius:4px;background:#e5e7eb;animation:shimmer 1.5s infinite;}
+@keyframes shimmer{0%,100%{opacity:0.4}50%{opacity:0.9}}
+.memo-text{font-style:italic;color:#6b7280;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 16px;color:#9ca3af;font-size:14px;}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a3a6b;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;z-index:100;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="escudo">⚽</div>
+      <div>
+        <h1>Mi Bombonera</h1>
+        <p>Partidos en La Bombonera · 2013–2026</p>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Partidos</div></div>
+      <div class="stat"><div class="stat-num" id="s-asistidos">0</div><div class="stat-label">Fui</div></div>
+      <div class="stat"><div class="stat-num" id="s-victorias">0</div><div class="stat-label">Victorias</div></div>
+      <div class="stat"><div class="stat-num" id="s-racha" style="font-size:14px">-</div><div class="stat-label">Racha</div></div>
+    </div>
+  </div>
+  <div class="sync-bar">
+    <div class="sync-dot syncing" id="sync-dot"></div>
+    <span id="sync-text">Conectando con la nube...</span>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('todos')">Todos</button>
+    <button class="filter-btn" onclick="setFilter('asistidos')">Fui</button>
+    <button class="filter-btn" onclick="setFilter('victorias')">Victorias</button>
+    <button class="filter-btn" onclick="setFilter('libertadores')">Libertadores</button>
+    <button class="filter-btn" onclick="setFilter('superclasico')">Superclásico</button>
+    <button class="filter-btn" onclick="setFilter('sudamericana')">Sudamericana</button>
+  </div>
+
+  <div id="matches-container"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://zesadrwfrdqvanqbwtqz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_a1mV-J7LRDkcrLzEv0CjKw_5WPyUu2C';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const MATCHES = [
+  {year:2013,date:"2013-02-10",rival:"Unión",score:"1-3",res:"P",torneo:"Torneo Final 2013",fecha:"4ª fecha"},
+  {year:2013,date:"2013-02-24",rival:"Argentinos Jrs.",score:"1-1",res:"E",torneo:"Torneo Final 2013",fecha:"6ª fecha"},
+  {year:2013,date:"2013-03-10",rival:"Lanús",score:"0-0",res:"E",torneo:"Torneo Final 2013",fecha:"8ª fecha"},
+  {year:2013,date:"2013-03-24",rival:"Belgrano",score:"0-0",res:"E",torneo:"Torneo Final 2013",fecha:"10ª fecha"},
+  {year:2013,date:"2013-04-28",rival:"Vélez",score:"1-1",res:"E",torneo:"Torneo Final 2013",fecha:"16ª fecha"},
+  {year:2013,date:"2013-04-17",rival:"Barcelona (ECU)",score:"1-0",res:"G",torneo:"Copa Libertadores 2013",fecha:"Fase de grupos"},
+  {year:2013,date:"2013-05-22",rival:"Newell's",score:"0-0",res:"E",torneo:"Copa Libertadores 2013",fecha:"4tos de final"},
+  {year:2013,date:"2013-08-25",rival:"Newell's",score:"2-3",res:"P",torneo:"Torneo Inicial 2013",fecha:"1ª fecha"},
+  {year:2013,date:"2013-09-08",rival:"Atl. Rafaela",score:"2-1",res:"G",torneo:"Torneo Inicial 2013",fecha:"3ª fecha"},
+  {year:2013,date:"2013-09-22",rival:"Vélez",score:"2-1",res:"G",torneo:"Torneo Inicial 2013",fecha:"5ª fecha"},
+  {year:2013,date:"2013-10-06",rival:"Racing",score:"2-0",res:"G",torneo:"Torneo Inicial 2013",fecha:"7ª fecha"},
+  {year:2013,date:"2013-10-20",rival:"Quilmes",score:"2-0",res:"G",torneo:"Torneo Inicial 2013",fecha:"9ª fecha"},
+  {year:2013,date:"2013-11-03",rival:"Rosario Central",score:"1-1",res:"E",torneo:"Torneo Inicial 2013",fecha:"11ª fecha"},
+  {year:2013,date:"2013-11-17",rival:"Colón",score:"2-0",res:"G",torneo:"Torneo Inicial 2013",fecha:"13ª fecha"},
+  {year:2013,date:"2013-12-01",rival:"Tigre",score:"2-1",res:"G",torneo:"Torneo Inicial 2013",fecha:"15ª fecha"},
+  {year:2014,date:"2014-03-09",rival:"Olimpo",score:"2-0",res:"G",torneo:"Torneo Final 2014",fecha:"6ª fecha"},
+  {year:2014,date:"2014-03-23",rival:"Argentinos Jrs.",score:"1-1",res:"E",torneo:"Torneo Final 2014",fecha:"8ª fecha"},
+  {year:2014,date:"2014-04-06",rival:"River",score:"1-2",res:"P",torneo:"Torneo Final 2014",fecha:"10ª fecha"},
+  {year:2014,date:"2014-04-20",rival:"Godoy Cruz",score:"3-0",res:"G",torneo:"Torneo Final 2014",fecha:"12ª fecha"},
+  {year:2014,date:"2014-05-04",rival:"San Lorenzo",score:"0-0",res:"E",torneo:"Torneo Final 2014",fecha:"14ª fecha"},
+  {year:2014,date:"2014-05-18",rival:"Arsenal",score:"4-2",res:"G",torneo:"Torneo Final 2014",fecha:"16ª fecha"},
+  {year:2014,date:"2014-06-01",rival:"Lanús",score:"3-1",res:"G",torneo:"Torneo Final 2014",fecha:"18ª fecha"},
+  {year:2014,date:"2014-08-10",rival:"Newell's",score:"0-1",res:"P",torneo:"Torneo Transición 2014",fecha:"1ª fecha"},
+  {year:2014,date:"2014-09-07",rival:"Vélez",score:"3-1",res:"G",torneo:"Torneo Transición 2014",fecha:"5ª fecha"},
+  {year:2014,date:"2014-10-05",rival:"Rosario Central",score:"2-1",res:"G",torneo:"Torneo Transición 2014",fecha:"11ª fecha"},
+  {year:2014,date:"2014-10-19",rival:"Defensa y Justicia",score:"2-0",res:"G",torneo:"Torneo Transición 2014",fecha:"13ª fecha"},
+  {year:2014,date:"2014-11-16",rival:"Independiente",score:"3-1",res:"G",torneo:"Torneo Transición 2014",fecha:"17ª fecha"},
+  {year:2014,date:"2014-07-24",rival:"Dep. Capiatá",score:"0-1",res:"P",torneo:"Copa Sudamericana 2014",fecha:"8vos de final"},
+  {year:2014,date:"2014-08-21",rival:"Cerro Porteño",score:"1-0",res:"G",torneo:"Copa Sudamericana 2014",fecha:"4tos de final"},
+  {year:2014,date:"2014-10-01",rival:"River",score:"0-0",res:"E",torneo:"Copa Sudamericana 2014",fecha:"Semifinal"},
+  {year:2015,date:"2015-02-19",rival:"M. Wanderers",score:"2-1",res:"G",torneo:"Copa Libertadores 2015",fecha:"Fase de grupos"},
+  {year:2015,date:"2015-03-05",rival:"Zamora",score:"5-0",res:"G",torneo:"Copa Libertadores 2015",fecha:"Fase de grupos"},
+  {year:2015,date:"2015-03-19",rival:"Palestino",score:"2-0",res:"G",torneo:"Copa Libertadores 2015",fecha:"Fase de grupos"},
+  {year:2015,date:"2015-04-05",rival:"Olimpo",score:"3-1",res:"G",torneo:"Primera División 2015",fecha:"1ª fecha"},
+  {year:2015,date:"2015-05-03",rival:"Defensa y Justicia",score:"2-1",res:"G",torneo:"Primera División 2015",fecha:"5ª fecha"},
+  {year:2015,date:"2015-05-17",rival:"Estudiantes",score:"3-0",res:"G",torneo:"Primera División 2015",fecha:"7ª fecha"},
+  {year:2015,date:"2015-05-31",rival:"Nueva Chicago",score:"0-0",res:"E",torneo:"Primera División 2015",fecha:"9ª fecha"},
+  {year:2015,date:"2015-06-14",rival:"River",score:"2-0",res:"G",torneo:"Primera División 2015",fecha:"11ª fecha"},
+  {year:2015,date:"2015-08-16",rival:"Quilmes",score:"2-1",res:"G",torneo:"Primera División 2015",fecha:"17ª fecha"},
+  {year:2015,date:"2015-09-13",rival:"Unión",score:"3-4",res:"P",torneo:"Primera División 2015",fecha:"19ª fecha"},
+  {year:2015,date:"2015-10-11",rival:"Godoy Cruz",score:"2-0",res:"G",torneo:"Primera División 2015",fecha:"21ª fecha"},
+  {year:2015,date:"2015-10-25",rival:"San Lorenzo",score:"0-1",res:"P",torneo:"Primera División 2015",fecha:"23ª fecha"},
+  {year:2015,date:"2015-11-08",rival:"Banfield",score:"3-0",res:"G",torneo:"Primera División 2015",fecha:"25ª fecha"},
+  {year:2015,date:"2015-11-15",rival:"Crucero del Norte",score:"1-0",res:"G",torneo:"Primera División 2015",fecha:"26ª fecha"},
+  {year:2015,date:"2015-11-29",rival:"Tigre",score:"1-0",res:"G",torneo:"Primera División 2015",fecha:"28ª fecha"},
+  {year:2016,date:"2016-02-25",rival:"Bolívar",score:"3-1",res:"G",torneo:"Copa Libertadores 2016",fecha:"Fase de grupos"},
+  {year:2016,date:"2016-03-10",rival:"Dep. Cali",score:"6-2",res:"G",torneo:"Copa Libertadores 2016",fecha:"Fase de grupos"},
+  {year:2016,date:"2016-06-22",rival:"Ind. del Valle",score:"2-3",res:"P",torneo:"Copa Libertadores 2016",fecha:"Semifinal"},
+  {year:2016,date:"2016-08-21",rival:"Newell's",score:"4-1",res:"G",torneo:"Transición 2016",fecha:"4ª fecha"},
+  {year:2016,date:"2016-09-11",rival:"Unión",score:"2-1",res:"G",torneo:"Transición 2016",fecha:"7ª fecha"},
+  {year:2016,date:"2016-09-25",rival:"Atl. Rafaela",score:"3-0",res:"G",torneo:"Transición 2016",fecha:"9ª fecha"},
+  {year:2016,date:"2016-10-02",rival:"Aldosivi",score:"4-1",res:"G",torneo:"Transición 2016",fecha:"11ª fecha"},
+  {year:2016,date:"2016-10-09",rival:"River",score:"0-0",res:"E",torneo:"Transición 2016",fecha:"12ª fecha"},
+  {year:2016,date:"2016-10-30",rival:"Belgrano",score:"3-0",res:"G",torneo:"Primera División 2016/17",fecha:"2ª fecha"},
+  {year:2016,date:"2016-11-13",rival:"Quilmes",score:"4-1",res:"G",torneo:"Primera División 2016/17",fecha:"4ª fecha"},
+  {year:2016,date:"2016-12-11",rival:"Temperley",score:"4-0",res:"G",torneo:"Primera División 2016/17",fecha:"8ª fecha"},
+  {year:2016,date:"2017-01-08",rival:"Rosario Central",score:"1-1",res:"E",torneo:"Primera División 2016/17",fecha:"10ª fecha"},
+  {year:2016,date:"2017-02-05",rival:"Colón",score:"4-1",res:"G",torneo:"Primera División 2016/17",fecha:"14ª fecha"},
+  {year:2017,date:"2017-02-26",rival:"Talleres",score:"1-2",res:"P",torneo:"Primera División 2016/17",fecha:"16ª fecha"},
+  {year:2017,date:"2017-03-12",rival:"Defensa y Justicia",score:"1-0",res:"G",torneo:"Primera División 2016/17",fecha:"18ª fecha"},
+  {year:2017,date:"2017-04-09",rival:"Arsenal",score:"3-0",res:"G",torneo:"Primera División 2016/17",fecha:"22ª fecha"},
+  {year:2017,date:"2017-04-23",rival:"River",score:"1-3",res:"P",torneo:"Primera División 2016/17",fecha:"24ª fecha"},
+  {year:2017,date:"2017-04-30",rival:"Newell's",score:"1-0",res:"G",torneo:"Primera División 2016/17",fecha:"25ª fecha"},
+  {year:2017,date:"2017-05-21",rival:"Independiente",score:"3-0",res:"G",torneo:"Primera División 2016/17",fecha:"27ª fecha"},
+  {year:2017,date:"2017-06-11",rival:"Unión",score:"2-1",res:"G",torneo:"Primera División 2016/17",fecha:"30ª fecha"},
+  {year:2017,date:"2017-08-20",rival:"Olimpo",score:"3-0",res:"G",torneo:"Superliga 2017/18",fecha:"1ª fecha"},
+  {year:2017,date:"2017-09-03",rival:"Godoy Cruz",score:"4-1",res:"G",torneo:"Superliga 2017/18",fecha:"3ª fecha"},
+  {year:2017,date:"2017-09-17",rival:"Chacarita",score:"1-0",res:"G",torneo:"Superliga 2017/18",fecha:"5ª fecha"},
+  {year:2017,date:"2017-10-22",rival:"Racing",score:"1-2",res:"P",torneo:"Superliga 2017/18",fecha:"9ª fecha"},
+  {year:2018,date:"2018-01-14",rival:"Temperley",score:"1-0",res:"G",torneo:"Superliga 2017/18",fecha:"15ª fecha"},
+  {year:2018,date:"2018-02-11",rival:"S. Martín SJ",score:"4-2",res:"G",torneo:"Superliga 2017/18",fecha:"17ª fecha"},
+  {year:2018,date:"2018-03-11",rival:"Tigre",score:"2-1",res:"G",torneo:"Superliga 2017/18",fecha:"19ª fecha"},
+  {year:2018,date:"2018-04-01",rival:"Talleres",score:"2-1",res:"G",torneo:"Superliga 2017/18",fecha:"21ª fecha"},
+  {year:2018,date:"2018-04-15",rival:"Defensa y Justicia",score:"1-2",res:"P",torneo:"Superliga 2017/18",fecha:"22ª fecha"},
+  {year:2018,date:"2018-04-29",rival:"Newell's",score:"3-1",res:"G",torneo:"Superliga 2017/18",fecha:"24ª fecha"},
+  {year:2018,date:"2018-05-13",rival:"Unión",score:"2-0",res:"G",torneo:"Superliga 2017/18",fecha:"26ª fecha"},
+  {year:2018,date:"2018-04-05",rival:"Júnior",score:"1-0",res:"G",torneo:"Copa Libertadores 2018",fecha:"Fase de grupos"},
+  {year:2018,date:"2018-04-19",rival:"Palmeiras",score:"0-2",res:"P",torneo:"Copa Libertadores 2018",fecha:"Fase de grupos"},
+  {year:2018,date:"2018-05-03",rival:"Alianza Lima",score:"5-0",res:"G",torneo:"Copa Libertadores 2018",fecha:"Fase de grupos"},
+  {year:2018,date:"2018-07-19",rival:"Libertad",score:"2-0",res:"G",torneo:"Copa Libertadores 2018",fecha:"8vos de final"},
+  {year:2018,date:"2018-08-23",rival:"Cruzeiro",score:"2-0",res:"G",torneo:"Copa Libertadores 2018",fecha:"4tos de final"},
+  {year:2018,date:"2018-10-24",rival:"Palmeiras",score:"2-0",res:"G",torneo:"Copa Libertadores 2018",fecha:"Semifinal"},
+  {year:2018,date:"2018-11-11",rival:"River",score:"2-2",res:"E",torneo:"Copa Libertadores 2018",fecha:"Final"},
+  {year:2018,date:"2018-08-12",rival:"Talleres",score:"1-0",res:"G",torneo:"Superliga 2018/19",fecha:"1ª fecha"},
+  {year:2018,date:"2018-09-02",rival:"Vélez",score:"3-0",res:"G",torneo:"Superliga 2018/19",fecha:"4ª fecha"},
+  {year:2018,date:"2018-09-23",rival:"River",score:"0-2",res:"P",torneo:"Superliga 2018/19",fecha:"6ª fecha"},
+  {year:2018,date:"2018-11-18",rival:"Patronato",score:"1-0",res:"G",torneo:"Superliga 2018/19",fecha:"13ª fecha"},
+  {year:2019,date:"2019-01-20",rival:"Godoy Cruz",score:"2-0",res:"G",torneo:"Superliga 2018/19",fecha:"17ª fecha"},
+  {year:2019,date:"2019-02-03",rival:"Lanús",score:"2-1",res:"G",torneo:"Superliga 2018/19",fecha:"19ª fecha"},
+  {year:2019,date:"2019-01-06",rival:"Atl. Tucumán",score:"1-2",res:"P",torneo:"Superliga 2018/19",fecha:"15ª fecha"},
+  {year:2019,date:"2019-02-24",rival:"San Lorenzo",score:"3-0",res:"G",torneo:"Superliga 2018/19",fecha:"22ª fecha"},
+  {year:2019,date:"2019-03-10",rival:"Banfield",score:"2-0",res:"G",torneo:"Superliga 2018/19",fecha:"24ª fecha"},
+  {year:2019,date:"2019-04-24",rival:"Dep. Tolima",score:"3-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos"},
+  {year:2019,date:"2019-05-08",rival:"J. Wilstermann",score:"4-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos"},
+  {year:2019,date:"2019-05-22",rival:"Ath. Paranaense",score:"2-1",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos"},
+  {year:2019,date:"2019-08-08",rival:"Ath. Paranaense",score:"2-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"8vos de final"},
+  {year:2019,date:"2019-09-19",rival:"Liga de Quito",score:"0-0",res:"E",torneo:"Copa Libertadores 2019",fecha:"4tos de final"},
+  {year:2019,date:"2019-10-22",rival:"River",score:"1-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Semifinal"},
+  {year:2019,date:"2019-06-20",rival:"Godoy Cruz",score:"3-1",res:"G",torneo:"Copa Superliga 2019",fecha:"8vos de final"},
+  {year:2019,date:"2019-07-04",rival:"Vélez",score:"0-0",res:"E",torneo:"Copa Superliga 2019",fecha:"4tos de final"},
+  {year:2019,date:"2019-07-21",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Copa Superliga 2019",fecha:"Semifinal"},
+  {year:2019,date:"2019-08-25",rival:"Huracán",score:"0-0",res:"E",torneo:"Superliga 2019/20",fecha:"1ª fecha"},
+  {year:2019,date:"2019-09-08",rival:"Aldosivi",score:"2-0",res:"G",torneo:"Superliga 2019/20",fecha:"3ª fecha"},
+  {year:2019,date:"2019-09-29",rival:"Estudiantes",score:"1-0",res:"G",torneo:"Superliga 2019/20",fecha:"6ª fecha"},
+  {year:2019,date:"2019-11-10",rival:"Racing",score:"0-1",res:"P",torneo:"Superliga 2019/20",fecha:"10ª fecha"},
+  {year:2019,date:"2019-12-08",rival:"Unión",score:"2-0",res:"G",torneo:"Superliga 2019/20",fecha:"14ª fecha"},
+  {year:2020,date:"2020-01-19",rival:"Independiente",score:"0-0",res:"E",torneo:"Superliga 2019/20",fecha:"17ª fecha"},
+  {year:2020,date:"2020-02-02",rival:"Atl. Tucumán",score:"2-0",res:"G",torneo:"Superliga 2019/20",fecha:"19ª fecha"},
+  {year:2020,date:"2020-02-16",rival:"Godoy Cruz",score:"3-0",res:"G",torneo:"Superliga 2019/20",fecha:"21ª fecha"},
+  {year:2021,date:"2021-10-25",rival:"Lanús",score:"4-2",res:"G",torneo:"Liga Profesional 2021",fecha:"15ª fecha"},
+  {year:2021,date:"2021-11-21",rival:"GELP",score:"0-1",res:"P",torneo:"Liga Profesional 2021",fecha:"19ª fecha"},
+  {year:2021,date:"2021-12-05",rival:"Sarmiento",score:"2-0",res:"G",torneo:"Liga Profesional 2021",fecha:"21ª fecha"},
+  {year:2021,date:"2021-12-19",rival:"Newell's",score:"0-0",res:"E",torneo:"Liga Profesional 2021",fecha:"23ª fecha"},
+  {year:2021,date:"2021-12-26",rival:"Central Córdoba",score:"8-1",res:"G",torneo:"Liga Profesional 2021",fecha:"25ª fecha"},
+  {year:2022,date:"2022-02-13",rival:"Colón",score:"1-1",res:"E",torneo:"Copa de la Liga 2022",fecha:"1ª fecha"},
+  {year:2022,date:"2022-03-13",rival:"Huracán",score:"0-1",res:"P",torneo:"Copa de la Liga 2022",fecha:"5ª fecha"},
+  {year:2022,date:"2022-04-17",rival:"Lanús",score:"1-1",res:"E",torneo:"Copa de la Liga 2022",fecha:"10ª fecha"},
+  {year:2022,date:"2022-04-24",rival:"Godoy Cruz",score:"1-1",res:"E",torneo:"Copa de la Liga 2022",fecha:"11ª fecha"},
+  {year:2022,date:"2022-05-08",rival:"Barracas Central",score:"2-0",res:"G",torneo:"Copa de la Liga 2022",fecha:"13ª fecha"},
+  {year:2022,date:"2022-05-29",rival:"Defensa y Justicia",score:"2-0",res:"G",torneo:"Copa de la Liga 2022",fecha:"4tos de final"},
+  {year:2022,date:"2022-04-06",rival:"Dep. Cali",score:"1-0",res:"G",torneo:"Copa Libertadores 2022",fecha:"Fase de grupos"},
+  {year:2022,date:"2022-07-06",rival:"Corinthians",score:"0-0",res:"E",torneo:"Copa Libertadores 2022",fecha:"8vos de final"},
+  {year:2022,date:"2022-06-26",rival:"Arsenal",score:"2-1",res:"G",torneo:"Liga Profesional 2022",fecha:"1ª fecha"},
+  {year:2022,date:"2022-07-10",rival:"Tigre",score:"5-3",res:"G",torneo:"Liga Profesional 2022",fecha:"3ª fecha"},
+  {year:2022,date:"2022-07-24",rival:"Unión",score:"1-2",res:"P",torneo:"Liga Profesional 2022",fecha:"5ª fecha"},
+  {year:2022,date:"2022-07-31",rival:"Banfield",score:"0-3",res:"P",torneo:"Liga Profesional 2022",fecha:"6ª fecha"},
+  {year:2022,date:"2022-08-21",rival:"Talleres",score:"1-0",res:"G",torneo:"Liga Profesional 2022",fecha:"8ª fecha"},
+  {year:2022,date:"2022-09-04",rival:"Estudiantes",score:"3-1",res:"G",torneo:"Liga Profesional 2022",fecha:"10ª fecha"},
+  {year:2022,date:"2022-10-02",rival:"Rosario Central",score:"0-0",res:"E",torneo:"Liga Profesional 2022",fecha:"14ª fecha"},
+  {year:2022,date:"2022-10-16",rival:"Atl. Tucumán",score:"2-1",res:"G",torneo:"Liga Profesional 2022",fecha:"16ª fecha"},
+  {year:2022,date:"2022-10-30",rival:"River",score:"1-0",res:"G",torneo:"Liga Profesional 2022",fecha:"18ª fecha"},
+  {year:2022,date:"2022-11-13",rival:"Huracán",score:"0-0",res:"E",torneo:"Liga Profesional 2022",fecha:"20ª fecha"},
+  {year:2022,date:"2022-11-27",rival:"Vélez",score:"1-0",res:"G",torneo:"Liga Profesional 2022",fecha:"22ª fecha"},
+  {year:2022,date:"2022-12-11",rival:"Aldosivi",score:"2-1",res:"G",torneo:"Liga Profesional 2022",fecha:"24ª fecha"},
+  {year:2022,date:"2023-01-08",rival:"Independiente",score:"2-2",res:"E",torneo:"Liga Profesional 2022",fecha:"27ª fecha"},
+  {year:2023,date:"2023-01-22",rival:"Atl. Tucumán",score:"1-0",res:"G",torneo:"Liga Profesional 2023",fecha:"1ª fecha"},
+  {year:2023,date:"2023-01-29",rival:"Central Córdoba",score:"0-0",res:"E",torneo:"Liga Profesional 2023",fecha:"2ª fecha"},
+  {year:2023,date:"2023-02-19",rival:"Platense",score:"3-1",res:"G",torneo:"Liga Profesional 2023",fecha:"4ª fecha"},
+  {year:2023,date:"2023-03-05",rival:"Defensa y Justicia",score:"0-0",res:"E",torneo:"Liga Profesional 2023",fecha:"6ª fecha"},
+  {year:2023,date:"2023-03-19",rival:"Instituto",score:"2-3",res:"P",torneo:"Liga Profesional 2023",fecha:"8ª fecha"},
+  {year:2023,date:"2023-04-23",rival:"Estudiantes",score:"0-1",res:"P",torneo:"Liga Profesional 2023",fecha:"12ª fecha"},
+  {year:2023,date:"2023-05-07",rival:"Racing",score:"3-1",res:"G",torneo:"Liga Profesional 2023",fecha:"14ª fecha"},
+  {year:2023,date:"2023-05-28",rival:"Belgrano",score:"2-0",res:"G",torneo:"Liga Profesional 2023",fecha:"16ª fecha"},
+  {year:2023,date:"2023-06-11",rival:"Tigre",score:"1-0",res:"G",torneo:"Liga Profesional 2023",fecha:"18ª fecha"},
+  {year:2023,date:"2023-07-09",rival:"Sarmiento",score:"2-0",res:"G",torneo:"Liga Profesional 2023",fecha:"22ª fecha"},
+  {year:2023,date:"2023-07-23",rival:"Huracán",score:"1-0",res:"G",torneo:"Liga Profesional 2023",fecha:"24ª fecha"},
+  {year:2023,date:"2023-08-06",rival:"Newell's",score:"2-1",res:"G",torneo:"Liga Profesional 2023",fecha:"26ª fecha"},
+  {year:2023,date:"2023-04-04",rival:"Dep. Pereira",score:"2-1",res:"G",torneo:"Copa Libertadores 2023",fecha:"Fase de grupos"},
+  {year:2023,date:"2023-05-17",rival:"Colo Colo",score:"1-0",res:"G",torneo:"Copa Libertadores 2023",fecha:"Fase de grupos"},
+  {year:2023,date:"2023-05-25",rival:"Monagas",score:"4-0",res:"G",torneo:"Copa Libertadores 2023",fecha:"Fase de grupos"},
+  {year:2023,date:"2023-06-28",rival:"Nacional",score:"2-2",res:"E",torneo:"Copa Libertadores 2023",fecha:"8vos de final"},
+  {year:2023,date:"2023-08-23",rival:"Racing",score:"0-0",res:"E",torneo:"Copa Libertadores 2023",fecha:"4tos de final"},
+  {year:2023,date:"2023-10-05",rival:"Palmeiras",score:"0-0",res:"E",torneo:"Copa Libertadores 2023",fecha:"Semifinal"},
+  {year:2023,date:"2023-01-29",rival:"Platense",score:"3-1",res:"G",torneo:"Copa de la Liga 2023",fecha:"1ª fecha"},
+  {year:2023,date:"2023-02-12",rival:"Tigre",score:"0-1",res:"P",torneo:"Copa de la Liga 2023",fecha:"3ª fecha"},
+  {year:2023,date:"2023-03-05",rival:"Lanús",score:"1-1",res:"E",torneo:"Copa de la Liga 2023",fecha:"6ª fecha"},
+  {year:2023,date:"2023-03-19",rival:"River",score:"0-2",res:"P",torneo:"Copa de la Liga 2023",fecha:"7ª fecha"},
+  {year:2023,date:"2023-04-02",rival:"Unión",score:"2-1",res:"G",torneo:"Copa de la Liga 2023",fecha:"9ª fecha"},
+  {year:2023,date:"2023-04-23",rival:"Estudiantes",score:"0-0",res:"E",torneo:"Copa de la Liga 2023",fecha:"11ª fecha"},
+  {year:2023,date:"2023-05-07",rival:"Newell's",score:"1-0",res:"G",torneo:"Copa de la Liga 2023",fecha:"13ª fecha"},
+  {year:2024,date:"2024-02-18",rival:"Sarmiento",score:"1-1",res:"E",torneo:"Copa de la Liga 2024",fecha:"2ª fecha"},
+  {year:2024,date:"2024-04-07",rival:"Belgrano",score:"3-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"8ª fecha"},
+  {year:2024,date:"2024-04-21",rival:"Racing",score:"4-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"10ª fecha"},
+  {year:2024,date:"2024-05-05",rival:"San Lorenzo",score:"2-1",res:"G",torneo:"Copa de la Liga 2024",fecha:"12ª fecha"},
+  {year:2024,date:"2024-05-19",rival:"Godoy Cruz",score:"1-0",res:"G",torneo:"Copa de la Liga 2024",fecha:"14ª fecha"},
+  {year:2024,date:"2024-04-10",rival:"Sp. Trinidense",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos"},
+  {year:2024,date:"2024-05-01",rival:"Fortaleza",score:"1-1",res:"E",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos"},
+  {year:2024,date:"2024-05-22",rival:"Nac. Potosí",score:"4-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos"},
+  {year:2024,date:"2024-07-18",rival:"Ind. del Valle",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"16vos de final"},
+  {year:2024,date:"2024-08-08",rival:"Cruzeiro",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"8vos de final"},
+  {year:2024,date:"2024-03-10",rival:"Talleres",score:"0-0",res:"E",torneo:"Liga Profesional 2024",fecha:"3ª fecha"},
+  {year:2024,date:"2024-03-24",rival:"Vélez",score:"1-0",res:"G",torneo:"Liga Profesional 2024",fecha:"5ª fecha"},
+  {year:2024,date:"2024-04-07",rival:"Banfield",score:"3-0",res:"G",torneo:"Liga Profesional 2024",fecha:"7ª fecha"},
+  {year:2024,date:"2024-04-21",rival:"Barracas Central",score:"1-1",res:"E",torneo:"Liga Profesional 2024",fecha:"9ª fecha"},
+  {year:2024,date:"2024-06-16",rival:"River",score:"0-1",res:"P",torneo:"Liga Profesional 2024",fecha:"15ª fecha"},
+  {year:2024,date:"2024-06-30",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Liga Profesional 2024",fecha:"17ª fecha"},
+  {year:2024,date:"2024-07-21",rival:"Dep. Riestra",score:"1-1",res:"E",torneo:"Liga Profesional 2024",fecha:"19ª fecha"},
+  {year:2024,date:"2024-08-11",rival:"Godoy Cruz",score:"4-1",res:"G",torneo:"Liga Profesional 2024",fecha:"21ª fecha"},
+  {year:2024,date:"2024-08-25",rival:"Unión",score:"1-0",res:"G",torneo:"Liga Profesional 2024",fecha:"23ª fecha"},
+  {year:2024,date:"2024-09-15",rival:"Gimnasia",score:"1-0",res:"G",torneo:"Liga Profesional 2024",fecha:"25ª fecha"},
+  {year:2025,date:"2025-01-19",rival:"Argentinos Jrs.",score:"0-0",res:"E",torneo:"Torneo Apertura 2025",fecha:"1ª fecha"},
+  {year:2025,date:"2025-02-02",rival:"Huracán",score:"2-1",res:"G",torneo:"Torneo Apertura 2025",fecha:"3ª fecha"},
+  {year:2025,date:"2025-02-16",rival:"Ind. Rivadavia",score:"2-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"5ª fecha"},
+  {year:2025,date:"2025-03-02",rival:"Aldosivi",score:"2-1",res:"G",torneo:"Torneo Apertura 2025",fecha:"7ª fecha"},
+  {year:2025,date:"2025-03-30",rival:"Defensa y Justicia",score:"4-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"10ª fecha"},
+  {year:2025,date:"2025-04-13",rival:"Barracas Central",score:"1-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"12ª fecha"},
+  {year:2025,date:"2025-05-18",rival:"Lanús",score:"0-0",res:"E",torneo:"Torneo Apertura 2025",fecha:"8vos de final"},
+  {year:2025,date:"2025-06-01",rival:"Independiente",score:"0-1",res:"P",torneo:"Torneo Apertura 2025",fecha:"4tos de final"},
+  {year:2025,date:"2025-02-06",rival:"Alianza Lima",score:"2-1",res:"G",torneo:"Copa Libertadores 2025",fecha:"Fase 2"},
+  {year:2025,date:"2025-07-13",rival:"Unión",score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"2ª fecha"},
+  {year:2025,date:"2025-07-27",rival:"Racing",score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"4ª fecha"},
+  {year:2025,date:"2025-08-10",rival:"Banfield",score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"6ª fecha"},
+  {year:2025,date:"2025-09-07",rival:"Central Córdoba",score:"2-2",res:"E",torneo:"Torneo Clausura 2025",fecha:"9ª fecha"},
+  {year:2025,date:"2025-09-21",rival:"Newell's",score:"5-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"11ª fecha"},
+  {year:2025,date:"2025-10-05",rival:"Belgrano",score:"1-2",res:"P",torneo:"Torneo Clausura 2025",fecha:"13ª fecha"},
+  {year:2025,date:"2025-10-19",rival:"River",score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"15ª fecha"},
+  {year:2025,date:"2025-10-26",rival:"Tigre",score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"16ª fecha"},
+  {year:2025,date:"2025-11-16",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"4tos de final"},
+  {year:2025,date:"2025-11-30",rival:"Racing",score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinales"},
+  {year:2026,date:"2026-01-25",rival:"Dep. Riestra",score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha"},
+  {year:2026,date:"2026-02-08",rival:"Newell's",score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha"},
+  {year:2026,date:"2026-02-22",rival:"Platense",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha"},
+  {year:2026,date:"2026-03-08",rival:"Racing",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha"},
+];
+
+MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/\s/g,'-') + '-' + i; });
+
+const LIBERTADORES = ["Copa Libertadores 2013","Copa Libertadores 2015","Copa Libertadores 2016","Copa Libertadores 2018","Copa Libertadores 2019","Copa Libertadores 2022","Copa Libertadores 2023","Copa Libertadores 2025"];
+const SUDAMERICANA = ["Copa Sudamericana 2014","Copa Sudamericana 2024"];
+
+let attended = {};
+let activeFilter = 'todos';
+let expandedId = null;
+let extraData = {};
+let syncStatus = 'connecting';
+
+async function initSupabase() {
+  try {
+    const { data, error } = await db.from('asistencias').select('id, asistio');
+    if (error) throw error;
+    data.forEach(row => { attended[row.id] = row.asistio; });
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('error');
+  }
+  renderAll();
+}
+
+function setSyncStatus(s) {
+  syncStatus = s;
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  dot.className = 'sync-dot' + (s==='syncing'?' syncing':s==='error'?' error':'');
+  txt.textContent = s==='ok' ? 'Sincronizado con la nube' : s==='error' ? 'Sin conexión — cambios guardados localmente' : 'Sincronizando...';
+}
+
+async function toggleAttendance(id, e) {
+  e.stopPropagation();
+  attended[id] = !attended[id];
+  renderAll();
+  showToast(attended[id] ? '✓ Marcado como asistido' : 'Desmarcado');
+  try {
+    setSyncStatus('syncing');
+    const { error } = await db.from('asistencias').upsert({ id, asistio: attended[id], updated_at: new Date().toISOString() });
+    if (error) throw error;
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('error');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    const labels = {todos:'Todos',asistidos:'Fui',victorias:'Victorias',libertadores:'Libertadores',superclasico:'Superclásico',sudamericana:'Sudamericana'};
+    b.classList.toggle('active', b.textContent.trim() === labels[f]);
+  });
+  renderAll();
+}
+
+function getFiltered() {
+  return MATCHES.filter(m => {
+    if (activeFilter === 'asistidos') return attended[m._id];
+    if (activeFilter === 'victorias') return m.res === 'G';
+    if (activeFilter === 'libertadores') return LIBERTADORES.includes(m.torneo);
+    if (activeFilter === 'superclasico') return m.rival === 'River';
+    if (activeFilter === 'sudamericana') return SUDAMERICANA.includes(m.torneo);
+    return true;
+  });
+}
+
+function formatDate(d) {
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('es-AR', {weekday:'short', day:'numeric', month:'long', year:'numeric'});
+}
+
+function renderStats() {
+  const total = MATCHES.length;
+  const asistidos = MATCHES.filter(m => attended[m._id]).length;
+  const victorias = MATCHES.filter(m => m.res === 'G').length;
+  let maxRacha = 0, cur = 0;
+  MATCHES.forEach(m => { if(attended[m._id] && m.res==='G'){cur++;maxRacha=Math.max(maxRacha,cur);}else{cur=0;} });
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-asistidos').textContent = asistidos;
+  document.getElementById('s-victorias').textContent = victorias;
+  document.getElementById('s-racha').textContent = maxRacha > 0 ? maxRacha + 'G' : '-';
+}
+
+async function fetchExtraData(match) {
+  const id = match._id;
+  if (extraData[id] && !extraData[id].error) return;
+  extraData[id] = { loading: true };
+  renderAll();
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 300,
+        messages: [{ role: "user", content: `Partido de Boca Juniors en La Bombonera:
+- Fecha: ${match.date}
+- Rival: ${match.rival}
+- Resultado: Boca ${match.score}
+- Competencia: ${match.torneo} (${match.fecha})
+
+Responde SOLO con JSON sin markdown:
+{"dt_boca":"Nombre Apellido","dt_rival":"Nombre Apellido","goleadores":"Apellido (min') / Apellido rival (min')","nota":"Frase memorable del partido, máx 70 caracteres"}
+
+Goleadores: primero los de Boca separados por coma, luego / y los del rival. Si no hubo goles pon "-". Si no sabés con certeza, pon "N/D".` }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.map(c => c.text||'').join('');
+    extraData[id] = { loading: false, ...JSON.parse(text.replace(/```json|```/g,'').trim()) };
+  } catch(e) {
+    extraData[id] = { loading: false, error: true };
+  }
+  renderAll();
+}
+
+function renderAll() {
+  renderStats();
+  const filtered = getFiltered();
+  const container = document.getElementById('matches-container');
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div>No hay partidos con este filtro</div>';
+    return;
+  }
+
+  const byYear = {};
+  filtered.forEach(m => {
+    if (!byYear[m.year]) byYear[m.year] = [];
+    byYear[m.year].push(m);
+  });
+
+  let html = '';
+  Object.keys(byYear).sort((a,b)=>b-a).forEach(yr => {
+    const yMs = byYear[yr];
+    const yAtt = yMs.filter(m=>attended[m._id]).length;
+    html += `<div class="year-header"><span>${yr}</span><span class="year-badge">${yMs.length} partidos${yAtt ? ` · fui a ${yAtt}` : ''}</span></div>`;
+
+    yMs.forEach(m => {
+      const isAtt = !!attended[m._id];
+      const isExp = expandedId === m._id;
+      const ex = extraData[m._id];
+      const resLabel = m.res==='G'?'V':m.res==='E'?'E':'D';
+
+      html += `<div class="match-card${isAtt?' attended':''}" onclick="toggleExpand('${m._id}')">
+        <button class="attendance-btn${isAtt?' yes':''}" onclick="toggleAttendance('${m._id}',event)" title="${isAtt?'Desmarcar':'Marcar como asistido'}">
+          <svg viewBox="0 0 16 16" fill="none" stroke="${isAtt?'#fff':'#9ca3af'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            ${isAtt?'<polyline points="2,8 6,12 14,4"/>':'<circle cx="8" cy="8" r="5"/>'}
+          </svg>
+        </button>
+        <div class="match-body">
+          <div class="match-header">
+            <span class="match-rival">Boca vs ${m.rival}</span>
+            <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
+          </div>
+          <div class="match-meta">${formatDate(m.date)}</div>
+          <div class="match-torneo">${m.torneo} · ${m.fecha}</div>
+          ${isExp ? `<div class="match-detail">
+            ${!ex || ex.loading ? `
+              <div class="match-detail-row"><span class="detail-label">DT Boca</span><span class="loading-pill" style="width:110px"></span></div>
+              <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="loading-pill" style="width:90px"></span></div>
+              <div class="match-detail-row"><span class="detail-label">Goles</span><span class="loading-pill" style="width:150px"></span></div>
+            ` : ex.error ? `<span style="color:#9ca3af;font-size:12px">No se pudo cargar la info</span>` : `
+              <div class="match-detail-row"><span class="detail-label">DT Boca</span><span class="detail-val">${ex.dt_boca||'N/D'}</span></div>
+              <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="detail-val">${ex.dt_rival||'N/D'}</span></div>
+              <div class="match-detail-row"><span class="detail-label">Goles</span><span class="detail-val">${ex.goleadores||'-'}</span></div>
+              ${ex.nota?`<div class="match-detail-row"><span class="detail-label">Memo</span><span class="detail-val memo-text">${ex.nota}</span></div>`:''}
+            `}
+          </div>` : ''}
+        </div>
+      </div>`;
+    });
+  });
+
+  container.innerHTML = html;
+}
+
+function toggleExpand(id) {
+  if (expandedId === id) { expandedId = null; renderAll(); return; }
+  expandedId = id;
+  renderAll();
+  const match = MATCHES.find(m => m._id === id);
+  if (match && (!extraData[id] || extraData[id].error)) fetchExtraData(match);
+}
+
+initSupabase();
+</script>
+</body>
+</html>
