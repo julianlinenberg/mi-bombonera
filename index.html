@@ -101,6 +101,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* HEADER ROW with badge */
 .match-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.match-header-left { flex: 1; }
+.match-header-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 
 /* CONFIRM MODAL */
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
@@ -562,8 +564,10 @@ function renderAll() {
         <div class="match-body">
           <div class="match-header">
             <span class="match-rival">Boca vs ${m.rival}</span>
-            <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
-            ${isAtt ? `<span class="att-badge" onclick="event.stopPropagation();openConfirm('${m._id}','remove')" title="Desmarcar">✓ Fui</span>` : `<span class="att-badge" style="background:#f3f4f6;color:#9ca3af;" onclick="event.stopPropagation();openConfirm('${m._id}','add')">+ Fui</span>`}
+            <div class="match-header-right">
+              <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
+              ${isAtt ? `<span class="att-badge" onclick="event.stopPropagation();openConfirm('${m._id}','remove')" title="Desmarcar">✓ Fui</span>` : `<span class="att-badge" style="background:#fee2e2;color:#b91c1c;" onclick="event.stopPropagation();openConfirm('${m._id}','add')">✗ Ausente</span>`}
+            </div>
           </div>
           <div class="match-meta">${formatDate(m.date)}</div>
           <div class="match-torneo">${m.torneo} · ${m.fecha}</div>
