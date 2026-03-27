@@ -356,7 +356,7 @@ const MATCHES = [
   {year:2026,date:"2026-03-11",rival:"San Lorenzo",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
 ];
 
-MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/\s/g,'-') + '-' + i; });
+MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/\s/g,'-').replace(/'/g,'') + '-' + i; });
 
 const LIBERTADORES = ["Copa Libertadores 2013","Copa Libertadores 2015","Copa Libertadores 2016","Copa Libertadores 2018","Copa Libertadores 2019","Copa Libertadores 2022","Copa Libertadores 2023","Copa Libertadores 2025"];
 const SUDAMERICANA = ["Copa Sudamericana 2014","Copa Sudamericana 2024"];
