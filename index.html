@@ -348,12 +348,12 @@ const MATCHES = [
   {year:2025,date:"2025-10-26",rival:"Tigre",score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"16ª fecha"},
   {year:2025,date:"2025-11-16",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"4tos de final"},
   {year:2025,date:"2025-11-30",rival:"Racing",score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinales"},
-  {year:2026,date:"2026-01-25",rival:"Dep. Riestra",score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",hdb_id:"6591",hdb_slug:"boca-1-dep-riestra-0-torneo-apertura-2026"},
-  {year:2026,date:"2026-02-08",rival:"Newell's",score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",hdb_id:"6593",hdb_slug:"boca-2-newell_s-0-torneo-apertura-2026"},
-  {year:2026,date:"2026-02-22",rival:"Platense",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",hdb_id:"6595",hdb_slug:"boca-0-platense-0-torneo-apertura-2026"},
-  {year:2026,date:"2026-03-08",rival:"Racing",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha",hdb_id:"6596",hdb_slug:"boca-0-racing-0-torneo-apertura-2026"},
-  {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",hdb_id:"6598",hdb_slug:"boca-1-gimnasia-mza-1-torneo-apertura-2026"},
-  {year:2026,date:"2026-03-11",rival:"San Lorenzo",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",hdb_id:"6600",hdb_slug:"boca-1-san-lorenzo-1-torneo-apertura-2026"},
+  {year:2026,date:"2026-01-25",rival:"Dep. Riestra",score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Benítez, Gustavo",goleadores:"Di Lollo (77') / -"},
+  {year:2026,date:"2026-02-08",rival:"Newell's",score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Orsi-Gómez",goleadores:"L. Blanco (40'), Paredes -pen- (56') / -"},
+  {year:2026,date:"2026-02-22",rival:"Platense",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Zunino, Walter",goleadores:"-"},
+  {year:2026,date:"2026-02-20",rival:"Racing",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"-"},
+  {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Broggi, Ariel",goleadores:"Merentiel (41') / L. Paredes (15')"},
+  {year:2026,date:"2026-03-11",rival:"San Lorenzo",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
 ];
 
 MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/\s/g,'-') + '-' + i; });
@@ -451,30 +451,24 @@ function renderStats() {
 
 const EXTRA_DATA = {};
 
-async function fetchExtraData(match) {
+function fetchExtraData(match) {
   const id = match._id;
-  extraData[id] = { loading: true };
-  renderAll();
-  if (!match.hdb_id) {
-    extraData[id] = { loading: false, dt_boca: 'Sin datos', dt_rival: 'Sin datos', goleadores: '-', nota: 'Datos no disponibles aún para este partido' };
-    renderAll();
-    return;
-  }
-  try {
-    const params = new URLSearchParams({ hdb_id: match.hdb_id, hdb_slug: match.hdb_slug, match_id: id });
-    const res = await fetch(`/api/partido?${params}`);
-    if (!res.ok) throw new Error('not found');
-    const data = await res.json();
+  // Use inline data if available (already embedded in match object)
+  if (match.dt_boca) {
     extraData[id] = {
       loading: false,
-      fecha_exacta: data.fecha_exacta || '',
-      dt_boca: data.dt_boca || 'N/D',
-      dt_rival: data.dt_rival || 'N/D',
-      goleadores: data.goleadores || '-',
-      nota: data.nota || ''
+      dt_boca: match.dt_boca,
+      dt_rival: match.dt_rival || 'N/D',
+      goleadores: match.goleadores || '-',
+      nota: match.nota || ''
     };
-  } catch(e) {
-    extraData[id] = { loading: false, dt_boca: 'Error', dt_rival: 'Error', goleadores: '-' };
+  } else {
+    extraData[id] = {
+      loading: false,
+      dt_boca: 'Próximamente',
+      dt_rival: 'Próximamente',
+      goleadores: 'Próximamente'
+    };
   }
   renderAll();
 }
