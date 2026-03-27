@@ -358,8 +358,64 @@ const SUDAMERICANA = ["Copa Sudamericana 2014","Copa Sudamericana 2024"];
 let activeFilter = 'todos';
 let expandedId = null;
 let extraData = {};
-function initSupabase() {
+
+const SUPABASE_URL = 'https://zesadrwfrdqvanqbwtqz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_a1mV-J7LRDkcrLzEv0CjKw_5WPyUu2C';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Initialize attended from inline asistio field on each match
+let attended = {};
+MATCHES.forEach(m => { attended[m._id] = m.asistio !== false; });
+
+let pendingId = null;
+let pendingAction = null;
+
+async function initSupabase() {
+  // Override with any manual changes stored in Supabase
+  try {
+    const { data } = await db.from('asistencias').select('id, asistio');
+    if (data) data.forEach(row => { attended[row.id] = row.asistio; });
+  } catch(e) {}
+  updateAttendanceStat();
   renderAll();
+}
+
+function updateAttendanceStat() {
+  const total = MATCHES.length;
+  const went = MATCHES.filter(m => attended[m._id]).length;
+  const pct = total > 0 ? Math.round(went / total * 100) : 0;
+  const el = document.getElementById('attendance-stat');
+  if (el) el.innerHTML = 'Fui a <span>' + went + '</span> de ' + total + ' partidos &middot; <span>' + pct + '%</span> de asistencia';
+}
+
+function openConfirm(id, action) {
+  const m = MATCHES.find(x => x._id === id);
+  if (!m) return;
+  pendingId = id;
+  pendingAction = action;
+  document.getElementById('confirm-title').textContent = action === 'add' ? '¿Fuiste a este partido?' : '¿Desmarcar este partido?';
+  document.getElementById('confirm-subtitle').textContent = 'Boca vs ' + m.rival + ' · ' + new Date(m.date + 'T12:00:00').toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('confirm-yes-btn').textContent = action === 'add' ? 'Sí, fui' : 'Sí, desmarcar';
+  document.getElementById('confirm-overlay').classList.add('show');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('show');
+  pendingId = null;
+  pendingAction = null;
+}
+
+async function confirmAttendance() {
+  if (!pendingId) return;
+  const newVal = pendingAction === 'add';
+  attended[pendingId] = newVal;
+  closeConfirm();
+  updateAttendanceStat();
+  renderAll();
+  try {
+    await db.from('asistencias').upsert({ id: pendingId, asistio: newVal, updated_at: new Date().toISOString() });
+  } catch(e) {}
 }
 
 
