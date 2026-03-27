@@ -2,92 +2,40 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
 
-  const { fecha, rival, match_id } = req.query;
-  if (!fecha || !rival) return res.status(400).json({ error: 'Missing params' });
+  const { hdb_id, hdb_slug, match_id } = req.query;
+  if (!hdb_id || !hdb_slug) return res.status(400).json({ error: 'Missing hdb_id or hdb_slug' });
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Accept': 'text/html'
-  };
+  const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' };
 
   try {
-    // 1. Check Supabase cache first
+    // 1. Check Supabase cache
     const cacheRes = await fetch(
       `${SUPABASE_URL}/rest/v1/partidos_extra?id=eq.${encodeURIComponent(match_id)}&select=*`,
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
     );
     const cached = await cacheRes.json();
-    if (cached && cached.length > 0 && cached[0].dt_boca && cached[0].dt_boca !== 'N/D') {
+    if (cached?.length > 0 && cached[0].dt_boca && cached[0].dt_boca !== 'N/D') {
       return res.status(200).json({ ...cached[0], from_cache: true });
     }
 
-    // 2. Search on historiadeboca.com.ar
-    const year = fecha.substring(0, 4);
-    const [y, m, d] = fecha.split('-');
-    const fechaFormatted = `${d}/${m}/${y}`;
-
-    // Search home games of that year
-    const searchUrl = `https://www.historiadeboca.com.ar/buscarresultados.php?anio1=${year}&anio2=${year}&estadio=1&orden=1`;
-    const searchRes = await fetch(searchUrl, { headers });
-    const searchHtml = await searchRes.text();
-
-    // Find match link by date
-    let matchUrl = null;
-    const linkPattern = /href="(\/partido\/boca-[^"]+\/(\d+)\/[^"]*)"/g;
-    let linkMatch;
-    const candidates = [];
-    while ((linkMatch = linkPattern.exec(searchHtml)) !== null) {
-      candidates.push({ href: linkMatch[1], id: linkMatch[2] });
-    }
-
-    // Find the one matching our date
-    for (const c of candidates) {
-      const pageUrl = `https://www.historiadeboca.com.ar/partido/${c.href.split('/partido/')[1].split('/')[0]}/${c.id}.html`;
-      // Check if date appears near this link in the HTML
-      const pos = searchHtml.indexOf(c.href);
-      const surrounding = searchHtml.substring(Math.max(0, pos - 200), pos + 200);
-      if (surrounding.includes(fechaFormatted)) {
-        matchUrl = pageUrl;
-        break;
-      }
-    }
-
-    // Fallback: try rival-based slug search
-    if (!matchUrl) {
-      const rivalSlug = rival.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[\s.()]/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
-      for (const c of candidates) {
-        if (c.href.includes(rivalSlug.substring(0, 5))) {
-          matchUrl = `https://www.historiadeboca.com.ar/partido/${c.href.split('/partido/')[1].split('/')[0]}/${c.id}.html`;
-          break;
-        }
-      }
-    }
-
-    if (!matchUrl) {
-      return res.status(404).json({ error: 'Match not found', fecha, rival });
-    }
-
-    // 3. Fetch match page
+    // 2. Fetch match page directly using slug + id
+    const matchUrl = `https://www.historiadeboca.com.ar/partido/${hdb_slug}/${hdb_id}.html`;
     const matchRes = await fetch(matchUrl, { headers });
+    if (!matchRes.ok) return res.status(404).json({ error: 'Page not found', url: matchUrl });
     const html = await matchRes.text();
 
     // Extract exact date
     const fechaMatch = html.match(/Fecha:\s*([A-ZÁÉÍÓÚa-záéíóúñ]+\s+\d+\s+de\s+[A-ZÁÉÍÓÚa-záéíóúñ]+\s+de\s+\d{4})/i);
-    const fecha_exacta = fechaMatch ? fechaMatch[1].trim() : fechaFormatted;
+    const fecha_exacta = fechaMatch ? fechaMatch[1].trim() : '';
 
-    // Extract DT Boca (first tecnico link)
-    const dtBocaMatch = html.match(/tecnicos\/[^"]+">([^<]+)<\/a>/);
-    const dt_boca = dtBocaMatch ? dtBocaMatch[1].trim() : 'N/D';
-
-    // Extract DT Rival (second tecnico link)
+    // Extract all tecnico links
     const allDTs = [...html.matchAll(/tecnicos\/[^"]+">([^<]+)<\/a>/g)];
+    const dt_boca = allDTs.length > 0 ? allDTs[0][1].trim() : 'N/D';
     const dt_rival = allDTs.length > 1 ? allDTs[1][1].trim() : 'N/D';
 
-    // Extract goals from incidencias
+    // Extract goals
     let goleadores = '-';
     const incBlock = html.match(/Incidencias[\s\S]*?<table([\s\S]*?)<\/table>/i);
     if (incBlock) {
@@ -111,7 +59,7 @@ export default async function handler(req, res) {
 
     const result = { id: match_id, fecha_exacta, dt_boca, dt_rival, goleadores, nota, fuente: matchUrl };
 
-    // 4. Save to Supabase cache
+    // 3. Save to Supabase
     await fetch(`${SUPABASE_URL}/rest/v1/partidos_extra`, {
       method: 'POST',
       headers: {
@@ -124,7 +72,6 @@ export default async function handler(req, res) {
     });
 
     return res.status(200).json({ ...result, from_cache: false });
-
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
