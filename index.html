@@ -97,7 +97,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .match-card.not-attended:hover { opacity: 0.65; }
 
 /* ATTENDED BADGE */
-.att-badge { font-size: 10px; font-weight: 600; color: #15803d; background: #dcfce7; border-radius: 10px; padding: 2px 7px; white-space: nowrap; align-self: center; }
+.att-badge { font-size: 10px; font-weight: 600; color: #15803d; background: #dcfce7; border-radius: 10px; padding: 2px 7px; white-space: nowrap; align-self: center; width: 64px; text-align: center; display: inline-block; }
 
 /* HEADER ROW with badge */
 .match-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -324,33 +324,33 @@ const MATCHES = [
   {year:2023,date:"2023-04-23",rival:"Estudiantes",score:"0-0",res:"E",torneo:"Copa de la Liga 2023",fecha:"11ª fecha"},
   {year:2023,date:"2023-05-07",rival:"Newell's",score:"1-0",res:"G",torneo:"Copa de la Liga 2023",fecha:"13ª fecha"},
   // Copa de la Liga 2024
-  {year:2024,date:"2024-02-01",rival:"Sarmiento",score:"1-1",res:"E",torneo:"Copa de la Liga 2024",fecha:"2ª fecha",asistio:true},
-  {year:2024,date:"2024-02-10",rival:"Defensa y Justicia",score:"0-0",res:"E",torneo:"Copa de la Liga 2024",fecha:"4ª fecha",asistio:false},
-  {year:2024,date:"2024-02-14",rival:"Central Córdoba",score:"2-0",res:"G",torneo:"Copa de la Liga 2024",fecha:"5ª fecha",asistio:false},
-  {year:2024,date:"2024-03-03",rival:"Belgrano",score:"3-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"8ª fecha",asistio:true},
-  {year:2024,date:"2024-03-10",rival:"Racing",score:"4-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"10ª fecha",asistio:true},
-  {year:2024,date:"2024-03-30",rival:"San Lorenzo",score:"2-1",res:"G",torneo:"Copa de la Liga 2024",fecha:"12ª fecha",asistio:true},
-  {year:2024,date:"2024-04-16",rival:"Godoy Cruz",score:"1-0",res:"G",torneo:"Copa de la Liga 2024",fecha:"14ª fecha",asistio:true},
+  {year:2024,date:"2024-02-01",rival:"Sarmiento",score:"1-1",res:"E",torneo:"Copa de la Liga 2024",fecha:"2ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Rondina, Sergio",goleadores:"Merentiel (9') / Mauri (72')",asistio:true},
+  {year:2024,date:"2024-02-10",rival:"Defensa y Justicia",score:"0-0",res:"E",torneo:"Copa de la Liga 2024",fecha:"4ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Vaccari, Julio",goleadores:"-",asistio:false},
+  {year:2024,date:"2024-02-14",rival:"Central Córdoba",score:"2-0",res:"G",torneo:"Copa de la Liga 2024",fecha:"5ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Balbo, Abel",goleadores:"Merentiel (8'), Zenón (74') / -",asistio:false},
+  {year:2024,date:"2024-03-03",rival:"Belgrano",score:"3-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"8ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Farré, Guillermo",goleadores:"Cavani -pen- (63'), Cavani (74'), Cavani (79') / Passerini (21'), Marín (90')",asistio:true},
+  {year:2024,date:"2024-03-10",rival:"Racing",score:"4-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"10ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Costas, Gustavo",goleadores:"Blondel (26'), Colombo -eg- (49'), Cavani (60'), Valentini (80') / Quintero (33'), A.Martínez (47')",asistio:true},
+  {year:2024,date:"2024-03-30",rival:"San Lorenzo",score:"2-1",res:"G",torneo:"Copa de la Liga 2024",fecha:"12ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Insúa, Rubén",goleadores:"Cavani (42'), Merentiel (83') / Bareiro -pen- (9')",asistio:true},
+  {year:2024,date:"2024-04-16",rival:"Godoy Cruz",score:"1-0",res:"G",torneo:"Copa de la Liga 2024",fecha:"14ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Oldrá, Daniel",goleadores:"Cavani (40') / -",asistio:true},
   // Copa Sudamericana 2024
-  {year:2024,date:"2024-04-09",rival:"Sp. Trinidense",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",asistio:true},
-  {year:2024,date:"2024-05-15",rival:"Fortaleza",score:"1-1",res:"E",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",asistio:true},
-  {year:2024,date:"2024-05-29",rival:"Nacional Potosí",score:"4-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",asistio:true},
-  {year:2024,date:"2024-07-24",rival:"Ind. del Valle",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"16vos de final",asistio:true},
-  {year:2024,date:"2024-08-15",rival:"Cruzeiro",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"8vos de final",asistio:true},
+  {year:2024,date:"2024-04-09",rival:"Sp. Trinidense",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",dt_boca:"Martínez, Diego",dt_rival:"Jara, Jorge",goleadores:"Anselmino (70') / -",asistio:true},
+  {year:2024,date:"2024-05-15",rival:"Fortaleza",score:"1-1",res:"E",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",dt_boca:"Martínez, Diego",dt_rival:"Vojvoda, Juan Pablo",goleadores:"Cavani (68') / Tinga (23')",asistio:true},
+  {year:2024,date:"2024-05-29",rival:"Nacional Potosí",score:"4-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",dt_boca:"Martínez, Diego",dt_rival:"Ramírez, Eduardo",goleadores:"Cavani (6'), Merentiel (28'), Zenón (45'), Saracchi (72') / -",asistio:true},
+  {year:2024,date:"2024-07-24",rival:"Ind. del Valle",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"16vos de final",dt_boca:"Martínez, Diego",dt_rival:"Repetto, Martín",goleadores:"Merentiel (88') / -",asistio:true},
+  {year:2024,date:"2024-08-15",rival:"Cruzeiro",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"8vos de final",dt_boca:"Martínez, Diego",dt_rival:"Leonardo, Felipe",goleadores:"Figal (57') / -",asistio:true},
   // Campeonato 2024
-  {year:2024,date:"2024-05-25",rival:"Talleres",score:"0-0",res:"E",torneo:"Campeonato 2024",fecha:"3ª fecha",asistio:true},
-  {year:2024,date:"2024-06-14",rival:"Vélez",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"5ª fecha",asistio:true},
-  {year:2024,date:"2024-07-31",rival:"Banfield",score:"3-0",res:"G",torneo:"Campeonato 2024",fecha:"7ª fecha",asistio:true},
-  {year:2024,date:"2024-08-04",rival:"Barracas Central",score:"1-1",res:"E",torneo:"Campeonato 2024",fecha:"9ª fecha",asistio:true},
-  {year:2024,date:"2024-08-18",rival:"San Lorenzo",score:"3-2",res:"G",torneo:"Campeonato 2024",fecha:"11ª fecha",asistio:false},
-  {year:2024,date:"2024-08-31",rival:"Rosario Central",score:"2-1",res:"G",torneo:"Campeonato 2024",fecha:"13ª fecha",asistio:false},
-  {year:2024,date:"2024-09-21",rival:"River",score:"0-1",res:"P",torneo:"Campeonato 2024",fecha:"15ª fecha",asistio:true},
-  {year:2024,date:"2024-10-06",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"17ª fecha",asistio:true},
-  {year:2024,date:"2024-10-27",rival:"Dep. Riestra",score:"1-1",res:"E",torneo:"Campeonato 2024",fecha:"19ª fecha",asistio:true},
-  {year:2024,date:"2024-11-06",rival:"Godoy Cruz",score:"4-1",res:"G",torneo:"Campeonato 2024",fecha:"21ª fecha",asistio:true},
-  {year:2024,date:"2024-11-20",rival:"Unión",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"23ª fecha",asistio:true},
-  {year:2024,date:"2024-12-01",rival:"Gimnasia",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"25ª fecha",asistio:true},
-  {year:2024,date:"2024-12-14",rival:"Independiente",score:"0-0",res:"E",torneo:"Campeonato 2024",fecha:"27ª fecha",asistio:false},
+  {year:2024,date:"2024-05-25",rival:"Talleres",score:"0-0",res:"E",torneo:"Campeonato 2024",fecha:"3ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Tevez, Carlos",goleadores:"-",asistio:true},
+  {year:2024,date:"2024-06-14",rival:"Vélez",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"5ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Burruchaga, Gustavo",goleadores:"Merentiel (65') / -",asistio:true},
+  {year:2024,date:"2024-07-31",rival:"Banfield",score:"3-0",res:"G",torneo:"Campeonato 2024",fecha:"7ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Troglio, Pedro",goleadores:"Saracchi (27'), Aguirre (34'), Merentiel (79') / -",asistio:true},
+  {year:2024,date:"2024-08-04",rival:"Barracas Central",score:"1-1",res:"E",torneo:"Campeonato 2024",fecha:"9ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Insúa, Rubén",goleadores:"Merentiel (6') / Miloc (53')",asistio:true},
+  {year:2024,date:"2024-08-18",rival:"San Lorenzo",score:"3-2",res:"G",torneo:"Campeonato 2024",fecha:"11ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Insúa, Rubén",goleadores:"Zenón (15'), Merentiel (33'), Giménez (77') / Bareiro (10'), Nardoni (83')",asistio:false},
+  {year:2024,date:"2024-08-31",rival:"Rosario Central",score:"2-1",res:"G",torneo:"Campeonato 2024",fecha:"13ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Holan, Ariel",goleadores:"Saracchi (19'), Lema (74') / Sandez (55')",asistio:false},
+  {year:2024,date:"2024-09-21",rival:"River",score:"0-1",res:"P",torneo:"Campeonato 2024",fecha:"15ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Gallardo, Marcelo",goleadores:"- / Solari (79')",asistio:true},
+  {year:2024,date:"2024-10-06",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"17ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Diez, Nicolás",goleadores:"Merentiel (49') / -",asistio:true},
+  {year:2024,date:"2024-10-27",rival:"Dep. Riestra",score:"1-1",res:"E",torneo:"Campeonato 2024",fecha:"19ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Benítez, Gustavo",goleadores:"Merentiel (17') / Quiroga (79')",asistio:true},
+  {year:2024,date:"2024-11-06",rival:"Godoy Cruz",score:"4-1",res:"G",torneo:"Campeonato 2024",fecha:"21ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Oldrá, Daniel",goleadores:"Giménez (7'), Merentiel (45'), Cavani (59'), Aguirre (88') / Badaloni (73')",asistio:true},
+  {year:2024,date:"2024-11-20",rival:"Unión",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"23ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Madelón, Leonardo",goleadores:"Zenón (72') / -",asistio:true},
+  {year:2024,date:"2024-12-01",rival:"Gimnasia",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"25ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Gorosito, Néstor",goleadores:"Merentiel (22') / -",asistio:true},
+  {year:2024,date:"2024-12-14",rival:"Independiente",score:"0-0",res:"E",torneo:"Campeonato 2024",fecha:"27ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Vaccari, Julio",goleadores:"-",asistio:false},
   {year:2025,date:"2025-01-26",rival:"Argentinos Jrs.",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2025",fecha:"1ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Diez, Nicolás",goleadores:"-"},
   {year:2025,date:"2025-02-02",rival:"Huracán",asistio:true,score:"2-1",res:"G",torneo:"Torneo Apertura 2025",fecha:"3ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Kudelka, Frank",goleadores:"Cavani (19'), Palacios (68') / Pellegrino (31')"},
   {year:2025,date:"2025-02-11",rival:"Ind. Rivadavia",asistio:true,score:"2-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"5ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Berti, Alfredo",goleadores:"Merentiel (51'), Zeballos (83') / -"},
@@ -361,7 +361,7 @@ const MATCHES = [
   {year:2025,date:"2025-04-19",rival:"Estudiantes",asistio:false,score:"2-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"14ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Domínguez, Eduardo",goleadores:"Palacios (48'), Merentiel (63') / -"},
   {year:2025,date:"2025-05-10",rival:"Lanús",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2025",fecha:"8vos de final",dt_boca:"Herrón, Mariano",dt_rival:"Pellegrino, Mauricio",goleadores:"- (penales 4-2)"},
   {year:2025,date:"2025-05-19",rival:"Independiente",asistio:true,score:"0-1",res:"P",torneo:"Torneo Apertura 2025",fecha:"4tos de final",dt_boca:"Herrón, Mariano",dt_rival:"Vaccari, Julio",goleadores:"- / Angulo (64')"},
-  {year:2025,date:"2025-02-06",rival:"Alianza Lima",score:"2-1",res:"G",torneo:"Copa Libertadores 2025",fecha:"Fase 2"},
+  {year:2025,date:"2025-02-25",rival:"Alianza Lima",score:"2-1",res:"G",torneo:"Copa Libertadores 2025",fecha:"Fase 2",asistio:true,dt_boca:"Gago, Fernando",dt_rival:"Gorosito, Néstor",goleadores:"Palacios (7'), Zenón (58') / Barcos (22') — Penales 4-5 (elim.)"},
   {year:2025,date:"2025-07-18",rival:"Unión",asistio:true,score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"2ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Madelón, Leonardo",goleadores:"Di Lollo (85') / Tarragona (64')"},
   {year:2025,date:"2025-08-09",rival:"Racing",asistio:true,score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"4ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Costas, Gustavo",goleadores:"Giménez (88') / Solari (76')"},
   {year:2025,date:"2025-08-24",rival:"Banfield",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"6ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Troglio, Pedro",goleadores:"Merentiel (55'), Cavani (82') / -"},
@@ -565,8 +565,8 @@ function renderAll() {
           <div class="match-header">
             <span class="match-rival">Boca vs ${m.rival}</span>
             <div class="match-header-right">
-              <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
               ${isAtt ? `<span class="att-badge" onclick="event.stopPropagation();openConfirm('${m._id}','remove')" title="Desmarcar">✓ Fui</span>` : `<span class="att-badge" style="background:#fee2e2;color:#b91c1c;" onclick="event.stopPropagation();openConfirm('${m._id}','add')">✗ Ausente</span>`}
+              <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
             </div>
           </div>
           <div class="match-meta">${formatDate(m.date)}</div>
