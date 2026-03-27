@@ -90,9 +90,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="stats-bar">
       <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Partidos</div></div>
-      <div class="stat"><div class="stat-num" id="s-asistidos">0</div><div class="stat-label">Fui</div></div>
       <div class="stat"><div class="stat-num" id="s-victorias">0</div><div class="stat-label">Victorias</div></div>
-      <div class="stat"><div class="stat-num" id="s-racha" style="font-size:14px">-</div><div class="stat-label">Racha</div></div>
+      <div class="stat"><div class="stat-num" id="s-empates">0</div><div class="stat-label">Empates</div></div>
+      <div class="stat"><div class="stat-num" id="s-derrotas">0</div><div class="stat-label">Derrotas</div></div>
     </div>
   </div>
   <div class="sync-bar">
@@ -102,7 +102,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="filters">
     <button class="filter-btn active" onclick="setFilter('todos')">Todos</button>
-    <button class="filter-btn" onclick="setFilter('asistidos')">Fui</button>
     <button class="filter-btn" onclick="setFilter('victorias')">Victorias</button>
     <button class="filter-btn" onclick="setFilter('libertadores')">Libertadores</button>
     <button class="filter-btn" onclick="setFilter('superclasico')">Superclásico</button>
@@ -323,6 +322,8 @@ const MATCHES = [
   {year:2026,date:"2026-02-08",rival:"Newell's",score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha"},
   {year:2026,date:"2026-02-22",rival:"Platense",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha"},
   {year:2026,date:"2026-03-08",rival:"Racing",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha"},
+  {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha"},
+  {year:2026,date:"2026-03-11",rival:"San Lorenzo",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha"},
 ];
 
 MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/\s/g,'-') + '-' + i; });
@@ -337,6 +338,8 @@ let extraData = {};
 let syncStatus = 'connecting';
 
 async function initSupabase() {
+  MATCHES.forEach(m => { attended[m._id] = true; });
+  renderAll();
   try {
     const { data, error } = await db.from('asistencias').select('id, asistio');
     if (error) throw error;
@@ -381,7 +384,7 @@ function showToast(msg) {
 function setFilter(f) {
   activeFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => {
-    const labels = {todos:'Todos',asistidos:'Fui',victorias:'Victorias',libertadores:'Libertadores',superclasico:'Superclásico',sudamericana:'Sudamericana'};
+    const labels = {todos:'Todos',victorias:'Victorias',libertadores:'Libertadores',superclasico:'Superclásico',sudamericana:'Sudamericana'};
     b.classList.toggle('active', b.textContent.trim() === labels[f]);
   });
   renderAll();
@@ -389,7 +392,6 @@ function setFilter(f) {
 
 function getFiltered() {
   return MATCHES.filter(m => {
-    if (activeFilter === 'asistidos') return attended[m._id];
     if (activeFilter === 'victorias') return m.res === 'G';
     if (activeFilter === 'libertadores') return LIBERTADORES.includes(m.torneo);
     if (activeFilter === 'superclasico') return m.rival === 'River';
@@ -407,12 +409,12 @@ function renderStats() {
   const total = MATCHES.length;
   const asistidos = MATCHES.filter(m => attended[m._id]).length;
   const victorias = MATCHES.filter(m => m.res === 'G').length;
-  let maxRacha = 0, cur = 0;
-  MATCHES.forEach(m => { if(attended[m._id] && m.res==='G'){cur++;maxRacha=Math.max(maxRacha,cur);}else{cur=0;} });
+  const empates = MATCHES.filter(m => m.res === 'E').length;
+  const derrotas = MATCHES.filter(m => m.res === 'P').length;
   document.getElementById('s-total').textContent = total;
-  document.getElementById('s-asistidos').textContent = asistidos;
   document.getElementById('s-victorias').textContent = victorias;
-  document.getElementById('s-racha').textContent = maxRacha > 0 ? maxRacha + 'G' : '-';
+  document.getElementById('s-empates').textContent = empates;
+  document.getElementById('s-derrotas').textContent = derrotas;
 }
 
 async function fetchExtraData(match) {
@@ -466,9 +468,8 @@ function renderAll() {
 
   let html = '';
   Object.keys(byYear).sort((a,b)=>b-a).forEach(yr => {
-    const yMs = byYear[yr];
-    const yAtt = yMs.filter(m=>attended[m._id]).length;
-    html += `<div class="year-header"><span>${yr}</span><span class="year-badge">${yMs.length} partidos${yAtt ? ` · fui a ${yAtt}` : ''}</span></div>`;
+    const yMs = byYear[yr].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    html += `<div class="year-header"><span>${yr}</span><span class="year-badge">${yMs.length} partidos</span></div>`;
 
     yMs.forEach(m => {
       const isAtt = !!attended[m._id];
