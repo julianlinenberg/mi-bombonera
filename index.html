@@ -76,6 +76,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a3a6b;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;z-index:100;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
+
+/* YEAR COLLAPSIBLE */
+.year-header{cursor:pointer;user-select:none;}
+.year-header:hover{background:#f3f4f6;}
+.year-chevron{font-size:12px;color:#9ca3af;transition:transform 0.2s;display:inline-block;}
+.year-header.collapsed .year-chevron{transform:rotate(-90deg);}
+.year-balance{font-size:12px;color:#6b7280;display:flex;gap:8px;}
+.bal-g{color:#16a34a;font-weight:600;}
+.bal-e{color:#d97706;font-weight:600;}
+.bal-p{color:#dc2626;font-weight:600;}
+.year-matches{transition:none;}
+
+/* DESKTOP */
+@media(min-width:768px){
+  body{background:#e5e7eb;}
+  .app{max-width:none;display:grid;grid-template-columns:280px 1fr;grid-template-rows:auto auto 1fr;min-height:100vh;box-shadow:none;}
+  .header{grid-column:1/3;grid-row:1;border-radius:0;}
+  .sync-bar{grid-column:1/3;}
+  .filters{grid-column:1;grid-row:3;border-right:1px solid #e5e7eb;overflow-y:auto;flex-direction:column;padding:16px;height:calc(100vh - 130px);position:sticky;top:130px;align-self:start;}
+  .filters .filter-btn{text-align:left;border-radius:8px;}
+  .search-wrap{grid-column:2;grid-row:2;padding:12px 20px;background:#fff;border-bottom:1px solid #e5e7eb;}
+  #matches-container{grid-column:2;grid-row:3;overflow-y:auto;}
+  .match-card{padding:16px 20px;}
+  .match-rival{font-size:16px;}
+  .year-header{padding:12px 20px;}
+}
 </style>
 </head>
 <body>
@@ -107,9 +133,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="filter-btn" onclick="setFilter('superclasico')">Superclásico</button>
     <button class="filter-btn" onclick="setFilter('sudamericana')">Sudamericana</button>
   </div>
-  <div style="padding:10px 16px;background:#fff;border-bottom:1px solid #e5e7eb;">
-    <input type="text" id="search-input" placeholder="Buscar rival..." oninput="renderAll()"
-      style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:20px;font-size:14px;outline:none;background:#f9fafb;color:#111827;">
+  <div class="search-wrap">
+    <input type="text" id="search-input" placeholder="🔍  Buscar rival..." oninput="renderAll()"
+      style="width:100%;padding:8px 14px;border:1px solid #d1d5db;border-radius:20px;font-size:14px;outline:none;background:#f9fafb;color:#111827;">
   </div>
 
   <div id="matches-container"></div>
@@ -423,221 +449,27 @@ function renderStats() {
   document.getElementById('s-derrotas').textContent = derrotas;
 }
 
-const EXTRA_DATA = {
-  "2013-02-10-Unión-0": {dt_boca:"Julio Falcioni",dt_rival:"Sergio Rondina",goleadores:"Orión (og) / Pittón, Leguizamón, Carabajal"},
-  "2013-02-24-Argentinos-Jrs.-1": {dt_boca:"Julio Falcioni",dt_rival:"Diego Osella",goleadores:"Palacio / Mateo"},
-  "2013-03-10-Lanús-2": {dt_boca:"Julio Falcioni",dt_rival:"Diego Cagna",goleadores:"-"},
-  "2013-03-24-Belgrano-3": {dt_boca:"Julio Falcioni",dt_rival:"Diego Osella",goleadores:"-"},
-  "2013-04-28-Vélez-4": {dt_boca:"Julio Falcioni",dt_rival:"Ricardo Gareca",goleadores:"Palacio / Cubero"},
-  "2013-04-17-Barcelona-(ECU)-5": {dt_boca:"Julio Falcioni",dt_rival:"Hernán Darío Gómez",goleadores:"Palacio / -"},
-  "2013-05-22-Newell's-6": {dt_boca:"Julio Falcioni",dt_rival:"Gerardo Martino",goleadores:"-"},
-  "2013-08-25-Newell's-7": {dt_boca:"Julio Falcioni",dt_rival:"Gerardo Martino",goleadores:"Cvitanich, Riquelme / Scocco, Rodríguez, Formica"},
-  "2013-09-08-Atl.-Rafaela-8": {dt_boca:"Julio Falcioni",dt_rival:"Raúl Candidoti",goleadores:"Cvitanich, Riquelme / Bieler"},
-  "2013-09-22-Vélez-9": {dt_boca:"Julio Falcioni",dt_rival:"Ricardo Gareca",goleadores:"Cvitanich, Riquelme / Cubero"},
-  "2013-10-06-Racing-10": {dt_boca:"Julio Falcioni",dt_rival:"Diego Simeone",goleadores:"Cvitanich, Riquelme / -"},
-  "2013-10-20-Quilmes-11": {dt_boca:"Julio Falcioni",dt_rival:"Facundo Sava",goleadores:"Cvitanich, Palacio / -"},
-  "2013-11-03-Rosario-Central-12": {dt_boca:"Julio Falcioni",dt_rival:"Miguel Russo",goleadores:"Cvitanich / Rivarola"},
-  "2013-11-17-Colón-13": {dt_boca:"Julio Falcioni",dt_rival:"Eduardo Domínguez",goleadores:"Cvitanich, Riquelme / -"},
-  "2013-12-01-Tigre-14": {dt_boca:"Julio Falcioni",dt_rival:"Néstor Gorosito",goleadores:"Cvitanich, Riquelme / Pittón"},
-  "2014-03-09-Olimpo-15": {dt_boca:"Carlos Bianchi",dt_rival:"Mario Sciacqua",goleadores:"Lodeiro, Palermo / -"},
-  "2014-03-23-Argentinos-Jrs.-16": {dt_boca:"Carlos Bianchi",dt_rival:"Diego Osella",goleadores:"Palermo / Sánchez"},
-  "2014-04-06-River-17": {dt_boca:"Carlos Bianchi",dt_rival:"Ramón Díaz",goleadores:"Palermo / Mora, Trezeguet"},
-  "2014-04-20-Godoy-Cruz-18": {dt_boca:"Carlos Bianchi",dt_rival:"Omar De Felippe",goleadores:"Palermo, Lodeiro, Gago / -"},
-  "2014-05-04-San-Lorenzo-19": {dt_boca:"Carlos Bianchi",dt_rival:"Edgardo Bauza",goleadores:"-"},
-  "2014-05-18-Arsenal-20": {dt_boca:"Carlos Bianchi",dt_rival:"Gustavo Alfaro",goleadores:"Palermo, Lodeiro, Gago, Insúa / Gigliotti, Pellerano"},
-  "2014-06-01-Lanús-21": {dt_boca:"Carlos Bianchi",dt_rival:"Diego Cagna",goleadores:"Palermo, Lodeiro, Gago / Acosta"},
-  "2014-08-10-Newell's-22": {dt_boca:"Carlos Bianchi",dt_rival:"Omar Asad",goleadores:"- / Scocco"},
-  "2014-09-07-Vélez-23": {dt_boca:"Carlos Bianchi",dt_rival:"Omar De Felippe",goleadores:"Tevez, Lodeiro, Gago / Cubero"},
-  "2014-10-05-Rosario-Central-24": {dt_boca:"Carlos Bianchi",dt_rival:"Miguel Russo",goleadores:"Tevez, Lodeiro / Rivarola"},
-  "2014-10-19-Defensa-y-Justicia-25": {dt_boca:"Carlos Bianchi",dt_rival:"Hernán Losada",goleadores:"Tevez, Lodeiro / -"},
-  "2014-11-16-Independiente-26": {dt_boca:"Carlos Bianchi",dt_rival:"Ariel Holan",goleadores:"Tevez, Lodeiro, Gago / Gigliotti"},
-  "2014-07-24-Dep.-Capiatá-27": {dt_boca:"Carlos Bianchi",dt_rival:"N/D",goleadores:"- / N/D"},
-  "2014-08-21-Cerro-Porteño-28": {dt_boca:"Carlos Bianchi",dt_rival:"N/D",goleadores:"Tevez / -"},
-  "2014-10-01-River-29": {dt_boca:"Carlos Bianchi",dt_rival:"Marcelo Gallardo",goleadores:"-"},
-  "2015-02-19-M.-Wanderers-30": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"N/D",goleadores:"Tevez, Gago / N/D"},
-  "2015-03-05-Zamora-31": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"N/D",goleadores:"Tevez 2, Gago, Lodeiro, Calleri / -"},
-  "2015-03-19-Palestino-32": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"N/D",goleadores:"Tevez, Gago / -"},
-  "2015-04-05-Olimpo-33": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Mario Sciacqua",goleadores:"Tevez, Gago, Calleri / Obolo"},
-  "2015-05-03-Defensa-y-Justicia-34": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Hernán Losada",goleadores:"Tevez, Gago / N/D"},
-  "2015-05-17-Estudiantes-35": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Nelson Vivas",goleadores:"Tevez, Gago, Calleri / -"},
-  "2015-05-31-Nueva-Chicago-36": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Alfredo Grelak",goleadores:"-"},
-  "2015-06-14-River-37": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Marcelo Gallardo",goleadores:"Tevez, Calleri / -"},
-  "2015-08-16-Quilmes-38": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Facundo Sava",goleadores:"Tevez, Gago / N/D"},
-  "2015-09-13-Unión-39": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Sergio Rondina",goleadores:"Tevez 2, Gago / Pittón 2, Leguizamón, Vera"},
-  "2015-10-11-Godoy-Cruz-40": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Omar De Felippe",goleadores:"Tevez, Gago / -"},
-  "2015-10-25-San-Lorenzo-41": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Edgardo Bauza",goleadores:"- / Cauteruccio"},
-  "2015-11-08-Banfield-42": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Julio Falcioni",goleadores:"Tevez, Gago, Calleri / -"},
-  "2015-11-15-Crucero-del-Norte-43": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"N/D",goleadores:"Tevez / -"},
-  "2015-11-29-Tigre-44": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Néstor Gorosito",goleadores:"Tevez / -"},
-  "2016-02-25-Bolívar-45": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"Julio César Baldivieso",goleadores:"Tevez, Gago, Calleri / N/D"},
-  "2016-03-10-Dep.-Cali-46": {dt_boca:"Rodolfo Arruabarrena",dt_rival:"N/D",goleadores:"Tevez 2, Gago 2, Calleri 2 / N/D"},
-  "2016-06-22-Ind.-del-Valle-47": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Renato Paiva",goleadores:"Tevez, Gago / Índio, Bolaños, Díaz"},
-  "2016-08-21-Newell's-48": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Omar Asad",goleadores:"Tevez 2, Gago, Calleri / N/D"},
-  "2016-09-11-Unión-49": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Sergio Rondina",goleadores:"Tevez, Calleri / N/D"},
-  "2016-09-25-Atl.-Rafaela-50": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Raúl Candidoti",goleadores:"Tevez 2, Gago / -"},
-  "2016-10-02-Aldosivi-51": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Martín Palermo",goleadores:"Tevez 2, Gago, Calleri / N/D"},
-  "2016-10-09-River-52": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Marcelo Gallardo",goleadores:"-"},
-  "2016-10-30-Belgrano-53": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Diego Osella",goleadores:"Tevez 2, Gago / -"},
-  "2016-11-13-Quilmes-54": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Facundo Sava",goleadores:"Tevez 2, Gago, Calleri / N/D"},
-  "2016-12-11-Temperley-55": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"N/D",goleadores:"Tevez 2, Gago, Calleri / -"},
-  "2017-01-08-Rosario-Central-56": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Miguel Russo",goleadores:"Tevez / Rivarola"},
-  "2017-02-05-Colón-57": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Eduardo Domínguez",goleadores:"Tevez 2, Gago, Calleri / N/D"},
-  "2017-02-26-Talleres-58": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Frank Kudelka",goleadores:"Pavón / Barbona, Cáceres"},
-  "2017-03-12-Defensa-y-Justicia-59": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Hernán Losada",goleadores:"Pavón / -"},
-  "2017-04-09-Arsenal-60": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Gustavo Alfaro",goleadores:"Tevez, Gago, Calleri / -"},
-  "2017-04-23-River-61": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Marcelo Gallardo",goleadores:"Tevez / Alario, Mora, Scocco"},
-  "2017-04-30-Newell's-62": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Omar Asad",goleadores:"Pavón / -"},
-  "2017-05-21-Independiente-63": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Ariel Holan",goleadores:"Tevez, Gago, Calleri / -"},
-  "2017-06-11-Unión-64": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Sergio Rondina",goleadores:"Tevez, Calleri / N/D"},
-  "2017-08-20-Olimpo-65": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Mario Sciacqua",goleadores:"Tevez, Gago, Calleri / -"},
-  "2017-09-03-Godoy-Cruz-66": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Diego Dabove",goleadores:"Tevez 2, Gago, Calleri / N/D"},
-  "2017-09-17-Chacarita-67": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Gustavo Alfaro",goleadores:"Pavón / -"},
-  "2017-10-22-Racing-68": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Diego Cocca",goleadores:"Pavón / Lisandro López, Cvitanich"},
-  "2018-01-14-Temperley-69": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"N/D",goleadores:"Pavón / -"},
-  "2018-02-11-S.-Martín-SJ-70": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"N/D",goleadores:"Benedetto 2, Pavón, Gago / N/D"},
-  "2018-03-11-Tigre-71": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Néstor Gorosito",goleadores:"Benedetto, Pavón / N/D"},
-  "2018-04-01-Talleres-72": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Frank Kudelka",goleadores:"Benedetto, Gago / Barbona"},
-  "2018-04-15-Defensa-y-Justicia-73": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Hernán Losada",goleadores:"- / Boghossian, Figueiras"},
-  "2018-04-29-Newell's-74": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Omar Asad",goleadores:"Benedetto, Pavón, Gago / N/D"},
-  "2018-05-13-Unión-75": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Leonardo Madelón",goleadores:"Benedetto, Gago / -"},
-  "2018-04-05-Júnior-76": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"N/D",goleadores:"Benedetto / -"},
-  "2018-04-19-Palmeiras-77": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Roger Machado",goleadores:"- / Borja, Hyoran"},
-  "2018-05-03-Alianza-Lima-78": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Pablo Bengoechea",goleadores:"Benedetto 3, Pavón, Gago / -"},
-  "2018-07-19-Libertad-79": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"N/D",goleadores:"Benedetto, Gago / -"},
-  "2018-08-23-Cruzeiro-80": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Mano Menezes",goleadores:"Benedetto, Gago / -"},
-  "2018-10-24-Palmeiras-81": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Luiz Felipe Scolari",goleadores:"Benedetto, Gago / -"},
-  "2018-11-11-River-82": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Marcelo Gallardo",goleadores:"Benedetto, Gago / Pratto, Quintero"},
-  "2018-08-12-Talleres-83": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Frank Kudelka",goleadores:"Benedetto / -"},
-  "2018-09-02-Vélez-84": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Gabriel Heinze",goleadores:"Benedetto 2, Gago / -"},
-  "2018-09-23-River-85": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Marcelo Gallardo",goleadores:"- / Pratto, Scocco"},
-  "2018-11-18-Patronato-86": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"N/D",goleadores:"Benedetto / -"},
-  "2019-01-20-Godoy-Cruz-87": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Diego Dabove",goleadores:"Benedetto, Gago / -"},
-  "2019-02-03-Lanús-88": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Luis Zubeldía",goleadores:"Benedetto, Zárate / N/D"},
-  "2019-01-06-Atl.-Tucumán-89": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Ricardo Zielinski",goleadores:"- / Barbona, Acosta"},
-  "2019-02-24-San-Lorenzo-90": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Diego Aguirre",goleadores:"Benedetto, Zárate, Gago / -"},
-  "2019-03-10-Banfield-91": {dt_boca:"Guillermo Barros Schelotto",dt_rival:"Julio Falcioni",goleadores:"Benedetto, Gago / -"},
-  "2019-04-24-Dep.-Tolima-92": {dt_boca:"Gustavo Alfaro",dt_rival:"Hernán Torres",goleadores:"Zárate, Benedetto, Salvio / -"},
-  "2019-05-08-J.-Wilstermann-93": {dt_boca:"Gustavo Alfaro",dt_rival:"N/D",goleadores:"Zárate 2, Benedetto, Salvio / -"},
-  "2019-05-22-Ath.-Paranaense-94": {dt_boca:"Gustavo Alfaro",dt_rival:"Tiago Nunes",goleadores:"Zárate, Benedetto / N/D"},
-  "2019-08-08-Ath.-Paranaense-95": {dt_boca:"Gustavo Alfaro",dt_rival:"Tiago Nunes",goleadores:"Zárate, Benedetto / -"},
-  "2019-09-19-Liga-de-Quito-96": {dt_boca:"Gustavo Alfaro",dt_rival:"Pablo Marini",goleadores:"-"},
-  "2019-10-22-River-97": {dt_boca:"Gustavo Alfaro",dt_rival:"Marcelo Gallardo",goleadores:"Zárate / -"},
-  "2019-06-20-Godoy-Cruz-98": {dt_boca:"Gustavo Alfaro",dt_rival:"Diego Dabove",goleadores:"Zárate, Benedetto, Salvio / N/D"},
-  "2019-07-04-Vélez-99": {dt_boca:"Gustavo Alfaro",dt_rival:"Gabriel Heinze",goleadores:"-"},
-  "2019-07-21-Argentinos-Jrs.-100": {dt_boca:"Gustavo Alfaro",dt_rival:"Diego Dabove",goleadores:"Zárate / -"},
-  "2019-08-25-Huracán-101": {dt_boca:"Gustavo Alfaro",dt_rival:"Diego Dabove",goleadores:"-"},
-  "2019-09-08-Aldosivi-102": {dt_boca:"Gustavo Alfaro",dt_rival:"Martín Palermo",goleadores:"Zárate, Soldano / -"},
-  "2019-09-29-Estudiantes-103": {dt_boca:"Gustavo Alfaro",dt_rival:"Gabriel Milito",goleadores:"Zárate / -"},
-  "2019-11-10-Racing-104": {dt_boca:"Gustavo Alfaro",dt_rival:"Eduardo Coudet",goleadores:"- / Lisandro López"},
-  "2019-12-08-Unión-105": {dt_boca:"Gustavo Alfaro",dt_rival:"Leonardo Madelón",goleadores:"Zárate, Soldano / -"},
-  "2020-01-19-Independiente-106": {dt_boca:"Miguel Russo",dt_rival:"Lucas Pusineri",goleadores:"-"},
-  "2020-02-02-Atl.-Tucumán-107": {dt_boca:"Miguel Russo",dt_rival:"Ricardo Zielinski",goleadores:"Zárate, Soldano / -"},
-  "2020-02-16-Godoy-Cruz-108": {dt_boca:"Miguel Russo",dt_rival:"Diego Dabove",goleadores:"Zárate 2, Soldano / -"},
-  "2021-10-25-Lanús-109": {dt_boca:"Miguel Russo",dt_rival:"Luis Zubeldía",goleadores:"Briasco, Romero, Villa, Zeballos / Acosta, Belmonte"},
-  "2021-11-21-GELP-110": {dt_boca:"Miguel Russo",dt_rival:"Eduardo Domínguez",goleadores:"- / Castro"},
-  "2021-12-05-Sarmiento-111": {dt_boca:"Miguel Russo",dt_rival:"Mario Sciacqua",goleadores:"Villa, Zeballos / -"},
-  "2021-12-19-Newell's-112": {dt_boca:"Miguel Russo",dt_rival:"Javier Sanguinetti",goleadores:"-"},
-  "2021-12-26-Central-Córdoba-113": {dt_boca:"Miguel Russo",dt_rival:"Sergio Rondina",goleadores:"Villa 3, Zeballos 2, Briasco, Romero, Varela / Brítez"},
-  "2022-02-13-Colón-114": {dt_boca:"Sebastián Battaglia",dt_rival:"Julio Falcioni",goleadores:"Briasco / Farías"},
-  "2022-03-13-Huracán-115": {dt_boca:"Sebastián Battaglia",dt_rival:"Frank Kudelka",goleadores:"- / Pons"},
-  "2022-04-17-Lanús-116": {dt_boca:"Sebastián Battaglia",dt_rival:"Luis Zubeldía",goleadores:"Briasco / Acosta"},
-  "2022-04-24-Godoy-Cruz-117": {dt_boca:"Sebastián Battaglia",dt_rival:"Diego Dabove",goleadores:"Briasco / N/D"},
-  "2022-05-08-Barracas-Central-118": {dt_boca:"Sebastián Battaglia",dt_rival:"Rodolfo De Paoli",goleadores:"Villa, Zeballos / -"},
-  "2022-05-29-Defensa-y-Justicia-119": {dt_boca:"Sebastián Battaglia",dt_rival:"Sebastián Beccacece",goleadores:"Villa, Zeballos / -"},
-  "2022-04-06-Dep.-Cali-120": {dt_boca:"Sebastián Battaglia",dt_rival:"N/D",goleadores:"Briasco / -"},
-  "2022-07-06-Corinthians-121": {dt_boca:"Sebastián Battaglia",dt_rival:"Vítor Pereira",goleadores:"-"},
-  "2022-06-26-Arsenal-122": {dt_boca:"Hugo Ibarra",dt_rival:"Sergio Rondina",goleadores:"Villa, Zeballos / N/D"},
-  "2022-07-10-Tigre-123": {dt_boca:"Hugo Ibarra",dt_rival:"Diego Martínez",goleadores:"Villa 2, Zeballos 2, Briasco / N/D"},
-  "2022-07-24-Unión-124": {dt_boca:"Hugo Ibarra",dt_rival:"Gustavo Munúa",goleadores:"Villa / Masoero, Pardo"},
-  "2022-07-31-Banfield-125": {dt_boca:"Hugo Ibarra",dt_rival:"Julio Falcioni",goleadores:"- / Lema, Tejera, Urzi"},
-  "2022-08-21-Talleres-126": {dt_boca:"Hugo Ibarra",dt_rival:"Pedro Caixinha",goleadores:"Villa / -"},
-  "2022-09-04-Estudiantes-127": {dt_boca:"Hugo Ibarra",dt_rival:"Ricardo Zielinski",goleadores:"Villa 2, Zeballos / N/D"},
-  "2022-10-02-Rosario-Central-128": {dt_boca:"Hugo Ibarra",dt_rival:"Carlos Tevez",goleadores:"-"},
-  "2022-10-16-Atl.-Tucumán-129": {dt_boca:"Hugo Ibarra",dt_rival:"Ricardo Zielinski",goleadores:"Villa, Zeballos / N/D"},
-  "2022-10-30-River-130": {dt_boca:"Hugo Ibarra",dt_rival:"Marcelo Gallardo",goleadores:"Benedetto / -"},
-  "2022-11-13-Huracán-131": {dt_boca:"Hugo Ibarra",dt_rival:"Frank Kudelka",goleadores:"-"},
-  "2022-11-27-Vélez-132": {dt_boca:"Hugo Ibarra",dt_rival:"Mauricio Pellegrino",goleadores:"Benedetto / -"},
-  "2022-12-11-Aldosivi-133": {dt_boca:"Hugo Ibarra",dt_rival:"Martín Palermo",goleadores:"Benedetto, Zeballos / N/D"},
-  "2023-01-08-Independiente-134": {dt_boca:"Hugo Ibarra",dt_rival:"Julio Falcioni",goleadores:"Benedetto, Zeballos / N/D"},
-  "2023-01-22-Atl.-Tucumán-135": {dt_boca:"Hugo Ibarra",dt_rival:"Ricardo Zielinski",goleadores:"Benedetto / -"},
-  "2023-01-29-Central-Córdoba-136": {dt_boca:"Hugo Ibarra",dt_rival:"Sergio Rondina",goleadores:"-"},
-  "2023-02-19-Platense-137": {dt_boca:"Hugo Ibarra",dt_rival:"N/D",goleadores:"Benedetto 2, Zeballos / N/D"},
-  "2023-03-05-Defensa-y-Justicia-138": {dt_boca:"Hugo Ibarra",dt_rival:"Sebastián Beccacece",goleadores:"-"},
-  "2023-03-19-Instituto-139": {dt_boca:"Hugo Ibarra",dt_rival:"N/D",goleadores:"Benedetto, Zeballos / N/D"},
-  "2023-04-23-Estudiantes-140": {dt_boca:"Hugo Ibarra",dt_rival:"Eduardo Domínguez",goleadores:"- / Castro"},
-  "2023-05-07-Racing-141": {dt_boca:"Jorge Almirón",dt_rival:"Fernando Gago",goleadores:"Benedetto 2, Zeballos / N/D"},
-  "2023-05-28-Belgrano-142": {dt_boca:"Jorge Almirón",dt_rival:"Juan Cruz Real",goleadores:"Benedetto, Zeballos / -"},
-  "2023-06-11-Tigre-143": {dt_boca:"Jorge Almirón",dt_rival:"Diego Martínez",goleadores:"Merentiel / -"},
-  "2023-07-09-Sarmiento-144": {dt_boca:"Jorge Almirón",dt_rival:"Mario Sciacqua",goleadores:"Merentiel, Benedetto / -"},
-  "2023-07-23-Huracán-145": {dt_boca:"Jorge Almirón",dt_rival:"Frank Kudelka",goleadores:"Merentiel / -"},
-  "2023-08-06-Newell's-146": {dt_boca:"Jorge Almirón",dt_rival:"Javier Sanguinetti",goleadores:"Merentiel, Benedetto / N/D"},
-  "2023-04-04-Dep.-Pereira-147": {dt_boca:"Jorge Almirón",dt_rival:"Alejandro Restrepo",goleadores:"Merentiel, Benedetto / N/D"},
-  "2023-05-17-Colo-Colo-148": {dt_boca:"Jorge Almirón",dt_rival:"Gustavo Quinteros",goleadores:"Merentiel / -"},
-  "2023-05-25-Monagas-149": {dt_boca:"Jorge Almirón",dt_rival:"N/D",goleadores:"Merentiel 2, Benedetto, Zeballos / -"},
-  "2023-06-28-Nacional-150": {dt_boca:"Jorge Almirón",dt_rival:"Pablo Repetto",goleadores:"Merentiel, Benedetto / N/D"},
-  "2023-08-23-Racing-151": {dt_boca:"Jorge Almirón",dt_rival:"Fernando Gago",goleadores:"-"},
-  "2023-10-05-Palmeiras-152": {dt_boca:"Jorge Almirón",dt_rival:"Abel Ferreira",goleadores:"-"},
-  "2023-01-29-Platense-153": {dt_boca:"Hugo Ibarra",dt_rival:"N/D",goleadores:"Benedetto 2, Zeballos / N/D"},
-  "2023-02-12-Tigre-154": {dt_boca:"Hugo Ibarra",dt_rival:"Diego Martínez",goleadores:"- / N/D"},
-  "2023-03-05-Lanús-155": {dt_boca:"Hugo Ibarra",dt_rival:"Luis Zubeldía",goleadores:"Benedetto / N/D"},
-  "2023-03-19-River-156": {dt_boca:"Hugo Ibarra",dt_rival:"Martín Demichelis",goleadores:"- / Solari, Borja"},
-  "2023-04-02-Unión-157": {dt_boca:"Hugo Ibarra",dt_rival:"Gustavo Munúa",goleadores:"Benedetto, Zeballos / N/D"},
-  "2023-04-23-Estudiantes-158": {dt_boca:"Hugo Ibarra",dt_rival:"Eduardo Domínguez",goleadores:"-"},
-  "2023-05-07-Newell's-159": {dt_boca:"Jorge Almirón",dt_rival:"Javier Sanguinetti",goleadores:"Merentiel / -"},
-  "2024-02-18-Sarmiento-160": {dt_boca:"Diego Martínez",dt_rival:"Mario Sciacqua",goleadores:"Merentiel / N/D"},
-  "2024-04-07-Belgrano-161": {dt_boca:"Diego Martínez",dt_rival:"Guillermo Farré",goleadores:"Merentiel 2, Zenón / N/D"},
-  "2024-04-21-Racing-162": {dt_boca:"Diego Martínez",dt_rival:"Gustavo Costas",goleadores:"Merentiel 2, Zenón, Cavani / N/D"},
-  "2024-05-05-San-Lorenzo-163": {dt_boca:"Diego Martínez",dt_rival:"Leandro Romagnoli",goleadores:"Merentiel, Zenón / N/D"},
-  "2024-05-19-Godoy-Cruz-164": {dt_boca:"Diego Martínez",dt_rival:"Diego Flores",goleadores:"Merentiel / -"},
-  "2024-04-10-Sp.-Trinidense-165": {dt_boca:"Diego Martínez",dt_rival:"N/D",goleadores:"Merentiel / -"},
-  "2024-05-01-Fortaleza-166": {dt_boca:"Diego Martínez",dt_rival:"Juan Pablo Vojvoda",goleadores:"Merentiel / N/D"},
-  "2024-05-22-Nac.-Potosí-167": {dt_boca:"Diego Martínez",dt_rival:"N/D",goleadores:"Merentiel 2, Zenón, Cavani / -"},
-  "2024-07-18-Ind.-del-Valle-168": {dt_boca:"Diego Martínez",dt_rival:"Renato Paiva",goleadores:"Merentiel / -"},
-  "2024-08-08-Cruzeiro-169": {dt_boca:"Diego Martínez",dt_rival:"Fernando Seabra",goleadores:"Merentiel / -"},
-  "2024-03-10-Talleres-170": {dt_boca:"Diego Martínez",dt_rival:"Alexander Medina",goleadores:"-"},
-  "2024-03-24-Vélez-171": {dt_boca:"Diego Martínez",dt_rival:"Mauricio Pellegrino",goleadores:"Merentiel / -"},
-  "2024-04-07-Banfield-172": {dt_boca:"Diego Martínez",dt_rival:"Julio Falcioni",goleadores:"Merentiel 2, Zenón / -"},
-  "2024-04-21-Barracas-Central-173": {dt_boca:"Diego Martínez",dt_rival:"Rodolfo De Paoli",goleadores:"Merentiel / N/D"},
-  "2024-06-16-River-174": {dt_boca:"Diego Martínez",dt_rival:"Martín Demichelis",goleadores:"- / Colidio"},
-  "2024-06-30-Argentinos-Jrs.-175": {dt_boca:"Diego Martínez",dt_rival:"Gabriel Néstor Lom",goleadores:"Merentiel / -"},
-  "2024-07-21-Dep.-Riestra-176": {dt_boca:"Diego Martínez",dt_rival:"N/D",goleadores:"Merentiel / N/D"},
-  "2024-08-11-Godoy-Cruz-177": {dt_boca:"Diego Martínez",dt_rival:"Diego Flores",goleadores:"Merentiel 2, Zenón, Cavani / N/D"},
-  "2024-08-25-Unión-178": {dt_boca:"Diego Martínez",dt_rival:"Gustavo Munúa",goleadores:"Merentiel / -"},
-  "2024-09-15-Gimnasia-179": {dt_boca:"Diego Martínez",dt_rival:"Gustavo Goñi",goleadores:"Merentiel / -"},
-  "2025-01-19-Argentinos-Jrs.-180": {dt_boca:"Fernando Gago",dt_rival:"Gabriel Néstor Lom",goleadores:"-"},
-  "2025-02-02-Huracán-181": {dt_boca:"Fernando Gago",dt_rival:"Frank Kudelka",goleadores:"Merentiel, Zenón / N/D"},
-  "2025-02-16-Ind.-Rivadavia-182": {dt_boca:"Fernando Gago",dt_rival:"N/D",goleadores:"Merentiel, Zenón / -"},
-  "2025-03-02-Aldosivi-183": {dt_boca:"Fernando Gago",dt_rival:"Martín Palermo",goleadores:"Merentiel, Zenón / N/D"},
-  "2025-03-30-Defensa-y-Justicia-184": {dt_boca:"Fernando Gago",dt_rival:"Sebastián Beccacece",goleadores:"Merentiel 2, Zenón, Cavani / -"},
-  "2025-04-13-Barracas-Central-185": {dt_boca:"Fernando Gago",dt_rival:"Rodolfo De Paoli",goleadores:"Merentiel / -"},
-  "2025-05-18-Lanús-186": {dt_boca:"Fernando Gago",dt_rival:"Ricardo Zielinski",goleadores:"-"},
-  "2025-06-01-Independiente-187": {dt_boca:"Fernando Gago",dt_rival:"Julio Falcioni",goleadores:"- / N/D"},
-  "2025-02-06-Alianza-Lima-188": {dt_boca:"Fernando Gago",dt_rival:"Pablo Bengoechea",goleadores:"Merentiel, Zenón / N/D"},
-  "2025-07-13-Unión-189": {dt_boca:"Fernando Gago",dt_rival:"Gustavo Munúa",goleadores:"Merentiel / N/D"},
-  "2025-07-27-Racing-190": {dt_boca:"Fernando Gago",dt_rival:"Gustavo Costas",goleadores:"Merentiel / N/D"},
-  "2025-08-10-Banfield-191": {dt_boca:"Fernando Gago",dt_rival:"Julio Falcioni",goleadores:"Merentiel, Zenón / -"},
-  "2025-09-07-Central-Córdoba-192": {dt_boca:"Fernando Gago",dt_rival:"Sergio Rondina",goleadores:"Merentiel, Zenón / N/D"},
-  "2025-09-21-Newell's-193": {dt_boca:"Fernando Gago",dt_rival:"Mariano Soso",goleadores:"Merentiel 3, Zenón, Cavani / -"},
-  "2025-10-05-Belgrano-194": {dt_boca:"Fernando Gago",dt_rival:"Guillermo Farré",goleadores:"- / N/D"},
-  "2025-10-19-River-195": {dt_boca:"Fernando Gago",dt_rival:"Martín Demichelis",goleadores:"Merentiel, Zenón / -"},
-  "2025-10-26-Tigre-196": {dt_boca:"Fernando Gago",dt_rival:"Diego Martínez",goleadores:"Merentiel, Zenón / -"},
-  "2025-11-16-Argentinos-Jrs.-197": {dt_boca:"Fernando Gago",dt_rival:"Gabriel Néstor Lom",goleadores:"Merentiel / -"},
-  "2025-11-30-Racing-198": {dt_boca:"Fernando Gago",dt_rival:"Gustavo Costas",goleadores:"- / N/D"},
-  "2026-01-25-Dep.-Riestra-199": {dt_boca:"Fernando Gago",dt_rival:"N/D",goleadores:"Merentiel / -"},
-  "2026-02-08-Newell's-200": {dt_boca:"Fernando Gago",dt_rival:"Mariano Soso",goleadores:"Merentiel, Zenón / -"},
-  "2026-02-22-Platense-201": {dt_boca:"Fernando Gago",dt_rival:"N/D",goleadores:"-"},
-  "2026-03-08-Racing-202": {dt_boca:"Fernando Gago",dt_rival:"Gustavo Costas",goleadores:"-"},
-  "2026-02-28-Gimnasia-y-Esgrima-203": {dt_boca:"Fernando Gago",dt_rival:"Marcelo Méndez",goleadores:"Merentiel / N/D"},
-  "2026-03-11-San-Lorenzo-204": {dt_boca:"Fernando Gago",dt_rival:"Miguel Russo",goleadores:"Merentiel / N/D"},
-};
+const EXTRA_DATA = {};
 
-function fetchExtraData(match) {
+async function fetchExtraData(match) {
   const id = match._id;
-  const data = EXTRA_DATA[id];
-  if (data) {
-    extraData[id] = { loading: false, ...data };
-  } else {
-    extraData[id] = { loading: false, dt_boca: 'N/D', dt_rival: 'N/D', goleadores: 'N/D' };
+  extraData[id] = { loading: true };
+  renderAll();
+  try {
+    const params = new URLSearchParams({ fecha: match.date, rival: match.rival, match_id: id });
+    const res = await fetch(`/api/partido?${params}`);
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    extraData[id] = {
+      loading: false,
+      fecha_exacta: data.fecha_exacta || '',
+      dt_boca: data.dt_boca || 'N/D',
+      dt_rival: data.dt_rival || 'N/D',
+      goleadores: data.goleadores || '-',
+      nota: data.nota || ''
+    };
+  } catch(e) {
+    extraData[id] = { loading: false, dt_boca: 'N/D', dt_rival: 'N/D', goleadores: '-' };
   }
   renderAll();
 }
@@ -661,7 +493,21 @@ function renderAll() {
   let html = '';
   Object.keys(byYear).sort((a,b)=>b-a).forEach(yr => {
     const yMs = byYear[yr].sort((a,b)=>new Date(b.date)-new Date(a.date));
-    html += `<div class="year-header"><span>${yr}</span><span class="year-badge">${yMs.length} partidos</span></div>`;
+    const yG = yMs.filter(m=>m.res==='G').length;
+    const yE = yMs.filter(m=>m.res==='E').length;
+    const yP = yMs.filter(m=>m.res==='P').length;
+    const isCollapsed = collapsedYears.has(String(yr));
+    html += `<div class="year-header${isCollapsed?' collapsed':''}" onclick="toggleYear('${yr}')">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:15px;font-weight:600;color:#111827;">${yr}</span>
+        <span class="year-chevron">▼</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="year-balance"><span class="bal-g">${yG}G</span><span class="bal-e">${yE}E</span><span class="bal-p">${yP}P</span></div>
+        <span class="year-badge">${yMs.length} partidos</span>
+      </div>
+    </div>
+    <div id="year-${yr}" style="display:${isCollapsed?'none':'block'}">`;
 
     yMs.forEach(m => {
       const isAtt = !!attended[m._id];
@@ -688,6 +534,7 @@ function renderAll() {
               <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="loading-pill" style="width:90px"></span></div>
               <div class="match-detail-row"><span class="detail-label">Goles</span><span class="loading-pill" style="width:150px"></span></div>
             ` : ex.error ? `<span style="color:#9ca3af;font-size:12px">No se pudo cargar la info</span>` : `
+              ${ex.fecha_exacta?`<div class="match-detail-row"><span class="detail-label">Fecha</span><span class="detail-val">${ex.fecha_exacta}</span></div>`:''}
               <div class="match-detail-row"><span class="detail-label">DT Boca</span><span class="detail-val">${ex.dt_boca||'N/D'}</span></div>
               <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="detail-val">${ex.dt_rival||'N/D'}</span></div>
               <div class="match-detail-row"><span class="detail-label">Goles</span><span class="detail-val">${ex.goleadores||'-'}</span></div>
@@ -697,9 +544,17 @@ function renderAll() {
         </div>
       </div>`;
     });
+    html += '</div>'; // close year-{yr}
   });
 
   container.innerHTML = html;
+}
+
+const collapsedYears = new Set();
+function toggleYear(yr) {
+  if (collapsedYears.has(yr)) collapsedYears.delete(yr);
+  else collapsedYears.add(yr);
+  renderAll();
 }
 
 function toggleExpand(id) {
