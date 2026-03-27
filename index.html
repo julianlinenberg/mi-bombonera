@@ -74,9 +74,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .year-chevron{font-size:12px;color:#9ca3af;transition:transform 0.2s;display:inline-block;}
 .year-header.collapsed .year-chevron{transform:rotate(-90deg);}
 .year-balance{font-size:12px;color:#6b7280;display:flex;gap:8px;}
-.bal-g{color:#15803d;font-weight:600;}
-.bal-e{color:#854d0e;font-weight:600;}
-.bal-p{color:#b91c1c;font-weight:600;}
+
 .year-matches{transition:none;}
 
 /* DESKTOP */
@@ -116,8 +114,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="filters">
     <button class="filter-btn active" onclick="setFilter('todos')">Todos</button>
     <button class="filter-btn" onclick="setFilter('victorias')">Victorias</button>
-    <button class="filter-btn" onclick="setFilter('libertadores')">Libertadores</button>
+    <button class="filter-btn" onclick="setFilter('empates')">Empates</button>
+    <button class="filter-btn" onclick="setFilter('derrotas')">Derrotas</button>
     <button class="filter-btn" onclick="setFilter('superclasico')">Superclásico</button>
+    <button class="filter-btn" onclick="setFilter('clasicos')">Clásicos</button>
+    <button class="filter-btn" onclick="setFilter('libertadores')">Libertadores</button>
     <button class="filter-btn" onclick="setFilter('sudamericana')">Sudamericana</button>
   </div>
   <div class="search-wrap">
@@ -335,7 +336,7 @@ const MATCHES = [
   {year:2025,date:"2025-12-07",rival:"Racing",score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinal",dt_boca:"Ubeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"- / A. Martínez (75')"},
   {year:2026,date:"2026-01-25",rival:"Dep. Riestra",score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Benítez, Gustavo",goleadores:"Di Lollo (77') / -"},
   {year:2026,date:"2026-02-01",rival:"Newell's",score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Orsi-Gómez",goleadores:"L. Blanco (40'), Paredes -pen- (56') / -"},
-  {year:2026,date:"2026-02-22",rival:"Platense",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Zunino, Walter",goleadores:"-"},
+  {year:2026,date:"2026-02-15",rival:"Platense",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Zunino, Walter",goleadores:"-"},
   {year:2026,date:"2026-02-20",rival:"Racing",score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"-"},
   {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Broggi, Ariel",goleadores:"Merentiel (41') / L. Paredes (15')"},
   {year:2026,date:"2026-03-11",rival:"San Lorenzo",score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
@@ -357,7 +358,7 @@ function initSupabase() {
 function setFilter(f) {
   activeFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => {
-    const labels = {todos:'Todos',victorias:'Victorias',libertadores:'Libertadores',superclasico:'Superclásico',sudamericana:'Sudamericana'};
+    const labels = {todos:'Todos',victorias:'Victorias',empates:'Empates',derrotas:'Derrotas',superclasico:'Superclásico',clasicos:'Clásicos',libertadores:'Libertadores',sudamericana:'Sudamericana'};
     b.classList.toggle('active', b.textContent.trim() === labels[f]);
   });
   renderAll();
@@ -365,11 +366,15 @@ function setFilter(f) {
 
 function getFiltered() {
   const q = (document.getElementById('search-input') ? document.getElementById('search-input').value : '').toLowerCase().trim();
+  const CLASICOS_RIVALS = ['River','Racing','Independiente','San Lorenzo'];
   return MATCHES.filter(m => {
     if (q && !m.rival.toLowerCase().includes(q)) return false;
     if (activeFilter === 'victorias') return m.res === 'G';
-    if (activeFilter === 'libertadores') return LIBERTADORES.includes(m.torneo);
+    if (activeFilter === 'empates') return m.res === 'E';
+    if (activeFilter === 'derrotas') return m.res === 'P';
     if (activeFilter === 'superclasico') return m.rival === 'River';
+    if (activeFilter === 'clasicos') return CLASICOS_RIVALS.includes(m.rival);
+    if (activeFilter === 'libertadores') return LIBERTADORES.includes(m.torneo);
     if (activeFilter === 'sudamericana') return SUDAMERICANA.includes(m.torneo);
     return true;
   });
@@ -447,7 +452,7 @@ function renderAll() {
         <span class="year-chevron">▼</span>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div class="year-balance"><span class="bal-g">${yG}G</span><span class="bal-e">${yE}E</span><span class="bal-p">${yP}P</span></div>
+        <div class="year-balance"><span style="color:#15803d;font-weight:600">${yG}G</span><span style="color:#854d0e;font-weight:600">${yE}E</span><span style="color:#b91c1c;font-weight:600">${yP}P</span></div>
         <span class="year-badge">${yMs.length} partidos</span>
       </div>
     </div>
@@ -489,7 +494,7 @@ function renderAll() {
   container.innerHTML = html;
 }
 
-const collapsedYears = new Set();
+const collapsedYears = new Set(MATCHES.map(m=>String(m.year)));
 function toggleYear(yr) {
   if (collapsedYears.has(yr)) collapsedYears.delete(yr);
   else collapsedYears.add(yr);
