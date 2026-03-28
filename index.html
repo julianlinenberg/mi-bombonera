@@ -50,6 +50,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 .match-meta{font-size:12px;color:#6b7280;margin-bottom:3px;}
 .match-torneo{font-size:11px;color:#9ca3af;}
+.cancha-alt-badge{display:inline-block;margin-left:5px;font-size:10px;font-weight:700;color:#7c3aed;background:#ede9fe;border-radius:4px;padding:1px 5px;cursor:default;vertical-align:middle;}
 
 /* EXPANDED DETAIL */
 .match-detail{margin-top:10px;padding:10px;background:#f9fafb;border-radius:8px;font-size:12px;color:#374151;}
@@ -252,35 +253,37 @@ const MATCHES = [
   {year:2018,date:"2018-09-02",rival:"Vélez",score:"3-0",res:"G",torneo:"Superliga 2018/19",fecha:"4ª fecha"},
   {year:2018,date:"2018-09-23",rival:"River",score:"0-2",res:"P",torneo:"Superliga 2018/19",fecha:"6ª fecha"},
   {year:2018,date:"2018-11-18",rival:"Patronato",score:"1-0",res:"G",torneo:"Superliga 2018/19",fecha:"13ª fecha"},
-  {year:2019,date:"2019-01-20",rival:"Godoy Cruz",score:"2-0",res:"G",torneo:"Superliga 2018/19",fecha:"17ª fecha"},
-  {year:2019,date:"2019-02-03",rival:"Lanús",score:"2-1",res:"G",torneo:"Superliga 2018/19",fecha:"19ª fecha"},
-  {year:2019,date:"2019-01-06",rival:"Atl. Tucumán",score:"1-2",res:"P",torneo:"Superliga 2018/19",fecha:"15ª fecha"},
-  {year:2019,date:"2019-02-24",rival:"San Lorenzo",score:"3-0",res:"G",torneo:"Superliga 2018/19",fecha:"22ª fecha"},
-  {year:2019,date:"2019-03-10",rival:"Banfield",score:"2-0",res:"G",torneo:"Superliga 2018/19",fecha:"24ª fecha"},
-  {year:2019,date:"2019-04-24",rival:"Dep. Tolima",score:"3-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos"},
-  {year:2019,date:"2019-05-08",rival:"J. Wilstermann",score:"4-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos"},
-  {year:2019,date:"2019-05-22",rival:"Ath. Paranaense",score:"2-1",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos"},
-  {year:2019,date:"2019-08-08",rival:"Ath. Paranaense",score:"2-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"8vos de final"},
-  {year:2019,date:"2019-09-19",rival:"Liga de Quito",score:"0-0",res:"E",torneo:"Copa Libertadores 2019",fecha:"4tos de final"},
-  {year:2019,date:"2019-10-22",rival:"River",score:"1-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Semifinal"},
-  {year:2019,date:"2019-06-20",rival:"Godoy Cruz",score:"3-1",res:"G",torneo:"Copa Superliga 2019",fecha:"8vos de final"},
-  {year:2019,date:"2019-07-04",rival:"Vélez",score:"0-0",res:"E",torneo:"Copa Superliga 2019",fecha:"4tos de final"},
-  {year:2019,date:"2019-07-21",rival:"Argentinos Jrs.",score:"1-0",res:"G",torneo:"Copa Superliga 2019",fecha:"Semifinal"},
-  {year:2019,date:"2019-08-25",rival:"Huracán",score:"0-0",res:"E",torneo:"Superliga 2019/20",fecha:"1ª fecha"},
-  {year:2019,date:"2019-09-08",rival:"Aldosivi",score:"2-0",res:"G",torneo:"Superliga 2019/20",fecha:"3ª fecha"},
-  {year:2019,date:"2019-09-29",rival:"Estudiantes",score:"1-0",res:"G",torneo:"Superliga 2019/20",fecha:"6ª fecha"},
-  {year:2019,date:"2019-11-10",rival:"Racing",score:"0-1",res:"P",torneo:"Superliga 2019/20",fecha:"10ª fecha"},
-  {year:2019,date:"2019-12-08",rival:"Unión",score:"2-0",res:"G",torneo:"Superliga 2019/20",fecha:"14ª fecha"},
-  {year:2020,date:"2020-01-19",rival:"Independiente",score:"0-0",res:"E",torneo:"Superliga 2019/20",fecha:"17ª fecha"},
-  {year:2020,date:"2020-02-02",rival:"Atl. Tucumán",score:"2-0",res:"G",torneo:"Superliga 2019/20",fecha:"19ª fecha"},
-  {year:2020,date:"2020-02-16",rival:"Godoy Cruz",score:"3-0",res:"G",torneo:"Superliga 2019/20",fecha:"21ª fecha"},
-  {year:2021,date:"2021-10-25",rival:"Lanús",score:"4-2",res:"G",torneo:"Liga Profesional 2021",fecha:"15ª fecha"},
-  {year:2021,date:"2021-11-21",rival:"GELP",score:"0-1",res:"P",torneo:"Liga Profesional 2021",fecha:"19ª fecha"},
-  {year:2021,date:"2021-12-05",rival:"Sarmiento",score:"2-0",res:"G",torneo:"Liga Profesional 2021",fecha:"21ª fecha"},
-  {year:2021,date:"2021-12-19",rival:"Newell's",score:"0-0",res:"E",torneo:"Liga Profesional 2021",fecha:"23ª fecha"},
-  {year:2021,date:"2021-12-26",rival:"Central Córdoba",score:"8-1",res:"G",torneo:"Liga Profesional 2021",fecha:"25ª fecha"},
+  // Superliga 2018/2019 — locales en 2019
+  {year:2019,date:"2019-02-03",rival:"Godoy Cruz",score:"2-0",res:"G",torneo:"Superliga 2018/2019",fecha:"17ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Gómez, Marcelo",goleadores:"Benedetto -pen- (13'), Zárate -TL- (90') / -",asistio:true},
+  {year:2019,date:"2019-02-17",rival:"Lanús",score:"2-1",res:"G",torneo:"Superliga 2018/2019",fecha:"19ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Zubeldía, Luis",goleadores:"E.Más (55'), Zárate (60') / Sand (59')",asistio:true},
+  {year:2019,date:"2019-02-20",rival:"Atl. Tucumán",score:"1-2",res:"P",torneo:"Superliga 2018/2019",fecha:"15ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Zielinski, Ricardo",goleadores:"Ábila (61') / Nuñez (9'), Barbona (70')",asistio:true},
+  {year:2019,date:"2019-03-09",rival:"San Lorenzo",score:"3-0",res:"G",torneo:"Superliga 2018/2019",fecha:"22ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Almirón, Jorge",goleadores:"Zárate (4'), Nández (64'), Villa (84') / -",asistio:true},
+  {year:2019,date:"2019-03-29",rival:"Banfield",score:"2-0",res:"G",torneo:"Superliga 2018/2019",fecha:"24ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Crespo, Hernán",goleadores:"Ábila (18'), Pavón (57') / -",asistio:true},
+  // Copa Libertadores 2019
+  {year:2019,date:"2019-03-12",rival:"Dep. Tolima",score:"3-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos",dt_boca:"Alfaro, Gustavo",dt_rival:"Gamero, Alberto",goleadores:"M.Pérez -en contra- (47'), Benedetto (56'), Zárate (59') / -",asistio:true},
+  {year:2019,date:"2019-04-10",rival:"J. Wilstermann",score:"4-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos",dt_boca:"Alfaro, Gustavo",dt_rival:"Portugal, Miguel",goleadores:"Reynoso (36'), Benedetto -pen- (63'), Zárate (85'), Zárate (90') / -",asistio:true},
+  {year:2019,date:"2019-05-09",rival:"Atl. Paranaense",score:"2-1",res:"G",torneo:"Copa Libertadores 2019",fecha:"Fase de grupos",dt_boca:"Alfaro, Gustavo",dt_rival:"Nunes, Tiago",goleadores:"L.López (72'), Tevez (90') / Ruben (65')",asistio:true},
+  {year:2019,date:"2019-07-31",rival:"Atl. Paranaense",score:"2-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"8vos vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Nunes, Tiago",goleadores:"Ábila (57'), Salvio (90') / -",asistio:true},
+  {year:2019,date:"2019-08-28",rival:"Liga de Quito",score:"0-0",res:"E",torneo:"Copa Libertadores 2019",fecha:"4tos vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Repetto, Pablo",goleadores:"-",asistio:true},
+  {year:2019,date:"2019-10-22",rival:"River",score:"1-0",res:"G",torneo:"Copa Libertadores 2019",fecha:"Semifinal vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Gallardo, Marcelo",goleadores:"Hurtado (80') / -",asistio:true},
+  // Copa Superliga 2019
+  {year:2019,date:"2019-05-05",rival:"Godoy Cruz",score:"3-1",res:"G",torneo:"Copa Superliga 2019",fecha:"8vos vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Bernardi, Lucas",goleadores:"Ábila (6'), Ábila (55'), Zárate -TL- (88') / Prieto (80')",asistio:true},
+  {year:2019,date:"2019-05-16",rival:"Vélez",score:"0-0 pen 5-4",res:"E",torneo:"Copa Superliga 2019",fecha:"4tos vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Heinze, Gabriel",goleadores:"-",asistio:true},
+  {year:2019,date:"2019-05-26",rival:"Argentinos",score:"1-0",res:"G",torneo:"Copa Superliga 2019",fecha:"Semifinal vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Dabove, Diego",goleadores:"L.López (55') / -",asistio:true},
+  // Superliga 2019/2020 (partidos disputados en 2020, todos sin público por COVID)
+  {year:2020,date:"2020-01-26",rival:"Independiente",score:"0-0",res:"E",torneo:"Superliga 2019/2020",fecha:"17ª fecha",dt_boca:"Russo, Miguel",dt_rival:"Pusineri, Lucas",goleadores:"-",asistio:true},
+  {year:2020,date:"2020-02-08",rival:"Atl. Tucumán",score:"2-0",res:"G",torneo:"Superliga 2019/2020",fecha:"19ª fecha",dt_boca:"Russo, Miguel",dt_rival:"Zielinski, Ricardo",goleadores:"Soldano (22'), Ábila -pen- (90') / -",asistio:true},
+  {year:2020,date:"2020-02-23",rival:"Godoy Cruz",score:"3-0",res:"G",torneo:"Superliga 2019/2020",fecha:"21ª fecha",dt_boca:"Russo, Miguel",dt_rival:"Sciacqua, Mario",goleadores:"Tevez (19'), Salvio (83'), Salvio (87') / -",asistio:true},
+  // Campeonato 2021 (público muy limitado, algunos sin público)
+  {year:2021,date:"2021-10-09",rival:"Lanús",score:"4-2",res:"G",torneo:"Campeonato 2021",fecha:"15ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Zubeldía, Luis",goleadores:"Weigandt (31'), Almendra (38'), L.Vázquez (50'), Pavón -pen- (90') / Malcorra (22'), Braghieri (82')",asistio:true},
+  {year:2021,date:"2021-10-20",rival:"Godoy Cruz",score:"2-1",res:"G",torneo:"Campeonato 2021",fecha:"17ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Flores, Diego",goleadores:"Fabra (37'), L.Vázquez (45') / Badaloni (10')",asistio:false},
+  {year:2021,date:"2021-10-30",rival:"GELP",score:"0-1",res:"P",torneo:"Campeonato 2021",fecha:"19ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Gorosito, Néstor",goleadores:"- / L.Rodríguez -pen- (16')",asistio:true},
+  {year:2021,date:"2021-11-20",rival:"Sarmiento",score:"2-0",res:"G",torneo:"Campeonato 2021",fecha:"21ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Funes, Martín",goleadores:"L.Vázquez (24'), Fabra (46') / -",asistio:true},
+  {year:2021,date:"2021-11-30",rival:"Newell's",score:"0-0",res:"E",torneo:"Campeonato 2021",fecha:"23ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Taffarel, Adrián",goleadores:"-",asistio:true},
+  {year:2021,date:"2021-12-11",rival:"Central Córdoba",score:"8-1",res:"G",torneo:"Campeonato 2021",fecha:"25ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Rondina, Sergio",goleadores:"Pavón (15'), Salvio (22'), Zeballos -pen- (28'), D.González (44'), Mancuso (59'), Pavón (63'), L.Vázquez (81'), Villa (90') / Giménez (77')",asistio:true},
   // Copa Liga Profesional 2022
   {year:2022,date:"2022-02-13",rival:"Colón",score:"1-1",res:"E",torneo:"Copa Liga Profesional 2022",fecha:"1ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Falcioni, Julio",goleadores:"Benedetto (22') / Beltrán (86')",asistio:true},
+  {year:2022,date:"2022-02-20",rival:"Rosario Central",score:"2-1",res:"G",torneo:"Copa Liga Profesional 2022",fecha:"3ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"González, Cristian",goleadores:"Izquierdoz (50'), Fabra (81') / Dupuy (86')",asistio:false,cancha_alt:"Vélez Sársfield"},
   {year:2022,date:"2022-03-06",rival:"Huracán",score:"0-1",res:"P",torneo:"Copa Liga Profesional 2022",fecha:"5ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Kudelka, Frank",goleadores:"- / Coccaro (69')",asistio:true},
   {year:2022,date:"2022-04-02",rival:"Arsenal",score:"2-2",res:"E",torneo:"Copa Liga Profesional 2022",fecha:"8ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Madelón, Leonardo",goleadores:"L.Vázquez (34'), Rojo -pen- (74') / Lomónaco (61'), Colman (75')",asistio:false},
   {year:2022,date:"2022-04-17",rival:"Lanús",score:"1-1",res:"E",torneo:"Copa Liga Profesional 2022",fecha:"10ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Almirón, Jorge",goleadores:"Villa (5') / Sand (26')",asistio:true},
@@ -336,7 +339,7 @@ const MATCHES = [
   {year:2023,date:"2023-10-28",rival:"Estudiantes",score:"0-0",res:"E",torneo:"Copa Liga Profesional 2023",fecha:"11ª fecha",dt_boca:"Almirón, Jorge",dt_rival:"E.Domínguez, Eduardo",goleadores:"-",asistio:true},
   {year:2023,date:"2023-11-12",rival:"Newell's",score:"1-0",res:"G",torneo:"Copa Liga Profesional 2023",fecha:"13ª fecha",dt_boca:"Herrón, Mariano",dt_rival:"Larriera, Mauricio",goleadores:"Merentiel -pen- (90') / -",asistio:true},
   // Copa de la Liga 2024
-  {year:2024,date:"2024-02-01",rival:"Sarmiento",score:"1-1",res:"E",torneo:"Copa de la Liga 2024",fecha:"2ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Rondina, Sergio",goleadores:"Merentiel (9') / Mauri (72')",asistio:true},
+  {year:2024,date:"2024-02-01",rival:"Sarmiento",score:"1-1",res:"E",torneo:"Copa de la Liga 2024",fecha:"2ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Rondina, Sergio",goleadores:"Merentiel (9') / Mauri (72')",asistio:true,cancha_alt:"San Lorenzo"},
   {year:2024,date:"2024-02-10",rival:"Defensa y Justicia",score:"0-0",res:"E",torneo:"Copa de la Liga 2024",fecha:"4ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Vaccari, Julio",goleadores:"-",asistio:false},
   {year:2024,date:"2024-02-14",rival:"Central Córdoba",score:"2-0",res:"G",torneo:"Copa de la Liga 2024",fecha:"5ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Balbo, Abel",goleadores:"Merentiel (8'), Zenón (74') / -",asistio:false},
   {year:2024,date:"2024-03-03",rival:"Belgrano",score:"3-2",res:"G",torneo:"Copa de la Liga 2024",fecha:"8ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Farré, Guillermo",goleadores:"Cavani -pen- (63'), Cavani (74'), Cavani (79') / Passerini (21'), Marín (90')",asistio:true},
@@ -576,7 +579,7 @@ function renderAll() {
 
         <div class="match-body">
           <div class="match-header">
-            <span class="match-rival">Boca vs ${m.rival}</span>
+            <span class="match-rival">Boca vs ${m.rival}${m.cancha_alt ? '<span class="cancha-alt-badge" title="Jugado en ' + m.cancha_alt + '">★ ' + m.cancha_alt + '</span>' : ''}</span>
             <div class="match-header-right">
               ${isAtt ? `<span class="att-badge" onclick="event.stopPropagation();openConfirm('${m._id}','remove')" title="Desmarcar">✓ Fui</span>` : `<span class="att-badge" style="background:#fee2e2;color:#b91c1c;" onclick="event.stopPropagation();openConfirm('${m._id}','add')">✗ Ausente</span>`}
               <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
@@ -594,6 +597,7 @@ function renderAll() {
               <div class="match-detail-row"><span class="detail-label">DT Boca</span><span class="detail-val">${ex.dt_boca||'N/D'}</span></div>
               <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="detail-val">${ex.dt_rival||'N/D'}</span></div>
               <div class="match-detail-row"><span class="detail-label">Goles</span><span class="detail-val">${ex.goleadores||'-'}</span></div>
+              ${m.cancha_alt?`<div class="match-detail-row"><span class="detail-label">Cancha</span><span class="detail-val" style="color:#7c3aed;">${m.cancha_alt}</span></div>`:''}
               ${ex.nota?`<div class="match-detail-row"><span class="detail-label">Memo</span><span class="detail-val memo-text">${ex.nota}</span></div>`:''}
             `}
           </div>` : ''}
