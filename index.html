@@ -15,12 +15,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .escudo{width:40px;height:40px;border-radius:50%;background:#f5c518;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .header h1{font-size:17px;font-weight:600;color:#fff;}
 .header p{font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;}
+
+/* STATS MODE TOGGLE */
+.stats-mode-toggle{display:flex;gap:4px;margin-bottom:10px;}
+.mode-btn{padding:4px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:rgba(255,255,255,0.55);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.mode-btn.active{background:rgba(255,255,255,0.22);color:#fff;border-color:rgba(255,255,255,0.7);}
+
 .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
 .stat{background:rgba(255,255,255,0.12);border-radius:8px;padding:8px;text-align:center;}
-.stat-num{font-size:20px;font-weight:600;color:#fff;}
-.stat-label{font-size:10px;color:rgba(255,255,255,0.65);margin-top:2px;}
-
-
+.stat-num{font-size:18px;font-weight:600;color:#fff;line-height:1.2;}
+.stat-label{font-size:10px;color:rgba(255,255,255,0.65);margin-top:2px;line-height:1.2;}
 
 /* FILTERS */
 .filters{padding:12px 16px;display:flex;gap:8px;overflow-x:auto;background:#fff;border-bottom:1px solid #e5e7eb;scrollbar-width:none;}
@@ -33,13 +37,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .year-header span{font-size:13px;font-weight:600;color:#374151;}
 .year-badge{font-size:12px;color:#9ca3af;}
 
+/* YEAR ATTENDANCE BADGE */
+.year-att{font-size:11px;color:#0c4a6e;font-weight:700;background:#e0f2fe;border-radius:10px;padding:2px 8px;white-space:nowrap;}
+.year-att .att-pct{font-weight:400;color:#0369a1;margin-left:2px;}
+
 /* MATCH CARD */
 .match-card{padding:14px 16px;border-bottom:1px solid #f3f4f6;background:#fff;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:background 0.15s;}
 .match-card:active{background:#f9fafb;}
-
-
-
-
 .match-body{flex:1;min-width:0;}
 .match-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
 .match-rival{font-size:15px;font-weight:600;color:#111827;}
@@ -47,7 +51,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .score-g{background:#dcfce7;color:#15803d;}
 .score-e{background:#fef9c3;color:#854d0e;}
 .score-p{background:#fee2e2;color:#b91c1c;}
-
 .match-meta{font-size:12px;color:#6b7280;margin-bottom:3px;}
 .match-torneo{font-size:11px;color:#9ca3af;}
 .cancha-alt-badge{display:inline-block;margin-left:5px;font-size:10px;font-weight:700;color:#7c3aed;background:#ede9fe;border-radius:4px;padding:1px 5px;cursor:default;vertical-align:middle;}
@@ -66,16 +69,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty{text-align:center;padding:48px 16px;color:#9ca3af;font-size:14px;}
 .empty-icon{font-size:40px;margin-bottom:12px;}
 
-/* TOAST */
-
-
 /* YEAR COLLAPSIBLE */
 .year-header{cursor:pointer;user-select:none;}
 .year-header:hover{background:#f3f4f6;}
 .year-chevron{font-size:12px;color:#9ca3af;transition:transform 0.2s;display:inline-block;}
 .year-header.collapsed .year-chevron{transform:rotate(-90deg);}
 .year-balance{font-size:12px;color:#6b7280;display:flex;gap:8px;}
-
 .year-matches{transition:none;}
 
 /* DESKTOP */
@@ -121,7 +120,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .confirm-btn.no:hover{background:#e5e7eb;}
 
 /* ATTENDANCE STAT BAR */
-.attendance-stat{background:#1e4080;border-top:1px solid rgba(255,255,255,0.1);padding:6px 16px;text-align:center;font-size:12px;color:rgba(255,255,255,0.7);}
+.attendance-stat{background:#1e4080;border-top:1px solid rgba(255,255,255,0.1);padding:6px 16px;text-align:center;font-size:11px;color:rgba(255,255,255,0.7);display:none;}
 .attendance-stat span{color:#4ade80;font-weight:700;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -136,14 +135,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <p>Partidos en La Bombonera · 2013–2026</p>
       </div>
     </div>
-    <div class="stats-bar">
-      <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">Partidos</div></div>
-      <div class="stat"><div class="stat-num" id="s-victorias">0</div><div class="stat-label">Victorias</div></div>
-      <div class="stat"><div class="stat-num" id="s-empates">0</div><div class="stat-label">Empates</div></div>
-      <div class="stat"><div class="stat-num" id="s-derrotas">0</div><div class="stat-label">Derrotas</div></div>
+    <div class="stats-mode-toggle">
+      <button class="mode-btn active" id="mode-boca" onclick="setStatsMode('boca')">Boca</button>
+      <button class="mode-btn" id="mode-yo" onclick="setStatsMode('yo')">Yo fui</button>
     </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label" id="lbl-total">Partidos</div></div>
+      <div class="stat"><div class="stat-num" id="s-victorias">0</div><div class="stat-label" id="lbl-victorias">Victorias</div></div>
+      <div class="stat"><div class="stat-num" id="s-empates">0</div><div class="stat-label" id="lbl-empates">Empates</div></div>
+      <div class="stat"><div class="stat-num" id="s-derrotas">0</div><div class="stat-label" id="lbl-derrotas">Derrotas</div></div>
+    </div>
+    <div id="attendance-stat" class="attendance-stat"></div>
   </div>
-
 
   <div class="filters">
     <button class="filter-btn active" onclick="setFilter('todos')">Todos</button>
@@ -163,12 +166,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="matches-container"></div>
 </div>
 
+<!-- CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <h3 id="confirm-title"></h3>
+    <p id="confirm-subtitle"></p>
+    <div class="confirm-btns">
+      <button class="confirm-btn no" onclick="closeConfirm()">Cancelar</button>
+      <button class="confirm-btn yes" id="confirm-yes-btn" onclick="confirmAttendance()">Sí, fui</button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 const MATCHES = [
   // Torneo Final 2013
   {year:2013,date:"2013-02-09",rival:"Quilmes",score:"3-2",res:"G",torneo:"Torneo Final 2013",fecha:"1ª fecha",dt_boca:"Bianchi, C.",dt_rival:"De Felippe, O.",goleadores:"Erviti (37'), Burdisso (67'), Burdisso (81') / Olivera -cab- (5'), Menéndez (8')",asistio:false},
-  {year:2013,date:"2013-03-03",rival:"Unión",score:"1-3",res:"P",torneo:"Torneo Final 2013",fecha:"4ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Sava, F.",goleadores:"S.Silva -cab- (88') / Lizio (26'), Bianchi (35'), Magnín (60')",asistio:true},
+  {year:2013,date:"2013-03-03",rival:"Unión",score:"1-3",res:"P",torneo:"Torneo Final 2013",fecha:"4ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Sava, F.",goleadores:"S.Silva -pen- (88') / Lizio (26'), Bianchi (35'), Magnín (60')",asistio:true},
   {year:2013,date:"2013-03-17",rival:"Argentinos",score:"1-1",res:"E",torneo:"Torneo Final 2013",fecha:"6ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Caruso Lombardi, R.",goleadores:"S.Silva -pen- (11') / M.Martínez (44')",asistio:true},
   {year:2013,date:"2013-04-07",rival:"Lanús",score:"0-0",res:"E",torneo:"Torneo Final 2013",fecha:"8ª fecha",dt_boca:"Castro, J.M.",dt_rival:"Barros Schelotto, G.",goleadores:"- / -",asistio:true},
   {year:2013,date:"2013-04-21",rival:"Belgrano",score:"0-0",res:"E",torneo:"Torneo Final 2013",fecha:"10ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Zielinski, R.",goleadores:"- / -",asistio:true},
@@ -192,7 +207,7 @@ const MATCHES = [
   {year:2013,date:"2013-11-10",rival:"Tigre",score:"2-1",res:"G",torneo:"Torneo Inicial 2013",fecha:"15ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Alegre, F.",goleadores:"Paredes (85'), D.Díaz -cab- (90') / C.D.Pérez -eg- (18')",asistio:true},
   {year:2013,date:"2013-11-24",rival:"All Boys",score:"0-2",res:"P",torneo:"Torneo Inicial 2013",fecha:"17ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Rodríguez, R.",goleadores:"- / Battión -cab- (47'), Matos -pen- (54')",asistio:false},
   {year:2013,date:"2013-12-08",rival:"Gimnasia",score:"1-1",res:"E",torneo:"Torneo Inicial 2013",fecha:"19ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Troglio, P.",goleadores:"Gigliotti (49') / Mussis (37')",asistio:false},
-  // Torneo de Transición 2014 (= "Torneo Final 2014" en historiadeboca)
+  // Torneo Final 2014
   {year:2014,date:"2014-02-23",rival:"Estudiantes",score:"1-0",res:"G",torneo:"Torneo Final 2014",fecha:"4ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Pellegrino, M.",goleadores:"Gigliotti -cab- (41') / -",asistio:false},
   {year:2014,date:"2014-03-05",rival:"Olimpo",score:"2-0",res:"G",torneo:"Torneo Final 2014",fecha:"6ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Perazzo, W.",goleadores:"Sánchez Miño (52'), Riquelme -pen- (84') / -",asistio:true},
   {year:2014,date:"2014-03-16",rival:"Argentinos",score:"1-1",res:"E",torneo:"Torneo Final 2014",fecha:"8ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Borghi, C.",goleadores:"Gigliotti (37') / Pisculichi (87')",asistio:true},
@@ -201,7 +216,7 @@ const MATCHES = [
   {year:2014,date:"2014-04-16",rival:"San Lorenzo",score:"0-0",res:"E",torneo:"Torneo Final 2014",fecha:"14ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Bauza, E.",goleadores:"- / -",asistio:true},
   {year:2014,date:"2014-04-27",rival:"Arsenal",score:"4-2",res:"G",torneo:"Torneo Final 2014",fecha:"16ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Palermo, M.",goleadores:"Erbes (1'), Riquelme -pen- (45'), Colazo -cab- (54'), Gigliotti -pen- (86') / Echeverría (17'), Furch (90')",asistio:true},
   {year:2014,date:"2014-05-11",rival:"Lanús",score:"3-1",res:"G",torneo:"Torneo Final 2014",fecha:"18ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Barros Schelotto, G.",goleadores:"Gigliotti (51'), Colazo -cab- (56'), Riaño (72') / D.González (54')",asistio:true},
-  // Torneo Final 2014 (= "Campeonato 2014" en historiadeboca)
+  // Torneo de Transición 2014
   {year:2014,date:"2014-08-10",rival:"Newell's",score:"0-1",res:"P",torneo:"Torneo de Transición 2014",fecha:"1ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Raggio, G.",goleadores:"- / M.Tévez (45')",asistio:true},
   {year:2014,date:"2014-08-24",rival:"Atl. Rafaela",score:"0-3",res:"P",torneo:"Torneo de Transición 2014",fecha:"3ª fecha",dt_boca:"Bianchi, C.",dt_rival:"Sensini, R.",goleadores:"- / M.Gómez -TL- (37'), F.González (55'), G.Fernández (73')",asistio:false},
   {year:2014,date:"2014-08-31",rival:"Vélez",score:"3-1",res:"G",torneo:"Torneo de Transición 2014",fecha:"5ª fecha",dt_boca:"Arruabarrena, R.",dt_rival:"Flores, J.",goleadores:"D.Díaz -cab- (56'), Meli (62'), Chávez (89') / Correa (45')",asistio:true},
@@ -236,7 +251,7 @@ const MATCHES = [
   {year:2015,date:"2015-09-27",rival:"Banfield",score:"3-0",res:"G",torneo:"Campeonato 2015",fecha:"25ª fecha",dt_boca:"Arruabarrena, R.",dt_rival:"Vivas, C.",goleadores:"Peruzzi (4'), Calleri (61'), Tevez (80') / -",asistio:true},
   {year:2015,date:"2015-10-04",rival:"Crucero del Norte",score:"1-0",res:"G",torneo:"Campeonato 2015",fecha:"27ª fecha",dt_boca:"Arruabarrena, R.",dt_rival:"Rambert, S.",goleadores:"Tomasini -eg- (12') / -",asistio:true},
   {year:2015,date:"2015-11-01",rival:"Tigre",score:"1-0",res:"G",torneo:"Campeonato 2015",fecha:"29ª fecha",dt_boca:"Arruabarrena, R.",dt_rival:"Alfaro, G.",goleadores:"Monzón -cab- (42') / -",asistio:true},
-  // Campeonato 2016 — locales en 2016
+  // Campeonato 2016
   {year:2016,date:"2016-02-14",rival:"Atlético Tucumán",score:"0-1",res:"P",torneo:"Campeonato 2016",fecha:"2ª fecha",dt_boca:"Arruabarrena, R.",dt_rival:"Azconzábal, J.M.",goleadores:"- / González (23')",asistio:false},
   {year:2016,date:"2016-02-20",rival:"Newell's",score:"4-1",res:"G",torneo:"Campeonato 2016",fecha:"4ª fecha",dt_boca:"Arruabarrena, R.",dt_rival:"Vojvoda, J.P.",goleadores:"Bentancur (1'), Tevez -TL- (5'), J.Silva (37'), Palacios (72') / M.Rodríguez (56')",asistio:true},
   {year:2016,date:"2016-03-14",rival:"Unión",score:"2-1",res:"G",torneo:"Campeonato 2016",fecha:"7ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Madelón, L.",goleadores:"Lodeiro (63'), Tevez (89') / Gamba (58')",asistio:true},
@@ -251,7 +266,7 @@ const MATCHES = [
   {year:2016,date:"2016-05-05",rival:"Cerro Porteño",score:"3-1",res:"G",torneo:"Copa Libertadores 2016",fecha:"Octavos de final (vuelta)",dt_boca:"Barros Schelotto, G.",dt_rival:"Florentín, G.",goleadores:"Tevez -pen- (3'), Pavón (72'), P.Pérez (88') / Rojas (12')",asistio:false},
   {year:2016,date:"2016-05-19",rival:"Nacional",score:"1-1 pen 4-3",res:"G",torneo:"Copa Libertadores 2016",fecha:"Cuartos de final (vuelta)",dt_boca:"Barros Schelotto, G.",dt_rival:"Munúa, G.",goleadores:"Pavón (72') / Díaz -eg- (20')",asistio:false},
   {year:2016,date:"2016-07-14",rival:"Indep. del Valle",score:"2-3",res:"P",torneo:"Copa Libertadores 2016",fecha:"Semifinal (vuelta)",dt_boca:"Barros Schelotto, G.",dt_rival:"Repetto, P.",goleadores:"Pavón (3'), Pavón (90') / Caicedo (25'), Cabezas (49'), Angulo (51')",asistio:true},
-  // Campeonato 2016/17 — locales en 2016
+  // Campeonato 2016/2017 — locales en 2016
   {year:2016,date:"2016-09-11",rival:"Belgrano",score:"3-0",res:"G",torneo:"Campeonato 2016/2017",fecha:"2ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"González, E.",goleadores:"Tevez (33'), Pavón -TL- (45'), Fabra (83') / -",asistio:true},
   {year:2016,date:"2016-09-25",rival:"Quilmes",score:"4-1",res:"G",torneo:"Campeonato 2016/2017",fecha:"4ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Grelak, A.",goleadores:"Benedetto (6'), Benedetto (17'), Centurión (22'), Benedetto -cab- (24') / Da Campo (12')",asistio:true},
   {year:2016,date:"2016-10-16",rival:"Sarmiento",score:"2-0",res:"G",torneo:"Campeonato 2016/2017",fecha:"6ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Schürrer, G.",goleadores:"Centurión (32'), Bou (90') / -",asistio:true},
@@ -273,8 +288,8 @@ const MATCHES = [
   {year:2017,date:"2017-09-17",rival:"Godoy Cruz",score:"4-1",res:"G",torneo:"Superliga 2017/2018",fecha:"3ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Larriera, Mauricio",goleadores:"P.Pérez (19'), P.Pérez (38'), Pavón (67'), Nández (84') / Galeano (12')",asistio:true},
   {year:2017,date:"2017-10-01",rival:"Chacarita",score:"1-0",res:"G",torneo:"Superliga 2017/2018",fecha:"5ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Coyete, Walter",goleadores:"Pavón (2') / -",asistio:true},
   {year:2017,date:"2017-10-29",rival:"Belgrano",score:"4-0",res:"G",torneo:"Superliga 2017/2018",fecha:"7ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Lavallén, Pablo",goleadores:"Lema -eg- (16'), Cardona -cab- (44'), Benedetto (62'), Benedetto (75') / -",asistio:false},
-  {year:2017,date:"2017-12-03",rival:"Arsenal",score:"2-0",res:"G",torneo:"Superliga 2017/2018",fecha:"11ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Grondona, Humberto",goleadores:"Vadalá (34'), Cardona (90') / -",asistio:false},
   {year:2017,date:"2017-11-19",rival:"Racing",score:"1-2",res:"P",torneo:"Superliga 2017/2018",fecha:"9ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Cocca, Diego",goleadores:"Benedetto -pen- (40') / L.Martínez (36'), Solari (53')",asistio:true},
+  {year:2017,date:"2017-12-03",rival:"Arsenal",score:"2-0",res:"G",torneo:"Superliga 2017/2018",fecha:"11ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Grondona, Humberto",goleadores:"Vadalá (34'), Cardona (90') / -",asistio:false},
   // Superliga 2017/2018 — locales en 2018
   {year:2018,date:"2018-01-27",rival:"Colón",score:"2-0",res:"G",torneo:"Superliga 2017/2018",fecha:"13ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"E.Domínguez",goleadores:"Pavón (2'), Nández (64') / -",asistio:false},
   {year:2018,date:"2018-02-11",rival:"Temperley",score:"1-0",res:"G",torneo:"Superliga 2017/2018",fecha:"15ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Esmerado, Gastón",goleadores:"Fabra (59') / -",asistio:true},
@@ -299,6 +314,7 @@ const MATCHES = [
   {year:2018,date:"2018-10-20",rival:"Rosario Central",score:"0-0",res:"E",torneo:"Superliga 2018/2019",fecha:"9ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Bauza, Edgardo",goleadores:"-",asistio:false},
   {year:2018,date:"2018-11-03",rival:"Tigre",score:"4-1",res:"G",torneo:"Superliga 2018/2019",fecha:"11ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Echeverría, Mariano",goleadores:"Tevez (26'), Cardona (68'), Tevez (72'), Buffarini (87') / F.González (10')",asistio:false},
   {year:2018,date:"2018-11-17",rival:"Patronato",score:"1-0",res:"G",torneo:"Superliga 2018/2019",fecha:"13ª fecha",dt_boca:"Barros Schelotto, G.",dt_rival:"Sciaqua, Mario",goleadores:"Espinoza (81') / -",asistio:true},
+  // Superliga 2018/2019 — locales en 2019
   {year:2019,date:"2019-02-03",rival:"Godoy Cruz",score:"2-0",res:"G",torneo:"Superliga 2018/2019",fecha:"17ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Gómez, Marcelo",goleadores:"Benedetto -pen- (13'), Zárate -TL- (90') / -",asistio:true},
   {year:2019,date:"2019-02-17",rival:"Lanús",score:"2-1",res:"G",torneo:"Superliga 2018/2019",fecha:"19ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Zubeldía, Luis",goleadores:"E.Más (55'), Zárate (60') / Sand (59')",asistio:true},
   {year:2019,date:"2019-02-20",rival:"Atl. Tucumán",score:"1-2",res:"P",torneo:"Superliga 2018/2019",fecha:"15ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Zielinski, Ricardo",goleadores:"Ábila (61') / Nuñez (9'), Barbona (70')",asistio:true},
@@ -315,7 +331,7 @@ const MATCHES = [
   {year:2019,date:"2019-05-05",rival:"Godoy Cruz",score:"3-1",res:"G",torneo:"Copa Superliga 2019",fecha:"8vos vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Bernardi, Lucas",goleadores:"Ábila (6'), Ábila (55'), Zárate -TL- (88') / Prieto (80')",asistio:true},
   {year:2019,date:"2019-05-16",rival:"Vélez",score:"0-0 pen 5-4",res:"E",torneo:"Copa Superliga 2019",fecha:"4tos vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Heinze, Gabriel",goleadores:"-",asistio:true},
   {year:2019,date:"2019-05-26",rival:"Argentinos",score:"1-0",res:"G",torneo:"Copa Superliga 2019",fecha:"Semifinal vuelta",dt_boca:"Alfaro, Gustavo",dt_rival:"Dabove, Diego",goleadores:"L.López (55') / -",asistio:true},
-  // Superliga 2019/2020 — locales en 2019 (con público)
+  // Superliga 2019/2020 — locales en 2019
   {year:2019,date:"2019-07-28",rival:"Huracán",score:"0-0",res:"E",torneo:"Superliga 2019/2020",fecha:"1ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Vojvoda, Juan Pablo",goleadores:"-",asistio:true},
   {year:2019,date:"2019-08-18",rival:"Aldosivi",score:"2-0",res:"G",torneo:"Superliga 2019/2020",fecha:"3ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Álvarez, Gustavo",goleadores:"Tevez (34'), Salvio (77') / -",asistio:true},
   {year:2019,date:"2019-09-15",rival:"Estudiantes",score:"1-0",res:"G",torneo:"Superliga 2019/2020",fecha:"6ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Milito, Gabriel",goleadores:"Reynoso (3') / -",asistio:true},
@@ -324,11 +340,11 @@ const MATCHES = [
   {year:2019,date:"2019-11-03",rival:"Arsenal",score:"5-1",res:"G",torneo:"Superliga 2019/2020",fecha:"12ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Rondina, Sergio",goleadores:"Tevez (15'), Ábila (44'), Fabra (49'), Zárate (89'), Fabra (90') / Álvarez Suárez -TL- (86')",asistio:false},
   {year:2019,date:"2019-11-24",rival:"Unión",score:"2-0",res:"G",torneo:"Superliga 2019/2020",fecha:"14ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Madelón, Leonardo",goleadores:"Ábila (2'), Mac Allister (55') / -",asistio:true},
   {year:2019,date:"2019-11-30",rival:"Argentinos",score:"1-1",res:"E",torneo:"Superliga 2019/2020",fecha:"15ª fecha",dt_boca:"Alfaro, Gustavo",dt_rival:"Dabove, Diego",goleadores:"Ábila (29') / Silva (53')",asistio:false},
-  // Superliga 2019/2020 (partidos disputados en 2020, todos sin público por COVID)
+  // Superliga 2019/2020 — locales en 2020
   {year:2020,date:"2020-01-26",rival:"Independiente",score:"0-0",res:"E",torneo:"Superliga 2019/2020",fecha:"17ª fecha",dt_boca:"Russo, Miguel",dt_rival:"Pusineri, Lucas",goleadores:"-",asistio:true},
   {year:2020,date:"2020-02-08",rival:"Atl. Tucumán",score:"2-0",res:"G",torneo:"Superliga 2019/2020",fecha:"19ª fecha",dt_boca:"Russo, Miguel",dt_rival:"Zielinski, Ricardo",goleadores:"Soldano (22'), Ábila -pen- (90') / -",asistio:true},
   {year:2020,date:"2020-02-23",rival:"Godoy Cruz",score:"3-0",res:"G",torneo:"Superliga 2019/2020",fecha:"21ª fecha",dt_boca:"Russo, Miguel",dt_rival:"Sciacqua, Mario",goleadores:"Tevez (19'), Salvio (83'), Salvio (87') / -",asistio:true},
-  // Campeonato 2021 (público muy limitado, algunos sin público)
+  // Campeonato 2021
   {year:2021,date:"2021-10-09",rival:"Lanús",score:"4-2",res:"G",torneo:"Campeonato 2021",fecha:"15ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Zubeldía, Luis",goleadores:"Weigandt (31'), Almendra (38'), L.Vázquez (50'), Pavón -pen- (90') / Malcorra (22'), Braghieri (82')",asistio:true},
   {year:2021,date:"2021-10-20",rival:"Godoy Cruz",score:"2-1",res:"G",torneo:"Campeonato 2021",fecha:"17ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Flores, Diego",goleadores:"Fabra (37'), L.Vázquez (45') / Badaloni (10')",asistio:false},
   {year:2021,date:"2021-10-30",rival:"GELP",score:"0-1",res:"P",torneo:"Campeonato 2021",fecha:"19ª fecha",dt_boca:"Battaglia, Sebastián",dt_rival:"Gorosito, Néstor",goleadores:"- / L.Rodríguez -pen- (16')",asistio:true},
@@ -405,7 +421,7 @@ const MATCHES = [
   {year:2024,date:"2024-04-09",rival:"Sp. Trinidense",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",dt_boca:"Martínez, Diego",dt_rival:"Arrúa, José",goleadores:"Anselmino (70') / -",asistio:true},
   {year:2024,date:"2024-05-15",rival:"Fortaleza",score:"1-1",res:"E",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",dt_boca:"Martínez, Diego",dt_rival:"Vojvoda, Juan Pablo",goleadores:"Cavani (55') / Andrade (88')",asistio:true},
   {year:2024,date:"2024-05-29",rival:"Nacional Potosí",score:"4-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"Fase de grupos",dt_boca:"Martínez, Diego",dt_rival:"Ramírez, Eduardo",goleadores:"Zenón (9'), Cavani (14'), Saracchi (19'), Rojo (53') / -",asistio:true},
-  {year:2024,date:"2024-07-24",rival:"Ind. del Valle",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"16vos de final",dt_boca:"Martínez, Diego",dt_rival:"Gandolfi, Javier",goleadores:"Cavani (39\') / -",asistio:true},
+  {year:2024,date:"2024-07-24",rival:"Ind. del Valle",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"16vos de final",dt_boca:"Martínez, Diego",dt_rival:"Gandolfi, Javier",goleadores:"Cavani (39') / -",asistio:true},
   {year:2024,date:"2024-08-15",rival:"Cruzeiro",score:"1-0",res:"G",torneo:"Copa Sudamericana 2024",fecha:"8vos de final",dt_boca:"Martínez, Diego",dt_rival:"Seabra, Fernando",goleadores:"Cavani (65') / -",asistio:true},
   // Campeonato 2024
   {year:2024,date:"2024-05-25",rival:"Talleres",score:"0-0",res:"E",torneo:"Campeonato 2024",fecha:"3ª fecha",dt_boca:"Martínez, Diego",dt_rival:"Ribonetto, Walter",goleadores:"-",asistio:true},
@@ -421,17 +437,19 @@ const MATCHES = [
   {year:2024,date:"2024-11-20",rival:"Unión",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"23ª fecha",dt_boca:"Gago, Fernando",dt_rival:"González, Cristian",goleadores:"Giménez (4') / -",asistio:true},
   {year:2024,date:"2024-12-01",rival:"Gimnasia",score:"1-0",res:"G",torneo:"Campeonato 2024",fecha:"25ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Méndez, Marcelo",goleadores:"Giménez (15') / -",asistio:true},
   {year:2024,date:"2024-12-14",rival:"Independiente",score:"0-0",res:"E",torneo:"Campeonato 2024",fecha:"27ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Vaccari, Julio",goleadores:"-",asistio:false},
+  // Torneo Apertura 2025
   {year:2025,date:"2025-01-26",rival:"Argentinos Jrs.",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2025",fecha:"1ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Diez, Nicolás",goleadores:"-"},
   {year:2025,date:"2025-02-02",rival:"Huracán",asistio:true,score:"2-1",res:"G",torneo:"Torneo Apertura 2025",fecha:"3ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Kudelka, Frank",goleadores:"Cavani (19'), Palacios (68') / Pellegrino (31')"},
   {year:2025,date:"2025-02-11",rival:"Ind. Rivadavia",asistio:true,score:"2-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"5ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Berti, Alfredo",goleadores:"Merentiel (51'), Zeballos (83') / -"},
   {year:2025,date:"2025-02-22",rival:"Aldosivi",asistio:true,score:"2-1",res:"G",torneo:"Torneo Apertura 2025",fecha:"7ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Yllana, Andrés",goleadores:"Advíncula (49'), Merentiel (84') / Serrago (63')"},
+  {year:2025,date:"2025-02-25",rival:"Alianza Lima",score:"2-1",res:"G",torneo:"Copa Libertadores 2025",fecha:"Fase 2",asistio:true,dt_boca:"Gago, Fernando",dt_rival:"Gorosito, Néstor",goleadores:"Palacios (7'), Zenón (58') / Barcos (22') — Penales 4-5 (elim.)"},
   {year:2025,date:"2025-02-28",rival:"Rosario Central",asistio:false,score:"1-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"8ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Holan, Ariel",goleadores:"Giménez (9') / -"},
   {year:2025,date:"2025-03-16",rival:"Defensa y Justicia",asistio:true,score:"4-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"10ª fecha",dt_boca:"Gago, Fernando",dt_rival:"De Muner, Pablo",goleadores:"Cavani (9'), Giménez (32', 50'), Merentiel (81') / -"},
   {year:2025,date:"2025-04-06",rival:"Barracas Central",asistio:true,score:"1-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"12ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Insúa, Rubén",goleadores:"Battaglia (40') / -"},
   {year:2025,date:"2025-04-19",rival:"Estudiantes",asistio:false,score:"2-0",res:"G",torneo:"Torneo Apertura 2025",fecha:"14ª fecha",dt_boca:"Gago, Fernando",dt_rival:"Domínguez, Eduardo",goleadores:"Palacios (48'), Merentiel (63') / -"},
   {year:2025,date:"2025-05-10",rival:"Lanús",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2025",fecha:"8vos de final",dt_boca:"Herrón, Mariano",dt_rival:"Pellegrino, Mauricio",goleadores:"- (penales 4-2)"},
   {year:2025,date:"2025-05-19",rival:"Independiente",asistio:true,score:"0-1",res:"P",torneo:"Torneo Apertura 2025",fecha:"4tos de final",dt_boca:"Herrón, Mariano",dt_rival:"Vaccari, Julio",goleadores:"- / Angulo (64')"},
-  {year:2025,date:"2025-02-25",rival:"Alianza Lima",score:"2-1",res:"G",torneo:"Copa Libertadores 2025",fecha:"Fase 2",asistio:true,dt_boca:"Gago, Fernando",dt_rival:"Gorosito, Néstor",goleadores:"Palacios (7'), Zenón (58') / Barcos (22') — Penales 4-5 (elim.)"},
+  // Torneo Clausura 2025
   {year:2025,date:"2025-07-18",rival:"Unión",asistio:true,score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"2ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Madelón, Leonardo",goleadores:"Di Lollo (85') / Tarragona (64')"},
   {year:2025,date:"2025-08-09",rival:"Racing",asistio:true,score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"4ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Costas, Gustavo",goleadores:"Giménez (88') / Solari (76')"},
   {year:2025,date:"2025-08-24",rival:"Banfield",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"6ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Troglio, Pedro",goleadores:"Merentiel (55'), Cavani (82') / -"},
@@ -443,6 +461,7 @@ const MATCHES = [
   {year:2025,date:"2025-11-23",rival:"Talleres",asistio:false,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"8vos de final",dt_boca:"Ubeda, Claudio",dt_rival:"Tevez, Carlos",goleadores:"Merentiel (28', 46') / -"},
   {year:2025,date:"2025-11-30",rival:"Argentinos Jrs.",asistio:true,score:"1-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"4tos de final",dt_boca:"Ubeda, Claudio",dt_rival:"Diez, Nicolás",goleadores:"Costa (5') / -"},
   {year:2025,date:"2025-12-07",rival:"Racing",asistio:true,score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinal",dt_boca:"Ubeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"- / A. Martínez (75')"},
+  // Torneo Apertura 2026
   {year:2026,date:"2026-01-25",rival:"Dep. Riestra",asistio:true,score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Benítez, Gustavo",goleadores:"Di Lollo (77') / -"},
   {year:2026,date:"2026-02-01",rival:"Newell's",asistio:true,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Orsi-Gómez",goleadores:"L. Blanco (40'), Paredes -pen- (56') / -"},
   {year:2026,date:"2026-02-15",rival:"Platense",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Zunino, Walter",goleadores:"-"},
@@ -460,6 +479,7 @@ const SUDAMERICANA = ["Copa Sudamericana 2014","Copa Sudamericana 2024"];
 let activeFilter = 'todos';
 let expandedId = null;
 let extraData = {};
+let statsMode = 'boca';
 
 const SUPABASE_URL = 'https://zesadrwfrdqvanqbwtqz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_a1mV-J7LRDkcrLzEv0CjKw_5WPyUu2C';
@@ -474,21 +494,59 @@ let pendingId = null;
 let pendingAction = null;
 
 async function initSupabase() {
-  // Override with any manual changes stored in Supabase
   try {
     const { data } = await db.from('asistencias').select('id, asistio');
     if (data) data.forEach(row => { attended[row.id] = row.asistio; });
   } catch(e) {}
-  updateAttendanceStat();
   renderAll();
 }
 
-function updateAttendanceStat() {
-  const total = MATCHES.length;
-  const went = MATCHES.filter(m => attended[m._id]).length;
-  const pct = total > 0 ? Math.round(went / total * 100) : 0;
-  const el = document.getElementById('attendance-stat');
-  if (el) el.innerHTML = 'Fui a <span>' + went + '</span> de ' + total + ' partidos &middot; <span>' + pct + '%</span> de asistencia';
+// ── STATS MODE ──────────────────────────────────────────
+function setStatsMode(mode) {
+  statsMode = mode;
+  document.getElementById('mode-boca').classList.toggle('active', mode === 'boca');
+  document.getElementById('mode-yo').classList.toggle('active', mode === 'yo');
+  renderStats();
+}
+
+function renderStats() {
+  const allG = MATCHES.filter(m => m.res === 'G').length;
+  const allE = MATCHES.filter(m => m.res === 'E').length;
+  const allP = MATCHES.filter(m => m.res === 'P').length;
+  const allTotal = MATCHES.length;
+
+  if (statsMode === 'boca') {
+    document.getElementById('s-total').textContent = allTotal;
+    document.getElementById('s-victorias').textContent = allG;
+    document.getElementById('s-empates').textContent = allE;
+    document.getElementById('s-derrotas').textContent = allP;
+    document.getElementById('lbl-total').textContent = 'Partidos';
+    document.getElementById('lbl-victorias').textContent = 'Victorias';
+    document.getElementById('lbl-empates').textContent = 'Empates';
+    document.getElementById('lbl-derrotas').textContent = 'Derrotas';
+    document.getElementById('attendance-stat').style.display = 'none';
+  } else {
+    const myMs = MATCHES.filter(m => attended[m._id]);
+    const myTotal = myMs.length;
+    const pct = allTotal > 0 ? Math.round(myTotal / allTotal * 100) : 0;
+    const myG = myMs.filter(m => m.res === 'G').length;
+    const myE = myMs.filter(m => m.res === 'E').length;
+    const myP = myMs.filter(m => m.res === 'P').length;
+    document.getElementById('s-total').textContent = myTotal + '/' + allTotal;
+    document.getElementById('s-victorias').textContent = myG + '/' + allG;
+    document.getElementById('s-empates').textContent = myE + '/' + allE;
+    document.getElementById('s-derrotas').textContent = myP + '/' + allP;
+    document.getElementById('lbl-total').textContent = pct + '% asistencia';
+    document.getElementById('lbl-victorias').textContent = 'V que vi';
+    document.getElementById('lbl-empates').textContent = 'E que vi';
+    document.getElementById('lbl-derrotas').textContent = 'D que vi';
+    const pctG = allG > 0 ? Math.round(myG/allG*100) : 0;
+    const pctE = allE > 0 ? Math.round(myE/allE*100) : 0;
+    const pctP = allP > 0 ? Math.round(myP/allP*100) : 0;
+    const attEl = document.getElementById('attendance-stat');
+    attEl.style.display = 'block';
+    attEl.innerHTML = 'Vi el <span>' + pctG + '%</span> de las victorias · <span>' + pctE + '%</span> de los empates · <span>' + pctP + '%</span> de las derrotas';
+  }
 }
 
 function openConfirm(id, action) {
@@ -513,13 +571,11 @@ async function confirmAttendance() {
   const newVal = pendingAction === 'add';
   attended[pendingId] = newVal;
   closeConfirm();
-  updateAttendanceStat();
   renderAll();
   try {
     await db.from('asistencias').upsert({ id: pendingId, asistio: newVal, updated_at: new Date().toISOString() });
   } catch(e) {}
 }
-
 
 function setFilter(f) {
   activeFilter = f;
@@ -551,44 +607,6 @@ function formatDate(d) {
   return dt.toLocaleDateString('es-AR', {weekday:'short', day:'numeric', month:'long', year:'numeric'});
 }
 
-function renderStats() {
-  const total = MATCHES.length;
-  const victorias = MATCHES.filter(m => m.res === 'G').length;
-  const empates = MATCHES.filter(m => m.res === 'E').length;
-  const derrotas = MATCHES.filter(m => m.res === 'P').length;
-  document.getElementById('s-total').textContent = total;
-  document.getElementById('s-victorias').textContent = victorias;
-  document.getElementById('s-empates').textContent = empates;
-  document.getElementById('s-derrotas').textContent = derrotas;
-}
-
-const EXTRA_DATA = {};
-
-function fetchExtraData(match) {
-  const id = match._id;
-  // Build a lookup key from date + rival (stable, no index)
-  const key = match.date + '|' + match.rival;
-  // Find the match with extra data by searching MATCHES directly
-  const src = MATCHES.find(m => m.date === match.date && m.rival === match.rival);
-  if (src && src.dt_boca) {
-    extraData[id] = {
-      loading: false,
-      dt_boca: src.dt_boca,
-      dt_rival: src.dt_rival || 'N/D',
-      goleadores: src.goleadores || '-',
-      nota: src.nota || ''
-    };
-  } else {
-    extraData[id] = {
-      loading: false,
-      dt_boca: 'Próximamente',
-      dt_rival: 'Próximamente',
-      goleadores: 'Próximamente'
-    };
-  }
-  renderAll();
-}
-
 function renderAll() {
   renderStats();
   const filtered = getFiltered();
@@ -611,13 +629,17 @@ function renderAll() {
     const yG = yMs.filter(m=>m.res==='G').length;
     const yE = yMs.filter(m=>m.res==='E').length;
     const yP = yMs.filter(m=>m.res==='P').length;
+    const yAtt = yMs.filter(m => attended[m._id]).length;
+    const yAttPct = yMs.length > 0 ? Math.round(yAtt / yMs.length * 100) : 0;
     const isCollapsed = collapsedYears.has(String(yr));
+
     html += `<div class="year-header${isCollapsed?' collapsed':''}" onclick="toggleYear('${yr}')">
       <div style="display:flex;align-items:center;gap:8px;">
         <span style="font-size:15px;font-weight:600;color:#111827;">${yr}</span>
         <span class="year-chevron">▼</span>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+        <span class="year-att">${yAtt}/${yMs.length}<span class="att-pct"> ${yAttPct}%</span></span>
         <div class="year-balance"><span style="color:#15803d;font-weight:600">${yG}G</span><span style="color:#854d0e;font-weight:600">${yE}E</span><span style="color:#b91c1c;font-weight:600">${yP}P</span></div>
         <span class="year-badge">${yMs.length} partidos</span>
       </div>
@@ -628,10 +650,9 @@ function renderAll() {
       const isExp = expandedId === m._id;
       const ex = extraData[m._id];
       const resLabel = m.res==='G'?'V':m.res==='E'?'E':'D';
-
       const isAtt = attended[m._id];
-      html += `<div class="match-card ${isAtt ? 'attended-' + m.res.toLowerCase() : 'not-attended'}" onclick="handleCardClick('${m._id}')">
 
+      html += `<div class="match-card ${isAtt ? 'attended-' + m.res.toLowerCase() : 'not-attended'}" onclick="handleCardClick('${m._id}')">
         <div class="match-body">
           <div class="match-header">
             <span class="match-rival">Boca vs ${m.rival}${m.cancha_alt ? '<span class="cancha-alt-badge" title="Jugado en ' + m.cancha_alt + '">★ ' + m.cancha_alt + '</span>' : ''}</span>
@@ -648,7 +669,6 @@ function renderAll() {
               <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="loading-pill" style="width:90px"></span></div>
               <div class="match-detail-row"><span class="detail-label">Goles</span><span class="loading-pill" style="width:150px"></span></div>
             ` : ex.error ? `<span style="color:#9ca3af;font-size:12px">No se pudo cargar la info</span>` : `
-              ${ex.fecha_exacta?`<div class="match-detail-row"><span class="detail-label">Fecha</span><span class="detail-val">${ex.fecha_exacta}</span></div>`:''}
               <div class="match-detail-row"><span class="detail-label">DT Boca</span><span class="detail-val">${ex.dt_boca||'N/D'}</span></div>
               <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="detail-val">${ex.dt_rival||'N/D'}</span></div>
               <div class="match-detail-row"><span class="detail-label">Goles</span><span class="detail-val">${ex.goleadores||'-'}</span></div>
@@ -659,11 +679,10 @@ function renderAll() {
         </div>
       </div>`;
     });
-    html += '</div>'; // close year-{yr}
+    html += '</div>';
   });
 
   container.innerHTML = html;
-  updateAttendanceStat();
 }
 
 const collapsedYears = new Set(MATCHES.map(m=>String(m.year)));
@@ -674,9 +693,7 @@ function toggleYear(yr) {
 }
 
 function handleCardClick(id) {
-  // Always allow expand to see match info
   toggleExpand(id);
-  // If not attended, also open confirm after expanding
   if (!attended[id]) {
     openConfirm(id, 'add');
   }
@@ -690,6 +707,22 @@ function toggleExpand(id) {
   if (match && (!extraData[id] || extraData[id].error)) fetchExtraData(match);
 }
 
+function fetchExtraData(match) {
+  const id = match._id;
+  const src = MATCHES.find(m => m.date === match.date && m.rival === match.rival);
+  if (src && src.dt_boca) {
+    extraData[id] = {
+      loading: false,
+      dt_boca: src.dt_boca,
+      dt_rival: src.dt_rival || 'N/D',
+      goleadores: src.goleadores || '-',
+      nota: src.nota || ''
+    };
+  } else {
+    extraData[id] = { loading: false, dt_boca: 'Próximamente', dt_rival: 'Próximamente', goleadores: 'Próximamente' };
+  }
+  renderAll();
+}
 
 window.addEventListener("DOMContentLoaded", initSupabase);
 </script>
