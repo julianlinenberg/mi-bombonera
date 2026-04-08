@@ -112,7 +112,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .attendance-stat span{color:#4ade80;font-weight:700;}
 
 /* FAB */
-.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:#1a3a6b;color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.28);z-index:100;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .15s;}
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:#1a3a6b;color:#fff;border:none;font-size:28px;line-height:52px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.28);z-index:100;transition:background .15s,transform .15s;padding:0;}
 .fab:active{background:#122d56;transform:scale(0.93);}
 
 /* PIN MODAL */
@@ -132,7 +132,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* ADD MATCH MODAL */
 .add-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:flex-end;justify-content:center;}
 .add-overlay.show{display:flex;}
-.add-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:430px;padding:20px 20px 40px;max-height:92vh;overflow-y:auto;}
+.add-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:20px 20px 32px;max-height:92vh;overflow-y:auto;}
+@media(min-width:768px){
+  .add-overlay{align-items:center;}
+  .add-sheet{border-radius:16px;max-width:560px;max-height:none;overflow-y:visible;padding:24px 28px 28px;}
+}
 .add-sheet h2{font-size:16px;font-weight:700;color:#1a3a6b;margin-bottom:16px;}
 .add-row{display:grid;gap:10px;margin-bottom:10px;}
 .add-row.cols-2{grid-template-columns:1fr 1fr;}
@@ -221,7 +225,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <h2>Nuevo partido</h2>
     <div class="add-row cols-2">
       <div class="add-field"><label>Fecha</label><input type="date" id="nf-date"/></div>
-      <div class="add-field"><label>Rival</label><input type="text" id="nf-rival" placeholder="ej. Independiente"/></div>
+      <div class="add-field"><label>Rival</label>
+        <div style="position:relative;">
+          <input type="text" id="nf-rival" placeholder="ej. Independiente" autocomplete="off" oninput="rivalSuggest(this.value)"/>
+          <div id="rival-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #d1d5db;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);z-index:500;max-height:180px;overflow-y:auto;"></div>
+        </div>
+      </div>
     </div>
     <div class="add-row">
       <div class="add-field"><label>Torneo</label><select id="nf-torneo"></select></div>
@@ -539,21 +548,21 @@ const MATCHES = [
   {year:2025,date:"2025-08-09",rival:"Racing",asistio:true,score:"1-1",res:"E",torneo:"Torneo Clausura 2025",fecha:"4ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Costas, Gustavo",goleadores:"Giménez (88') / Solari (76')"},
   {year:2025,date:"2025-08-24",rival:"Banfield",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"6ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"Troglio, Pedro",goleadores:"Merentiel (55'), Cavani (82') / -"},
   {year:2025,date:"2025-09-21",rival:"Central Córdoba",asistio:true,score:"2-2",res:"E",torneo:"Torneo Clausura 2025",fecha:"9ª fecha",dt_boca:"Russo, Miguel Ángel",dt_rival:"De Felippe, Omar",goleadores:"Battaglia (41'), Merentiel (56') / Florentín (62'), I. Gómez (83')"},
-  {year:2025,date:"2025-10-05",rival:"Newell's",asistio:true,score:"5-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"11ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Fabbiani, Cristian",goleadores:"Giménez (7', 24'), Costa (33'), Aguirre (50'), L. Blanco (59') / -"},
-  {year:2025,date:"2025-10-18",rival:"Belgrano",asistio:true,score:"1-2",res:"P",torneo:"Torneo Clausura 2025",fecha:"13ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Zielinski, Ricardo",goleadores:"Zeballos (66') / Passerini -pen- (58'), Paredes -eg- (62')"},
-  {year:2025,date:"2025-11-09",rival:"River",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"15ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Gallardo, Marcelo",goleadores:"Zeballos (45'), Merentiel (46') / -"},
-  {year:2025,date:"2025-11-16",rival:"Tigre",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"16ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Dabove, Diego",goleadores:"Costa (73'), Cavani -pen- (88') / -"},
-  {year:2025,date:"2025-11-23",rival:"Talleres",asistio:false,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"8vos de final",dt_boca:"Ubeda, Claudio",dt_rival:"Tevez, Carlos",goleadores:"Merentiel (28', 46') / -"},
-  {year:2025,date:"2025-11-30",rival:"Argentinos Jrs.",asistio:true,score:"1-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"4tos de final",dt_boca:"Ubeda, Claudio",dt_rival:"Diez, Nicolás",goleadores:"Costa (5') / -"},
-  {year:2025,date:"2025-12-07",rival:"Racing",asistio:true,score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinal",dt_boca:"Ubeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"- / A. Martínez (75')"},
+  {year:2025,date:"2025-10-05",rival:"Newell's",asistio:true,score:"5-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"11ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Fabbiani, Cristian",goleadores:"Giménez (7', 24'), Costa (33'), Aguirre (50'), L. Blanco (59') / -"},
+  {year:2025,date:"2025-10-18",rival:"Belgrano",asistio:true,score:"1-2",res:"P",torneo:"Torneo Clausura 2025",fecha:"13ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Zielinski, Ricardo",goleadores:"Zeballos (66') / Passerini -pen- (58'), Paredes -eg- (62')"},
+  {year:2025,date:"2025-11-09",rival:"River",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"15ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Gallardo, Marcelo",goleadores:"Zeballos (45'), Merentiel (46') / -"},
+  {year:2025,date:"2025-11-16",rival:"Tigre",asistio:true,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"16ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Dabove, Diego",goleadores:"Costa (73'), Cavani -pen- (88') / -"},
+  {year:2025,date:"2025-11-23",rival:"Talleres",asistio:false,score:"2-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"8vos de final",dt_boca:"Úbeda, Claudio",dt_rival:"Tevez, Carlos",goleadores:"Merentiel (28', 46') / -"},
+  {year:2025,date:"2025-11-30",rival:"Argentinos Jrs.",asistio:true,score:"1-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"4tos de final",dt_boca:"Úbeda, Claudio",dt_rival:"Diez, Nicolás",goleadores:"Costa (5') / -"},
+  {year:2025,date:"2025-12-07",rival:"Racing",asistio:true,score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinal",dt_boca:"Úbeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"- / A. Martínez (75')"},
   // Torneo Apertura 2026
-  {year:2026,date:"2026-01-25",rival:"Dep. Riestra",asistio:true,score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Benítez, Gustavo",goleadores:"Di Lollo (77') / -"},
-  {year:2026,date:"2026-02-01",rival:"Newell's",asistio:true,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Orsi-Gómez",goleadores:"L. Blanco (40'), Paredes -pen- (56') / -"},
-  {year:2026,date:"2026-02-15",rival:"Platense",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Zunino, Walter",goleadores:"-"},
-  {year:2026,date:"2026-02-20",rival:"Racing",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"-"},
-  {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Broggi, Ariel",goleadores:"Merentiel (41') / L. Paredes (15')"},
-  {year:2026,date:"2026-03-11",rival:"San Lorenzo",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
-  {year:2026,date:"2026-03-22",rival:"Instituto",asistio:false,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"12ª fecha",dt_boca:"Ubeda, Claudio",dt_rival:"Flores, Diego",goleadores:"Aranda (50'), Bareiro (56') / -"},
+  {year:2026,date:"2026-01-25",rival:"Dep. Riestra",asistio:true,score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Benítez, Gustavo",goleadores:"Di Lollo (77') / -"},
+  {year:2026,date:"2026-02-01",rival:"Newell's",asistio:true,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Orsi-Gómez",goleadores:"L. Blanco (40'), Paredes -pen- (56') / -"},
+  {year:2026,date:"2026-02-15",rival:"Platense",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"5ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Zunino, Walter",goleadores:"-"},
+  {year:2026,date:"2026-02-20",rival:"Racing",asistio:true,score:"0-0",res:"E",torneo:"Torneo Apertura 2026",fecha:"6ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"-"},
+  {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Broggi, Ariel",goleadores:"Merentiel (41') / L. Paredes (15')"},
+  {year:2026,date:"2026-03-11",rival:"San Lorenzo",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
+  {year:2026,date:"2026-03-22",rival:"Instituto",asistio:false,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"12ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Flores, Diego",goleadores:"Aranda (50'), Bareiro (56') / -"},
 ];
 
 MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]/g,'-') + '-' + i; });
@@ -819,7 +828,6 @@ function closePinModal() {
 const TORNEOS_ACTUALES = [
   'Torneo Apertura 2026',
   'Copa Libertadores 2026',
-  'Copa Argentina 2026',
 ];
 
 let nfRes = null;
@@ -834,9 +842,11 @@ function openAddModal() {
     sel.appendChild(o);
   });
   document.getElementById('nf-date').value = new Date().toISOString().slice(0,10);
-  ['nf-rival','nf-fecha','nf-score','nf-dt-boca','nf-dt-rival','nf-goles'].forEach(id => {
+  ['nf-rival','nf-fecha','nf-score','nf-dt-rival','nf-goles'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  document.getElementById('nf-dt-boca').value = 'Úbeda, Claudio';
+  hideRivalDropdown();
   nfRes = null; nfAtt = null;
   ['res-G','res-E','res-P'].forEach(id => document.getElementById(id).className = '');
   ['att-si','att-no'].forEach(id => document.getElementById(id).className = '');
@@ -859,6 +869,39 @@ function setAtt(v) {
   document.getElementById('att-si').className = v ? 'sel-si' : '';
   document.getElementById('att-no').className = !v ? 'sel-no' : '';
 }
+
+// ─── RIVAL AUTOCOMPLETE ───────────────────────────────────────────────────────
+function getRivalesUnicos() {
+  const set = new Set(MATCHES.map(m => m.rival));
+  return [...set].sort((a,b) => a.localeCompare(b, 'es'));
+}
+
+function rivalSuggest(q) {
+  const dd = document.getElementById('rival-dropdown');
+  if (!q || q.length < 2) { hideRivalDropdown(); return; }
+  const matches = getRivalesUnicos().filter(r => r.toLowerCase().includes(q.toLowerCase()));
+  if (!matches.length) { hideRivalDropdown(); return; }
+  dd.innerHTML = matches.map(r =>
+    `<div onclick="selectRival('${r.replace(/'/g,"\\'")}')"`+
+    ` style="padding:9px 12px;cursor:pointer;font-size:14px;color:#111827;border-bottom:1px solid #f3f4f6;"` +
+    ` onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background=''">${r}</div>`
+  ).join('');
+  dd.style.display = 'block';
+}
+
+function selectRival(r) {
+  document.getElementById('nf-rival').value = r;
+  hideRivalDropdown();
+}
+
+function hideRivalDropdown() {
+  const dd = document.getElementById('rival-dropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#nf-rival') && !e.target.closest('#rival-dropdown')) hideRivalDropdown();
+});
 
 async function saveNewMatch() {
   const date    = document.getElementById('nf-date').value;
