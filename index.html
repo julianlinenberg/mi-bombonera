@@ -160,7 +160,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .add-btn.save{background:#1a3a6b;color:#fff;}
 .add-btn.save:disabled{background:#9ca3af;cursor:not-allowed;}
 .add-btn.cancel{background:#f3f4f6;color:#374151;}
-.nuevo-badge{display:inline-block;font-size:9px;font-weight:700;color:#7c3aed;background:#ede9fe;border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:.03em;}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
@@ -566,6 +566,7 @@ const MATCHES = [
   {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Broggi, Ariel",goleadores:"Merentiel (41') / L. Paredes (15')"},
   {year:2026,date:"2026-03-11",rival:"San Lorenzo",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
   {year:2026,date:"2026-03-22",rival:"Instituto",asistio:false,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"12ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Flores, Diego",goleadores:"Aranda (50'), Bareiro (56') / -"},
+  {year:2026,date:"2026-04-11",rival:"Independiente",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"14ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Quinteros, Gustavo",goleadores:"Giménez -pen- (45') / Abaldo (5')"},
 ];
 
 MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]/g,'-') + '-' + i; });
@@ -724,7 +725,7 @@ function renderAll() {
       html += `<div class="match-card ${isAtt ? 'attended-' + m.res.toLowerCase() : 'not-attended'}" onclick="handleCardClick('${m._id}')">
         <div class="match-body">
           <div class="match-header">
-            <span class="match-rival">Boca vs ${m.rival}${m.cancha_alt ? '<span class="cancha-alt-badge" title="Jugado en ' + m.cancha_alt + '">★ ' + m.cancha_alt + '</span>' : ''}${m._nuevo ? '<span class="nuevo-badge">NUEVO</span>' : ''}</span>
+            <span class="match-rival">Boca vs ${m.rival}${m.cancha_alt ? '<span class="cancha-alt-badge" title="Jugado en ' + m.cancha_alt + '">★ ' + m.cancha_alt + '</span>' : ''}</span>
             <div class="match-header-right">
               ${isAtt ? `<span class="att-badge">✓ Fui</span>` : `<span class="att-badge" style="background:#fee2e2;color:#b91c1c;">✗ Ausente</span>`}
               <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
