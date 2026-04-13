@@ -77,6 +77,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .year-balance{font-size:12px;color:#6b7280;display:flex;gap:8px;}
 .year-matches{transition:none;}
 
+/* YEAR TOURNAMENT FILTERS */
+.year-torneo-filters{padding:8px 16px;background:#f0f4fb;border-bottom:1px solid #e5e7eb;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.year-torneo-filters::-webkit-scrollbar{display:none;}
+.year-torneo-btn{flex-shrink:0;padding:4px 11px;border-radius:14px;border:1px solid #c7d4e8;background:#fff;font-size:11px;color:#4b6a9b;cursor:pointer;white-space:nowrap;font-weight:500;}
+.year-torneo-btn.active{background:#1a3a6b;color:#fff;border-color:#1a3a6b;}
+
 /* DESKTOP */
 @media(min-width:768px){
   body{background:#e5e7eb;}
@@ -582,11 +588,19 @@ function renderAll() {
   let html = '';
   Object.keys(byYear).sort((a,b)=>b-a).forEach(yr => {
     const yMs = byYear[yr].sort((a,b)=>new Date(b.date)-new Date(a.date));
-    const yG = yMs.filter(m=>m.res==='G').length;
-    const yE = yMs.filter(m=>m.res==='E').length;
-    const yP = yMs.filter(m=>m.res==='P').length;
-    const yAtt = yMs.filter(m => attended[m._id]).length;
-    const yAttPct = yMs.length > 0 ? Math.round(yAtt / yMs.length * 100) : 0;
+
+    // Tournament filter buttons for this year
+    const torneos = [...new Set(yMs.map(m=>m.torneo))];
+    const activeTorneo = yearTorneoFilter[yr] || null;
+
+    // Apply per-year torneo filter
+    const yMsFiltered = activeTorneo ? yMs.filter(m => m.torneo === activeTorneo) : yMs;
+
+    const yG = yMsFiltered.filter(m=>m.res==='G').length;
+    const yE = yMsFiltered.filter(m=>m.res==='E').length;
+    const yP = yMsFiltered.filter(m=>m.res==='P').length;
+    const yAtt = yMsFiltered.filter(m => attended[m._id]).length;
+    const yAttPct = yMsFiltered.length > 0 ? Math.round(yAtt / yMsFiltered.length * 100) : 0;
     const isCollapsed = collapsedYears.has(String(yr));
 
     html += `<div class="year-header${isCollapsed?' collapsed':''}" onclick="toggleYear('${yr}')">
@@ -595,14 +609,24 @@ function renderAll() {
         <span class="year-chevron">▼</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-        ${statsMode === 'yo' ? `<span class="year-att">${yAtt}/${yMs.length}<span class="att-pct"> ${yAttPct}%</span></span>` : ''}
+        ${statsMode === 'yo' ? `<span class="year-att">${yAtt}/${yMsFiltered.length}<span class="att-pct"> ${yAttPct}%</span></span>` : ''}
         <div class="year-balance"><span style="color:#15803d;font-weight:600">${yG}G</span><span style="color:#854d0e;font-weight:600">${yE}E</span><span style="color:#b91c1c;font-weight:600">${yP}P</span></div>
-        <span class="year-badge">${yMs.length} partidos</span>
+        <span class="year-badge">${yMsFiltered.length} partidos</span>
       </div>
     </div>
     <div id="year-${yr}" style="display:${isCollapsed?'none':'block'}">`;
 
-    yMs.forEach(m => {
+    if (!isCollapsed && torneos.length > 1) {
+      html += `<div class="year-torneo-filters">`;
+      torneos.forEach(t => {
+        const isActive = activeTorneo === t;
+        const tEsc = t.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        html += `<button class="year-torneo-btn${isActive?' active':''}" onclick="setYearTorneo('${yr}','${tEsc}',event)">${t}</button>`;
+      });
+      html += `</div>`;
+    }
+
+    yMsFiltered.forEach(m => {
       const isExp = expandedId === m._id;
       const ex = extraData[m._id];
       const resLabel = m.res==='G'?'V':m.res==='E'?'E':'D';
@@ -642,9 +666,25 @@ function renderAll() {
 }
 
 const collapsedYears = new Set(MATCHES.map(m=>String(m.year)));
+const yearTorneoFilter = {}; // { '2018': 'Copa Libertadores 2018', ... }
+
 function toggleYear(yr) {
   if (collapsedYears.has(yr)) collapsedYears.delete(yr);
   else collapsedYears.add(yr);
+  renderAll();
+}
+
+function setYearTorneo(yr, torneo, event) {
+  event.stopPropagation();
+  if (yearTorneoFilter[yr] === torneo) delete yearTorneoFilter[yr];
+  else yearTorneoFilter[yr] = torneo;
+  renderAll();
+}
+
+function setYearTorneo(yr, torneo, event) {
+  event.stopPropagation();
+  if (yearTorneoFilter[yr] === torneo) delete yearTorneoFilter[yr];
+  else yearTorneoFilter[yr] = torneo;
   renderAll();
 }
 
