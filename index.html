@@ -111,55 +111,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .attendance-stat{background:rgba(255,255,255,0.08);border-radius:8px;margin-top:8px;padding:6px 16px;text-align:center;font-size:11px;color:rgba(255,255,255,0.7);display:none;}
 .attendance-stat span{color:#4ade80;font-weight:700;}
 
-/* FAB */
-.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:#1a3a6b;color:#fff;border:none;font-size:28px;line-height:52px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.28);z-index:100;transition:background .15s,transform .15s;padding:0;}
-.fab:active{background:#122d56;transform:scale(0.93);}
 
-/* PIN MODAL */
-.pin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:400;align-items:center;justify-content:center;}
-.pin-overlay.show{display:flex;}
-.pin-box{background:#fff;border-radius:16px;padding:28px 24px;width:280px;text-align:center;}
-.pin-box h3{font-size:15px;font-weight:700;color:#1a3a6b;margin-bottom:6px;}
-.pin-box p{font-size:12px;color:#9ca3af;margin-bottom:18px;}
-.pin-input{width:100%;padding:11px;border:1.5px solid #d1d5db;border-radius:10px;font-size:22px;letter-spacing:8px;text-align:center;outline:none;font-family:monospace;}
-.pin-input:focus{border-color:#1a3a6b;}
-.pin-error{font-size:12px;color:#e11d48;margin-top:8px;min-height:18px;}
-.pin-btns{display:flex;gap:8px;margin-top:16px;}
-.pin-btn{flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;}
-.pin-btn.ok{background:#1a3a6b;color:#fff;}
-.pin-btn.cancel{background:#f3f4f6;color:#374151;}
-
-/* ADD MATCH MODAL */
-.add-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:flex-end;justify-content:center;}
-.add-overlay.show{display:flex;}
-.add-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:20px 20px 32px;max-height:92vh;overflow-y:auto;}
-@media(min-width:768px){
-  .add-overlay{align-items:center;}
-  .add-sheet{border-radius:16px;max-width:560px;max-height:none;overflow-y:visible;padding:24px 28px 28px;}
-}
-.add-sheet h2{font-size:16px;font-weight:700;color:#1a3a6b;margin-bottom:16px;}
-.add-row{display:grid;gap:10px;margin-bottom:10px;}
-.add-row.cols-2{grid-template-columns:1fr 1fr;}
-.add-row-fecha-rival{grid-template-columns:1fr;}
-@media(min-width:480px){.add-row-fecha-rival{grid-template-columns:1fr 1fr;}}
-@media(max-width:479px){.add-row-fecha-rival .add-field:first-child input{max-width:180px;}}
-.add-field label{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px;}
-.add-field input,.add-field select{width:100%;padding:9px 11px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;color:#111827;background:#f9fafb;outline:none;font-family:inherit;}
-.add-field input:focus,.add-field select:focus{border-color:#1a3a6b;background:#fff;}
-.res-toggle{display:flex;gap:0;border:1px solid #d1d5db;border-radius:8px;overflow:hidden;}
-.res-toggle button{flex:1;padding:9px 6px;border:none;background:#f9fafb;font-size:13px;font-weight:600;cursor:pointer;color:#6b7280;transition:background .12s,color .12s;}
-.res-toggle button.sel-G{background:#dcfce7;color:#15803d;}
-.res-toggle button.sel-E{background:#fef9c3;color:#854d0e;}
-.res-toggle button.sel-P{background:#fee2e2;color:#b91c1c;}
-.att-toggle{display:flex;gap:0;border:1px solid #d1d5db;border-radius:8px;overflow:hidden;}
-.att-toggle button{flex:1;padding:9px 6px;border:none;background:#f9fafb;font-size:13px;font-weight:600;cursor:pointer;color:#6b7280;transition:background .12s,color .12s;}
-.att-toggle button.sel-si{background:#dcfce7;color:#15803d;}
-.att-toggle button.sel-no{background:#fee2e2;color:#b91c1c;}
-.add-footer{display:flex;gap:10px;margin-top:20px;}
-.add-btn{flex:1;padding:11px;border-radius:10px;border:none;font-size:14px;font-weight:600;cursor:pointer;}
-.add-btn.save{background:#1a3a6b;color:#fff;}
-.add-btn.save:disabled{background:#9ca3af;cursor:not-allowed;}
-.add-btn.cancel{background:#f3f4f6;color:#374151;}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -205,73 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="matches-container"></div>
 </div>
 
-<!-- FAB -->
-<button class="fab" onclick="fabClick()" title="Agregar partido">&#xFF0B;</button>
 
-<!-- PIN MODAL -->
-<div class="pin-overlay" id="pin-overlay">
-  <div class="pin-box">
-    <h3>Acceso restringido</h3>
-    <p>Ingres&#xE1; el PIN para agregar partidos</p>
-    <input class="pin-input" type="password" inputmode="numeric" maxlength="6" id="pin-input" onkeydown="if(event.key==='Enter')checkPin()"/>
-    <div class="pin-error" id="pin-error"></div>
-    <div class="pin-btns">
-      <button class="pin-btn cancel" onclick="closePinModal()">Cancelar</button>
-      <button class="pin-btn ok" onclick="checkPin()">Ingresar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ADD MATCH MODAL -->
-<div class="add-overlay" id="add-overlay">
-  <div class="add-sheet">
-    <h2>Nuevo partido</h2>
-    <div class="add-row add-row-fecha-rival">
-      <div class="add-field"><label>Fecha</label><input type="date" id="nf-date"/></div>
-      <div class="add-field"><label>Rival</label>
-        <div style="position:relative;">
-          <input type="text" id="nf-rival" placeholder="ej. Independiente" autocomplete="off" oninput="rivalSuggest(this.value)"/>
-          <div id="rival-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #d1d5db;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);z-index:500;max-height:180px;overflow-y:auto;"></div>
-        </div>
-      </div>
-    </div>
-    <div class="add-row">
-      <div class="add-field"><label>Torneo</label><select id="nf-torneo"></select></div>
-    </div>
-    <div class="add-row">
-      <div class="add-field"><label>Fecha / Instancia</label><input type="text" id="nf-fecha" placeholder="ej. 12&#xAA; fecha"/></div>
-    </div>
-    <div class="add-row cols-2">
-      <div class="add-field"><label>Score</label><input type="text" id="nf-score" placeholder="ej. 2-1"/></div>
-      <div class="add-field"><label>Resultado</label>
-        <div class="res-toggle">
-          <button id="res-G" onclick="setRes('G')">Victoria</button>
-          <button id="res-E" onclick="setRes('E')">Empate</button>
-          <button id="res-P" onclick="setRes('P')">Derrota</button>
-        </div>
-      </div>
-    </div>
-    <div class="add-row cols-2">
-      <div class="add-field"><label>DT Boca</label><input type="text" id="nf-dt-boca" placeholder="ej. Gago, Fernando"/></div>
-      <div class="add-field"><label>DT Rival</label><input type="text" id="nf-dt-rival" placeholder="ej. Costas, Gustavo"/></div>
-    </div>
-    <div class="add-row">
-      <div class="add-field"><label>Goleadores</label><input type="text" id="nf-goles" placeholder="ej. Cavani (23') / Romero (67')"/></div>
-    </div>
-    <div class="add-row">
-      <div class="add-field"><label>&#xBF;Fuiste?</label>
-        <div class="att-toggle">
-          <button id="att-si" onclick="setAtt(true)">S&#xED;, fui</button>
-          <button id="att-no" onclick="setAtt(false)">No fui</button>
-        </div>
-      </div>
-    </div>
-    <div class="add-footer">
-      <button class="add-btn cancel" onclick="closeAddModal()">Cancelar</button>
-      <button class="add-btn save" id="add-save-btn" onclick="saveNewMatch()">Guardar partido</button>
-    </div>
-  </div>
-</div>
 
 <script>
 
@@ -472,7 +358,7 @@ const MATCHES = [
   {year:2022,date:"2022-08-06",rival:"Platense",score:"2-1",res:"G",torneo:"Campeonato 2022",fecha:"12ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"De Felippe, Omar",goleadores:"O.Romero -TL- (12'), O.Romero (42') / Morgantini (55')",asistio:false},
   {year:2022,date:"2022-08-17",rival:"Rosario Central",score:"0-0",res:"E",torneo:"Campeonato 2022",fecha:"14ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"Tevez, Carlos",goleadores:"-",asistio:true},
   {year:2022,date:"2022-08-28",rival:"Atl. Tucumán",score:"2-1",res:"G",torneo:"Campeonato 2022",fecha:"16ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"Pusineri, Lucas",goleadores:"Langoni (77'), Langoni (87') / Lotti (16')",asistio:true},
-  {year:2022,date:"2022-09-11",rival:"River",score:"1-0",res:"G",torneo:"Campeonato 2022",fecha:"18ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"Gallardo, Marcelo",goleadores:"Espinoza (90') / -",asistio:true},
+  {year:2022,date:"2022-09-11",rival:"River",score:"1-0",res:"G",torneo:"Campeonato 2022",fecha:"18ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"Gallardo, Marcelo",goleadores:"Benedetto -cab- (65') / -",asistio:true},
   {year:2022,date:"2022-09-19",rival:"Huracán",score:"0-0",res:"E",torneo:"Campeonato 2022",fecha:"20ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"Dabove, Diego",goleadores:"-",asistio:true},
   {year:2022,date:"2022-10-02",rival:"Vélez",score:"1-0",res:"G",torneo:"Campeonato 2022",fecha:"22ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"A.Medina, Alexander",goleadores:"Morales (79') / -",asistio:true},
   {year:2022,date:"2022-10-09",rival:"Aldosivi",score:"2-1",res:"G",torneo:"Campeonato 2022",fecha:"24ª fecha",dt_boca:"Ibarra, Hugo",dt_rival:"Villar, Diego",goleadores:"Payero (11'), Benedetto (45') / Valentini (16')",asistio:true},
@@ -566,7 +452,7 @@ const MATCHES = [
   {year:2026,date:"2026-02-28",rival:"Gimnasia y Esgrima",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"8ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Broggi, Ariel",goleadores:"Merentiel (41') / L. Paredes (15')"},
   {year:2026,date:"2026-03-11",rival:"San Lorenzo",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"10ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Ayude, Damián",goleadores:"Ascacíbar (55') / G. Rodríguez (65')"},
   {year:2026,date:"2026-03-22",rival:"Instituto",asistio:false,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"12ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Flores, Diego",goleadores:"Aranda (50'), Bareiro (56') / -"},
-  {year:2026,date:"2026-04-11",rival:"Independiente",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"14ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Quinteros, Gustavo",goleadores:"Giménez -pen- (45') / Abaldo (5')"},
+  {year:2026,date:"2026-04-11",rival:"Independiente",asistio:true,score:"1-1",res:"E",torneo:"Torneo Apertura 2026",fecha:"14ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Quinteros, Gustavo",goleadores:"Giménez -pen- (45') / Abaldo (9')"},
 ];
 
 MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]/g,'-') + '-' + i; });
@@ -791,186 +677,7 @@ function fetchExtraData(match) {
   renderAll();
 }
 
-// ─── PIN + FAB ───────────────────────────────────────────────────────────────
-const PIN_HASH = '6ed13d029b93bf541e82b725b34ac6aa55b5b15693d995ff658bdd5fddcef316';
 
-async function hashPin(pin) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-let pinUnlocked = sessionStorage.getItem('mbomb_auth') === '1';
-
-function fabClick() {
-  if (pinUnlocked) { openAddModal(); return; }
-  document.getElementById('pin-overlay').classList.add('show');
-  setTimeout(() => document.getElementById('pin-input').focus(), 50);
-}
-
-async function checkPin() {
-  const val = document.getElementById('pin-input').value;
-  const h = await hashPin(val);
-  if (h === PIN_HASH) {
-    pinUnlocked = true;
-    sessionStorage.setItem('mbomb_auth', '1');
-    closePinModal();
-    openAddModal();
-  } else {
-    document.getElementById('pin-error').textContent = 'PIN incorrecto. Intentá de nuevo.';
-    document.getElementById('pin-input').value = '';
-    document.getElementById('pin-input').focus();
-  }
-}
-
-function closePinModal() {
-  document.getElementById('pin-overlay').classList.remove('show');
-  document.getElementById('pin-input').value = '';
-  document.getElementById('pin-error').textContent = '';
-}
-
-// ─── ADD MATCH MODAL ─────────────────────────────────────────────────────────
-const TORNEOS_ACTUALES = [
-  'Torneo Apertura 2026',
-  'Copa Libertadores 2026',
-];
-
-let nfRes = null;
-let nfAtt = null;
-
-function openAddModal() {
-  const sel = document.getElementById('nf-torneo');
-  sel.innerHTML = '';
-  TORNEOS_ACTUALES.forEach(t => {
-    const o = document.createElement('option');
-    o.value = t; o.textContent = t;
-    sel.appendChild(o);
-  });
-  document.getElementById('nf-date').value = new Date().toISOString().slice(0,10);
-  ['nf-rival','nf-fecha','nf-score','nf-dt-rival','nf-goles'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('nf-dt-boca').value = 'Úbeda, Claudio';
-  hideRivalDropdown();
-  nfRes = null; nfAtt = null;
-  ['res-G','res-E','res-P'].forEach(id => document.getElementById(id).className = '');
-  ['att-si','att-no'].forEach(id => document.getElementById(id).className = '');
-  document.getElementById('add-overlay').classList.add('show');
-}
-
-function closeAddModal() {
-  document.getElementById('add-overlay').classList.remove('show');
-}
-
-function setRes(r) {
-  nfRes = r;
-  ['G','E','P'].forEach(x => {
-    document.getElementById('res-'+x).className = x === r ? 'sel-'+x : '';
-  });
-}
-
-function setAtt(v) {
-  nfAtt = v;
-  document.getElementById('att-si').className = v ? 'sel-si' : '';
-  document.getElementById('att-no').className = !v ? 'sel-no' : '';
-}
-
-// ─── RIVAL AUTOCOMPLETE ───────────────────────────────────────────────────────
-function getRivalesUnicos() {
-  const set = new Set(MATCHES.map(m => m.rival));
-  return [...set].sort((a,b) => a.localeCompare(b, 'es'));
-}
-
-function rivalSuggest(q) {
-  const dd = document.getElementById('rival-dropdown');
-  if (!q || q.length < 2) { hideRivalDropdown(); return; }
-  const matches = getRivalesUnicos().filter(r => r.toLowerCase().includes(q.toLowerCase()));
-  if (!matches.length) { hideRivalDropdown(); return; }
-  dd.innerHTML = matches.map(r =>
-    `<div onclick="selectRival('${r.replace(/'/g,"\\'")}')"`+
-    ` style="padding:9px 12px;cursor:pointer;font-size:14px;color:#111827;border-bottom:1px solid #f3f4f6;"` +
-    ` onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background=''">${r}</div>`
-  ).join('');
-  dd.style.display = 'block';
-}
-
-function selectRival(r) {
-  document.getElementById('nf-rival').value = r;
-  hideRivalDropdown();
-}
-
-function hideRivalDropdown() {
-  const dd = document.getElementById('rival-dropdown');
-  if (dd) dd.style.display = 'none';
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#nf-rival') && !e.target.closest('#rival-dropdown')) hideRivalDropdown();
-});
-
-async function saveNewMatch() {
-  const date    = document.getElementById('nf-date').value;
-  const rival   = document.getElementById('nf-rival').value.trim();
-  const torneo  = document.getElementById('nf-torneo').value;
-  const fecha   = document.getElementById('nf-fecha').value.trim();
-  const score   = document.getElementById('nf-score').value.trim();
-  const dtBoca  = document.getElementById('nf-dt-boca').value.trim();
-  const dtRival = document.getElementById('nf-dt-rival').value.trim();
-  const goles   = document.getElementById('nf-goles').value.trim();
-
-  if (!date || !rival || !score || !nfRes || nfAtt === null) {
-    alert('Completá al menos: fecha, rival, score, resultado y asistencia.');
-    return;
-  }
-
-  const yr = parseInt(date.slice(0,4));
-  const newMatch = {
-    _id: date + '-' + rival.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]/g,'-') + '-new',
-    _nuevo: true,
-    year: yr, date, rival, score, res: nfRes, torneo,
-    fecha: fecha || '-',
-    dt_boca: dtBoca || '-', dt_rival: dtRival || '-',
-    goleadores: goles || '-',
-    asistio: nfAtt,
-  };
-
-  const btn = document.getElementById('add-save-btn');
-  btn.disabled = true; btn.textContent = 'Guardando...';
-  try {
-    await db.from('partidos_nuevos').upsert({
-      id: newMatch._id, year: yr, date, rival, score, res: nfRes, torneo,
-      fecha: newMatch.fecha, dt_boca: newMatch.dt_boca, dt_rival: newMatch.dt_rival,
-      goleadores: newMatch.goleadores, asistio: nfAtt,
-      created_at: new Date().toISOString()
-    });
-  } catch(e) { console.warn('Supabase save error', e); }
-
-  MATCHES.push(newMatch);
-  attended[newMatch._id] = nfAtt;
-  collapsedYears.delete(String(yr));
-
-  btn.disabled = false; btn.textContent = 'Guardar partido';
-  closeAddModal();
-  renderAll();
-}
-
-async function loadNuevos() {
-  try {
-    const { data } = await db.from('partidos_nuevos').select('*');
-    if (!data) return;
-    data.forEach(row => {
-      if (MATCHES.find(m => m._id === row.id)) return;
-      const m = {
-        _id: row.id, _nuevo: true,
-        year: row.year, date: row.date, rival: row.rival,
-        score: row.score, res: row.res, torneo: row.torneo,
-        fecha: row.fecha, dt_boca: row.dt_boca, dt_rival: row.dt_rival,
-        goleadores: row.goleadores, asistio: row.asistio
-      };
-      MATCHES.push(m);
-      attended[m._id] = row.asistio;
-    });
-  } catch(e) { console.warn('loadNuevos error', e); }
-}
 
 window.addEventListener("DOMContentLoaded", () => {
   renderAll();
