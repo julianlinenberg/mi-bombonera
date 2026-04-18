@@ -11,16 +11,18 @@ jobs:
   agregar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Agregar partido al index.html
+        env:
+          PARTIDO_JSON: ${{ github.event.inputs.partido }}
         run: |
           python3 << 'EOF'
-          import json, re, sys
+          import json, os
 
-          partido = json.loads('${{ github.event.inputs.partido }}')
+          partido = json.loads(os.environ['PARTIDO_JSON'])
 
-          entry = f"""  {{year:{partido['year']},date:"{partido['date']}",rival:"{partido['rival']}",score:"{partido['score']}",res:"{partido['res']}",torneo:"{partido['torneo']}",fecha:"{partido['fecha']}",dt_boca:"{partido['dt_boca']}",dt_rival:"{partido['dt_rival']}",goleadores:"{partido['goleadores']}",asistio:{str(partido['asistio']).lower()}}},"""
+          entry = "  {year:" + str(partido['year']) + ',date:"' + partido['date'] + '",rival:"' + partido['rival'] + '",score:"' + partido['score'] + '",res:"' + partido['res'] + '",torneo:"' + partido['torneo'] + '",fecha:"' + partido['fecha'] + '",dt_boca:"' + partido['dt_boca'] + '",dt_rival:"' + partido['dt_rival'] + '",goleadores:"' + partido['goleadores'] + '",asistio:' + str(partido['asistio']).lower() + '},'
 
           with open('index.html', 'r', encoding='utf-8') as f:
               content = f.read()
