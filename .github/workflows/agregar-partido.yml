@@ -34,7 +34,7 @@ jobs:
               f.write(content)
           EOF
 
-      - name: - name: Commit y push
+- name: Commit y push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
