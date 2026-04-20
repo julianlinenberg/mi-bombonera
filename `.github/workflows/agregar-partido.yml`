@@ -1,0 +1,43 @@
+name: Agregar partido
+
+on:
+  workflow_dispatch:
+    inputs:
+      partido:
+        description: 'JSON del partido'
+        required: true
+
+jobs:
+  agregar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Agregar partido al index.html
+        env:
+          PARTIDO_JSON: ${{ github.event.inputs.partido }}
+        run: |
+          python3 << 'EOF'
+          import json, os
+
+          partido = json.loads(os.environ['PARTIDO_JSON'])
+
+          entry = "  {year:" + str(partido['year']) + ',date:"' + partido['date'] + '",rival:"' + partido['rival'] + '",score:"' + partido['score'] + '",res:"' + partido['res'] + '",torneo:"' + partido['torneo'] + '",fecha:"' + partido['fecha'] + '",dt_boca:"' + partido['dt_boca'] + '",dt_rival:"' + partido['dt_rival'] + '",goleadores:"' + partido['goleadores'] + '",asistio:' + str(partido['asistio']).lower() + '},'
+
+          with open('index.html', 'r', encoding='utf-8') as f:
+              content = f.read()
+
+          marker = '  {year:2026'
+          content = content.replace(marker, entry + '\n' + marker, 1)
+
+          with open('index.html', 'w', encoding='utf-8') as f:
+              f.write(content)
+          EOF
+
+      - name: Commit y push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add index.html
+          git commit -m "Partido agregado"
+          git push
