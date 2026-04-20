@@ -21,10 +21,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mode-btn{padding:4px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:rgba(255,255,255,0.55);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
 .mode-btn.active{background:rgba(255,255,255,0.22);color:#fff;border-color:rgba(255,255,255,0.7);}
 
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.stat{background:rgba(255,255,255,0.12);border-radius:8px;padding:8px;text-align:center;}
-.stat-num{font-size:18px;font-weight:600;color:#fff;line-height:1.2;}
-.stat-label{font-size:10px;color:rgba(255,255,255,0.65);margin-top:2px;line-height:1.2;}
+.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.stat{background:rgba(255,255,255,0.12);border-radius:8px;padding:6px 4px;text-align:center;}
+.stat-num{font-size:16px;font-weight:600;color:#fff;line-height:1.2;}
+.stat-label{font-size:9px;color:rgba(255,255,255,0.65);margin-top:2px;line-height:1.2;}
 
 /* FILTERS */
 .filters{padding:12px 16px;display:flex;gap:8px;overflow-x:auto;background:#fff;border-bottom:1px solid #e5e7eb;scrollbar-width:none;}
@@ -101,11 +101,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .match-card.attended-g { background:#f0fdf4; border-left: 3px solid #16a34a; }
 .match-card.attended-e { background:#fefce8; border-left: 3px solid #ca8a04; }
 .match-card.attended-p { background:#fff1f2; border-left: 3px solid #e11d48; }
-.match-card.not-attended { opacity: 0.38; filter: grayscale(0.4); border-left: 3px solid #e5e7eb; }
-.match-card.not-attended:hover { opacity: 0.58; }
+.match-card.not-attended { opacity: 0.65; border-left: 3px solid #e5e7eb; }
+.match-card.not-attended:hover { opacity: 0.85; }
 
 /* ATTENDED BADGE */
 .att-badge { font-size: 10px; font-weight: 600; color: #15803d; background: #dcfce7; border-radius: 10px; padding: 2px 7px; white-space: nowrap; align-self: center; width: 64px; text-align: center; display: inline-block; }
+.att-badge-no { font-size: 10px; font-weight: 600; color: #6b7280; background: #f3f4f6; border-radius: 10px; padding: 2px 7px; white-space: nowrap; align-self: center; width: 64px; text-align: center; display: inline-block; }
 
 /* HEADER ROW with badge */
 .match-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -141,12 +142,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="stat"><div class="stat-num" id="s-victorias">0</div><div class="stat-label" id="lbl-victorias">Victorias</div></div>
       <div class="stat"><div class="stat-num" id="s-empates">0</div><div class="stat-label" id="lbl-empates">Empates</div></div>
       <div class="stat"><div class="stat-num" id="s-derrotas">0</div><div class="stat-label" id="lbl-derrotas">Derrotas</div></div>
+      <div class="stat"><div class="stat-num" id="s-goles-boca">0</div><div class="stat-label">Goles</div></div>
+      <div class="stat"><div class="stat-num" id="s-goles-rival">0</div><div class="stat-label">En contra</div></div>
     </div>
     <div id="attendance-stat" class="attendance-stat"></div>
   </div>
 
   <div class="filters">
     <button class="filter-btn active" onclick="setFilter('todos')">Todos</button>
+    <button class="filter-btn" onclick="setFilter('fui')">Fui</button>
+    <button class="filter-btn" onclick="setFilter('nofui')">No fui</button>
     <button class="filter-btn" onclick="setFilter('victorias')">Victorias</button>
     <button class="filter-btn" onclick="setFilter('empates')">Empates</button>
     <button class="filter-btn" onclick="setFilter('derrotas')">Derrotas</button>
@@ -154,10 +159,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="filter-btn" onclick="setFilter('clasicos')">Clásicos</button>
     <button class="filter-btn" onclick="setFilter('libertadores')">Libertadores</button>
     <button class="filter-btn" onclick="setFilter('sudamericana')">Sudamericana</button>
+    <button class="filter-btn" onclick="showGoleadores()">Goleadores</button>
   </div>
   <div class="search-wrap">
-    <input type="text" id="search-input" placeholder="🔍  Buscar rival..." oninput="renderAll()"
+    <input type="text" id="search-input" placeholder="🔍  Buscar rival, torneo, año..." oninput="renderAll()"
       style="width:100%;padding:8px 14px;border:1px solid #d1d5db;border-radius:20px;font-size:14px;outline:none;background:#f9fafb;color:#111827;">
+    <div id="active-filter-chip" style="display:none;margin-top:8px;align-items:center;gap:6px;">
+      <span style="font-size:12px;color:#6b7280;">Filtro:</span>
+      <span id="active-filter-label" style="font-size:12px;font-weight:600;color:#1a3a6b;background:#e8eef7;border-radius:20px;padding:3px 10px;"></span>
+      <button onclick="setFilter('todos')" style="font-size:11px;color:#9ca3af;background:none;border:none;cursor:pointer;padding:0 2px;">✕ quitar</button>
+    </div>
   </div>
 
   <div id="matches-container"></div>
@@ -491,6 +502,24 @@ async function initSupabase() {
   renderAll();
 }
 
+async function loadNuevos() {
+  try {
+    const { data } = await db.from('partidos_nuevos').select('*').order('date', {ascending:false});
+    if (data && data.length) {
+      data.forEach(p => {
+        if (!MATCHES.find(m => m.date === p.date && m.rival === p.rival)) {
+          const nm = {...p, year: parseInt(p.date.slice(0,4)), _nuevo: true};
+          nm._id = nm.date + '-' + nm.rival.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]/g,'-') + '-nuevo-' + nm.id;
+          attended[nm._id] = nm.asistio !== false;
+          MATCHES.unshift(nm);
+        }
+      });
+    }
+  } catch(e) {}
+}
+
+
+
 // ── STATS MODE ──────────────────────────────────────────
 function setStatsMode(mode) {
   statsMode = mode;
@@ -500,11 +529,54 @@ function setStatsMode(mode) {
   renderAll();
 }
 
+function parseGoals(goleadoresStr) {
+  // Returns {boca: number, rival: number, scorers: [{name, count}]}
+  if (!goleadoresStr || goleadoresStr === '-') return {boca:0, rival:0, scorers:[]};
+  const parts = goleadoresStr.split(' / ');
+  const bocaPart = parts[0] || '';
+  const rivalPart = parts[1] || '';
+  const countGoals = str => {
+    if (!str || str.trim() === '-') return 0;
+    // Each goal is separated by ", " — count occurrences of "(" which mark each goal's minute
+    return (str.match(/\(/g) || []).length;
+  };
+  // Extract scorer names from Boca side for the goleadores table
+  const scorers = [];
+  if (bocaPart && bocaPart.trim() !== '-') {
+    bocaPart.split(', ').forEach(g => {
+      // Format: "Nombre (min')" or "Nombre -mod- (min')"
+      const match = g.match(/^([^(-]+)/);
+      if (match) {
+        const raw = match[1].trim();
+        // Remove modifiers like -cab-, -pen-, -TL-, -eg-
+        const name = raw.replace(/-[a-záéíóúñ]+(-\s*$)?/gi,'').trim();
+        if (name) scorers.push(name);
+      }
+    });
+  }
+  return {boca: countGoals(bocaPart), rival: countGoals(rivalPart), scorers};
+}
+
+function buildGoleadoresTable(matchSet) {
+  const tally = {};
+  matchSet.forEach(m => {
+    const {scorers} = parseGoals(m.goleadores);
+    scorers.forEach(name => { tally[name] = (tally[name]||0) + 1; });
+  });
+  return Object.entries(tally).sort((a,b)=>b[1]-a[1]);
+}
+
 function renderStats() {
   const allG = MATCHES.filter(m => m.res === 'G').length;
   const allE = MATCHES.filter(m => m.res === 'E').length;
   const allP = MATCHES.filter(m => m.res === 'P').length;
   const allTotal = MATCHES.length;
+
+  let totalBocaGoals = 0, totalRivalGoals = 0;
+  MATCHES.forEach(m => {
+    const {boca, rival} = parseGoals(m.goleadores);
+    totalBocaGoals += boca; totalRivalGoals += rival;
+  });
 
   if (statsMode === 'boca') {
     document.getElementById('s-total').textContent = allTotal;
@@ -515,6 +587,8 @@ function renderStats() {
     document.getElementById('lbl-victorias').textContent = 'Victorias';
     document.getElementById('lbl-empates').textContent = 'Empates';
     document.getElementById('lbl-derrotas').textContent = 'Derrotas';
+    document.getElementById('s-goles-boca').textContent = totalBocaGoals;
+    document.getElementById('s-goles-rival').textContent = totalRivalGoals;
     document.getElementById('attendance-stat').style.display = 'none';
   } else {
     const myMs = MATCHES.filter(m => attended[m._id]);
@@ -523,6 +597,11 @@ function renderStats() {
     const myG = myMs.filter(m => m.res === 'G').length;
     const myE = myMs.filter(m => m.res === 'E').length;
     const myP = myMs.filter(m => m.res === 'P').length;
+    let myBocaGoals = 0, myRivalGoals = 0;
+    myMs.forEach(m => {
+      const {boca, rival} = parseGoals(m.goleadores);
+      myBocaGoals += boca; myRivalGoals += rival;
+    });
     document.getElementById('s-total').textContent = myTotal + '/' + allTotal;
     document.getElementById('s-victorias').textContent = myG + '/' + allG;
     document.getElementById('s-empates').textContent = myE + '/' + allE;
@@ -531,6 +610,8 @@ function renderStats() {
     document.getElementById('lbl-victorias').textContent = 'V que vi';
     document.getElementById('lbl-empates').textContent = 'E que vi';
     document.getElementById('lbl-derrotas').textContent = 'D que vi';
+    document.getElementById('s-goles-boca').textContent = myBocaGoals + '/' + totalBocaGoals;
+    document.getElementById('s-goles-rival').textContent = myRivalGoals + '/' + totalRivalGoals;
     const pctG = allG > 0 ? Math.round(myG/allG*100) : 0;
     const pctE = allE > 0 ? Math.round(myE/allE*100) : 0;
     const pctP = allP > 0 ? Math.round(myP/allP*100) : 0;
@@ -542,10 +623,17 @@ function renderStats() {
 
 function setFilter(f) {
   activeFilter = f;
+  const labels = {todos:'Todos',fui:'Fui',nofui:'No fui',victorias:'Victorias',empates:'Empates',derrotas:'Derrotas',superclasico:'Superclásico',clasicos:'Clásicos',libertadores:'Libertadores',sudamericana:'Sudamericana'};
   document.querySelectorAll('.filter-btn').forEach(b => {
-    const labels = {todos:'Todos',victorias:'Victorias',empates:'Empates',derrotas:'Derrotas',superclasico:'Superclásico',clasicos:'Clásicos',libertadores:'Libertadores',sudamericana:'Sudamericana'};
     b.classList.toggle('active', b.textContent.trim() === labels[f]);
   });
+  const chip = document.getElementById('active-filter-chip');
+  if (f !== 'todos') {
+    chip.style.display = 'flex';
+    document.getElementById('active-filter-label').textContent = labels[f];
+  } else {
+    chip.style.display = 'none';
+  }
   renderAll();
 }
 
@@ -553,7 +641,9 @@ function getFiltered() {
   const q = (document.getElementById('search-input') ? document.getElementById('search-input').value : '').toLowerCase().trim();
   const CLASICOS_RIVALS = ['River','Racing','Independiente','San Lorenzo'];
   return MATCHES.filter(m => {
-    if (q && !m.rival.toLowerCase().includes(q)) return false;
+    if (q && !m.rival.toLowerCase().includes(q) && !m.torneo.toLowerCase().includes(q) && !String(m.year).includes(q)) return false;
+    if (activeFilter === 'fui') return attended[m._id];
+    if (activeFilter === 'nofui') return !attended[m._id];
     if (activeFilter === 'victorias') return m.res === 'G';
     if (activeFilter === 'empates') return m.res === 'E';
     if (activeFilter === 'derrotas') return m.res === 'P';
@@ -638,7 +728,7 @@ function renderAll() {
           <div class="match-header">
             <span class="match-rival">Boca vs ${m.rival}${m.cancha_alt ? '<span class="cancha-alt-badge" title="Jugado en ' + m.cancha_alt + '">★ ' + m.cancha_alt + '</span>' : ''}</span>
             <div class="match-header-right">
-              ${isAtt ? `<span class="att-badge">✓ Fui</span>` : `<span class="att-badge" style="background:#fee2e2;color:#b91c1c;">✗ Ausente</span>`}
+              ${isAtt ? `<span class="att-badge">✓ Fui</span>` : `<span class="att-badge-no">✗ No fui</span>`}
               <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
             </div>
           </div>
@@ -666,8 +756,10 @@ function renderAll() {
   container.innerHTML = html;
 }
 
-const collapsedYears = new Set(MATCHES.map(m=>String(m.year)));
-const yearTorneoFilter = {}; // { '2018': 'Copa Libertadores 2018', ... }
+// Collapse all years except the most recent
+const mostRecentYear = String(Math.max(...MATCHES.map(m=>m.year)));
+const collapsedYears = new Set(MATCHES.map(m=>String(m.year)).filter(y => y !== mostRecentYear));
+const yearTorneoFilter = {};
 
 function toggleYear(yr) {
   if (collapsedYears.has(yr)) collapsedYears.delete(yr);
@@ -682,12 +774,56 @@ function setYearTorneo(yr, torneo, event) {
   renderAll();
 }
 
-function setYearTorneo(yr, torneo, event) {
-  event.stopPropagation();
-  if (yearTorneoFilter[yr] === torneo) delete yearTorneoFilter[yr];
-  else yearTorneoFilter[yr] = torneo;
-  renderAll();
+function showGoleadores() {
+  // Reset active filter button visual
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.filter-btn[onclick="showGoleadores()"]').classList.add('active');
+
+  const allTable = buildGoleadoresTable(MATCHES);
+  const myMs = MATCHES.filter(m => attended[m._id]);
+  const myTable = buildGoleadoresTable(myMs);
+  const myMap = Object.fromEntries(myTable);
+
+  const container = document.getElementById('matches-container');
+  const rows = allTable.slice(0, 50).map(([ name, total ], i) => {
+    const mine = myMap[name] || 0;
+    const bar = total > 0 ? Math.round(mine / total * 100) : 0;
+    return `<tr>
+      <td style="padding:8px 12px;font-size:13px;color:#374151;font-weight:${i<3?'700':'400'}">${i+1}. ${name}</td>
+      <td style="padding:8px 12px;text-align:center;font-size:14px;font-weight:600;color:#1a3a6b;">${total}</td>
+      <td style="padding:8px 12px;text-align:center;font-size:13px;color:#15803d;font-weight:600;">${mine}</td>
+      <td style="padding:8px 16px;">
+        <div style="background:#e5e7eb;border-radius:4px;height:6px;width:100%;">
+          <div style="background:#1a3a6b;border-radius:4px;height:6px;width:${bar}%;"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-size:15px;font-weight:700;color:#111827;">Goleadores de Boca</span>
+        <button onclick="setFilter('todos')" style="font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;">← Volver</button>
+      </div>
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:14px;">Goles en todos los partidos · en verde los que presencié</div>
+      <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;">
+        <thead>
+          <tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb;">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:600;">Jugador</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;color:#9ca3af;font-weight:600;">Total</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;color:#9ca3af;font-weight:600;">Vi</th>
+            <th style="padding:8px 16px;text-align:left;font-size:11px;color:#9ca3af;font-weight:600;">% que vi</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+      <div style="font-size:11px;color:#d1d5db;text-align:center;margin-top:12px;">Top 50 · ${allTable.length} jugadores en total</div>
+    </div>`;
 }
+
 
 function handleCardClick(id) {
   toggleExpand(id);
