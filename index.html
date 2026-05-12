@@ -10,9 +10,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .app{max-width:430px;margin:0 auto;background:#fff;min-height:100vh;padding-bottom:80px;}
 
 /* HEADER */
-.header{background:#1a3a6b;color:#fff;padding:16px;position:sticky;top:0;z-index:10;}
+.header{background:#001B5E;color:#fff;padding:16px;position:sticky;top:0;z-index:10;}
 .header-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.escudo{width:40px;height:40px;border-radius:50%;background:#f5c518;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.escudo{width:40px;height:40px;flex-shrink:0;object-fit:contain;}
 .header h1{font-size:17px;font-weight:600;color:#fff;}
 .header p{font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;}
 
@@ -30,10 +30,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .filters{padding:12px 16px;display:flex;gap:8px;overflow-x:auto;background:#fff;border-bottom:1px solid #e5e7eb;scrollbar-width:none;}
 .filters::-webkit-scrollbar{display:none;}
 .filter-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #d1d5db;background:#fff;font-size:13px;color:#6b7280;cursor:pointer;white-space:nowrap;}
-.filter-btn.active{background:#1a3a6b;color:#fff;border-color:#1a3a6b;}
+.filter-btn.active{background:#001B5E;color:#F5C518;border-color:#001B5E;}
 
 /* YEAR SECTION */
-.year-header{padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;}
+.year-header{padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;border-top:2px solid #F5C518;display:flex;justify-content:space-between;align-items:center;}
 .year-header span{font-size:13px;font-weight:600;color:#374151;}
 .year-badge{font-size:12px;color:#9ca3af;}
 
@@ -48,8 +48,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .match-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
 .match-rival{font-size:15px;font-weight:600;color:#111827;}
 .score-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
-.score-g{background:#dcfce7;color:#15803d;}
-.score-e{background:#fef9c3;color:#854d0e;}
+.score-g{background:#001B5E;color:#F5C518;}
+.score-e{background:#e0f2fe;color:#0369a1;}
 .score-p{background:#fee2e2;color:#b91c1c;}
 .match-meta{font-size:12px;color:#6b7280;margin-bottom:3px;}
 .match-torneo{font-size:11px;color:#9ca3af;}
@@ -81,7 +81,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .year-torneo-filters{padding:8px 16px;background:#f0f4fb;border-bottom:1px solid #e5e7eb;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
 .year-torneo-filters::-webkit-scrollbar{display:none;}
 .year-torneo-btn{flex-shrink:0;padding:4px 11px;border-radius:14px;border:1px solid #c7d4e8;background:#fff;font-size:11px;color:#4b6a9b;cursor:pointer;white-space:nowrap;font-weight:500;}
-.year-torneo-btn.active{background:#1a3a6b;color:#fff;border-color:#1a3a6b;}
+.year-torneo-btn.active{background:#001B5E;color:#F5C518;border-color:#001B5E;}
 
 /* DESKTOP */
 @media(min-width:768px){
@@ -98,8 +98,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 }
 
 /* ATTENDANCE STATES */
-.match-card.attended-g { background:#f0fdf4; border-left: 3px solid #16a34a; }
-.match-card.attended-e { background:#fefce8; border-left: 3px solid #ca8a04; }
+.match-card.attended-g { background:#fffbeb; border-left: 3px solid #F5C518; }
+.match-card.attended-e { background:#f0f9ff; border-left: 3px solid #7dd3fc; }
 .match-card.attended-p { background:#fff1f2; border-left: 3px solid #e11d48; }
 .match-card.not-attended { opacity: 0.65; border-left: 3px solid #e5e7eb; }
 .match-card.not-attended:hover { opacity: 0.85; }
@@ -127,7 +127,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="app">
   <div class="header">
     <div class="header-top">
-      <div class="escudo">⚽</div>
+      <img src="escudo.svg" class="escudo" alt="Escudo Boca Juniors">
       <div>
         <h1>Mi Bombonera</h1>
         <p>Partidos en La Bombonera · 2013–2026</p>
@@ -462,7 +462,6 @@ const MATCHES = [
   {year:2025,date:"2025-11-30",rival:"Argentinos Jrs.",asistio:true,score:"1-0",res:"G",torneo:"Torneo Clausura 2025",fecha:"4tos de final",dt_boca:"Úbeda, Claudio",dt_rival:"Diez, Nicolás",goleadores:"Costa (5') / -"},
   {year:2025,date:"2025-12-07",rival:"Racing",asistio:true,score:"0-1",res:"P",torneo:"Torneo Clausura 2025",fecha:"Semifinal",dt_boca:"Úbeda, Claudio",dt_rival:"Costas, Gustavo",goleadores:"- / A. Martínez (75')"},
   // Torneo Apertura 2026
-  {year:2026,date:"2026-05-09",rival:"Huracán",score:"2-3",res:"P",torneo:"Torneo Apertura 2026",fecha:"8vos de final",dt_boca:"Úbeda, Claudio",dt_rival:"Martínez, Diego",goleadores:"Giménez (87'), Ángel Romero (116') / Gil (5'), Ó.Romero -pen- (94'), Ó.Romero -pen- (103')",asistio:true},
   {year:2026,date:"2026-04-14",rival:"Barcelona SC",score:"3-0",res:"G",torneo:"Copa Libertadores 2026",fecha:"Fase de grupos",dt_boca:"Úbeda, Claudio",dt_rival:"Farías, César",goleadores:"Di Lollo (39'), Ascacíbar (81'), Herrera (90+4') / -",asistio:true},
   {year:2026,date:"2026-01-25",rival:"Dep. Riestra",asistio:true,score:"1-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"1ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Benítez, Gustavo",goleadores:"Di Lollo (77') / -"},
   {year:2026,date:"2026-02-01",rival:"Newell's",asistio:true,score:"2-0",res:"G",torneo:"Torneo Apertura 2026",fecha:"3ª fecha",dt_boca:"Úbeda, Claudio",dt_rival:"Orsi-Gómez",goleadores:"L. Blanco (40'), Paredes -pen- (56') / -"},
@@ -486,11 +485,8 @@ let statsMode = 'boca';
 
 const SUPABASE_URL = 'https://zesadrwfrdqvanqbwtqz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_a1mV-J7LRDkcrLzEv0CjKw_5WPyUu2C';
-let db = null;
-try {
-  const { createClient } = supabase;
-  db = createClient(SUPABASE_URL, SUPABASE_KEY);
-} catch(e) {}
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Initialize attended from inline asistio field on each match
 let attended = {};
@@ -498,7 +494,6 @@ MATCHES.forEach(m => { attended[m._id] = m.asistio !== false; });
 
 
 async function initSupabase() {
-  if (!db) return;
   await loadNuevos();
   try {
     const { data } = await db.from('asistencias').select('id, asistio');
@@ -508,7 +503,6 @@ async function initSupabase() {
 }
 
 async function loadNuevos() {
-  if (!db) return;
   try {
     const { data } = await db.from('partidos_nuevos').select('*').order('date', {ascending:false});
     if (data && data.length) {
