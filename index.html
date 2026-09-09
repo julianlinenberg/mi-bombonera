@@ -121,7 +121,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 <div class="app">
@@ -490,41 +489,9 @@ let expandedId = null;
 let extraData = {};
 let statsMode = 'boca';
 
-const SUPABASE_URL = 'https://zesadrwfrdqvanqbwtqz.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_a1mV-J7LRDkcrLzEv0CjKw_5WPyUu2C';
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
 // Initialize attended from inline asistio field on each match
 let attended = {};
 MATCHES.forEach(m => { attended[m._id] = m.asistio !== false; });
-
-
-async function initSupabase() {
-  await loadNuevos();
-  try {
-    const { data } = await db.from('asistencias').select('id, asistio');
-    if (data) data.forEach(row => { attended[row.id] = row.asistio; });
-  } catch(e) {}
-  renderAll();
-}
-
-async function loadNuevos() {
-  try {
-    const { data } = await db.from('partidos_nuevos').select('*').order('date', {ascending:false});
-    if (data && data.length) {
-      data.forEach(p => {
-        if (!MATCHES.find(m => m.date === p.date && m.rival === p.rival)) {
-          const nm = {...p, year: parseInt(p.date.slice(0,4)), _nuevo: true};
-          nm._id = nm.date + '-' + nm.rival.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]/g,'-') + '-nuevo-' + nm.id;
-          attended[nm._id] = nm.asistio !== false;
-          MATCHES.unshift(nm);
-        }
-      });
-    }
-  } catch(e) {}
-}
-
 
 
 // ── STATS MODE ──────────────────────────────────────────
@@ -865,7 +832,6 @@ function fetchExtraData(match) {
 
 window.addEventListener("DOMContentLoaded", () => {
   renderAll();
-  initSupabase();
 });
 </script>
 </body>
