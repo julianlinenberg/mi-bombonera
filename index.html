@@ -2,176 +2,236 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#001B5E"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Mi Bombonera"/>
+<link rel="icon" href="escudo.svg" type="image/svg+xml"/>
 <title>Mi Bombonera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;min-height:100vh;}
-.app{max-width:430px;margin:0 auto;background:#fff;min-height:100vh;padding-bottom:80px;}
-
-/* HEADER */
-.header{background:#001B5E;color:#fff;padding:16px;position:sticky;top:0;z-index:10;}
-.header-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.escudo{width:40px;height:40px;flex-shrink:0;object-fit:contain;}
-.header h1{font-size:17px;font-weight:600;color:#fff;}
-.header p{font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px;}
-
-/* STATS MODE TOGGLE */
-.stats-mode-toggle{display:flex;gap:4px;margin-bottom:10px;}
-.mode-btn{padding:4px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:rgba(255,255,255,0.55);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
-.mode-btn.active{background:rgba(255,255,255,0.22);color:#fff;border-color:rgba(255,255,255,0.7);}
-
-.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
-.stat{background:rgba(255,255,255,0.12);border-radius:8px;padding:6px 4px;text-align:center;}
-.stat-num{font-size:16px;font-weight:600;color:#fff;line-height:1.2;}
-.stat-label{font-size:9px;color:rgba(255,255,255,0.65);margin-top:2px;line-height:1.2;}
-
-/* FILTERS */
-.filters{padding:12px 16px;display:flex;gap:8px;overflow-x:auto;background:#fff;border-bottom:1px solid #e5e7eb;scrollbar-width:none;}
-.filters::-webkit-scrollbar{display:none;}
-.filter-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #d1d5db;background:#fff;font-size:13px;color:#6b7280;cursor:pointer;white-space:nowrap;}
-.filter-btn.active{background:#001B5E;color:#F5C518;border-color:#001B5E;}
-
-/* YEAR SECTION */
-.year-header{padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;}
-.year-header span{font-size:13px;font-weight:600;color:#374151;}
-.year-badge{font-size:12px;color:#9ca3af;}
-
-/* YEAR ATTENDANCE BADGE */
-.year-att{font-size:11px;color:#0c4a6e;font-weight:700;background:#e0f2fe;border-radius:10px;padding:2px 8px;white-space:nowrap;}
-.year-att .att-pct{font-weight:400;color:#0369a1;margin-left:2px;}
-
-/* MATCH CARD */
-.match-card{padding:14px 16px;border-bottom:1px solid #f3f4f6;background:#fff;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:background 0.15s;}
-.match-card:active{background:#f9fafb;}
-.match-body{flex:1;min-width:0;}
-.match-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
-.match-rival{font-size:15px;font-weight:600;color:#111827;}
-.score-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
-.score-g{background:#001B5E;color:#F5C518;}
-.score-e{background:#e0f2fe;color:#0369a1;}
-.score-p{background:#fee2e2;color:#b91c1c;}
-.match-meta{font-size:12px;color:#6b7280;margin-bottom:3px;}
-.match-torneo{font-size:11px;color:#9ca3af;}
-.cancha-alt-badge{display:inline-block;margin-left:5px;font-size:10px;font-weight:700;color:#7c3aed;background:#ede9fe;border-radius:4px;padding:1px 5px;cursor:default;vertical-align:middle;}
-
-/* EXPANDED DETAIL */
-.match-detail{margin-top:10px;padding:10px;background:#f9fafb;border-radius:8px;font-size:12px;color:#374151;}
-.match-detail-row{display:flex;gap:8px;margin-bottom:5px;align-items:flex-start;}
-.match-detail-row:last-child{margin-bottom:0;}
-.detail-label{color:#9ca3af;flex-shrink:0;width:64px;font-size:11px;padding-top:1px;}
-.detail-val{color:#374151;flex:1;}
-.memo-text{font-style:italic;color:#6b7280;}
-
-/* EMPTY STATE */
-.empty{text-align:center;padding:48px 16px;color:#9ca3af;font-size:14px;}
-.empty-icon{font-size:40px;margin-bottom:12px;}
-
-/* YEAR COLLAPSIBLE */
-.year-header{cursor:pointer;user-select:none;}
-.year-header:hover{background:#f3f4f6;}
-.year-chevron{font-size:12px;color:#9ca3af;transition:transform 0.2s;display:inline-block;}
-.year-header.collapsed .year-chevron{transform:rotate(-90deg);}
-.year-balance{font-size:12px;color:#6b7280;display:flex;gap:8px;}
-.year-matches{transition:none;}
-
-/* YEAR TOURNAMENT FILTERS */
-.year-torneo-filters{padding:8px 16px;background:#f0f4fb;border-bottom:1px solid #e5e7eb;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
-.year-torneo-filters::-webkit-scrollbar{display:none;}
-.year-torneo-btn{flex-shrink:0;padding:4px 11px;border-radius:14px;border:1px solid #c7d4e8;background:#fff;font-size:11px;color:#4b6a9b;cursor:pointer;white-space:nowrap;font-weight:500;}
-.year-torneo-btn.active{background:#001B5E;color:#F5C518;border-color:#001B5E;}
-
-/* DESKTOP */
-@media(min-width:768px){
-  body{background:#e5e7eb;}
-  .app{max-width:none;display:grid;grid-template-columns:280px 1fr;grid-template-rows:auto auto 1fr;min-height:100vh;box-shadow:none;}
-  .header{grid-column:1/3;grid-row:1;border-radius:0;}
-  .filters{grid-column:1;grid-row:3;border-right:1px solid #e5e7eb;overflow-y:auto;flex-direction:column;padding:16px;height:calc(100vh - 130px);position:sticky;top:130px;align-self:start;}
-  .filters .filter-btn{text-align:left;border-radius:8px;}
-  .search-wrap{grid-column:2;grid-row:2;padding:12px 20px;background:#fff;border-bottom:1px solid #e5e7eb;}
-  #matches-container{grid-column:2;grid-row:3;overflow-y:auto;}
-  .match-card{padding:16px 20px;}
-  .match-rival{font-size:16px;}
-  .year-header{padding:12px 20px;}
+:root{
+  --azul:#001B5E; --azul-2:#003087; --oro:#F5C518; --oro-suave:#FDF3C4;
+  --bg:#F4F5F8; --surface:#FFFFFF; --line:#E6E8EE; --text:#0E1630; --text-2:#5B6478; --text-3:#9AA1B2;
+  --v:#16A34A; --e:#8A94A8; --d:#DC2626;
+  --num:'Barlow Condensed','SF Pro Display',-apple-system,sans-serif;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
 }
+@media (prefers-color-scheme:dark){
+  :root{--bg:#070C1C;--surface:#0E1630;--line:#1C2643;--text:#EEF1F8;--text-2:#A3ABC0;--text-3:#646E88;--oro-suave:#2A2610;--e:#7C869B;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);min-height:100vh;}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+.app{max-width:560px;margin:0 auto;padding-bottom:calc(76px + var(--safe-bottom));}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:.2px;}
 
-/* ATTENDANCE STATES */
-.match-card.attended-g { background:#fffbeb; border-left: 3px solid #F5C518; }
-.match-card.attended-e { background:#f0f9ff; border-left: 3px solid #7dd3fc; }
-.match-card.attended-p { background:#fff1f2; border-left: 3px solid #e11d48; }
-.match-card.not-attended { opacity: 0.65; border-left: 3px solid #e5e7eb; }
-.match-card.not-attended:hover { opacity: 0.85; }
+/* HERO */
+.hero{background:var(--azul);color:#fff;padding:calc(16px + var(--safe-top)) 20px 20px;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(245,197,24,.07);pointer-events:none;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand img{width:30px;height:36px;object-fit:contain;}
+.brand h1{font-size:15px;font-weight:600;letter-spacing:.2px;}
+.brand p{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px;}
+.hero-main{display:flex;align-items:center;gap:18px;margin-top:20px;}
+.ring{width:92px;height:92px;flex-shrink:0;position:relative;}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring .pct b{font-family:var(--num);font-size:25px;font-weight:700;line-height:1;color:var(--oro);}
+.ring .pct small{font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;letter-spacing:.4px;text-transform:uppercase;}
+.hero-big{font-family:var(--num);font-size:56px;font-weight:700;line-height:.9;}
+.hero-big span{font-size:24px;font-weight:500;color:rgba(255,255,255,.5);margin-left:4px;}
+.hero-cap{font-size:13px;color:rgba(255,255,255,.7);margin-top:6px;}
+.hero-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px;}
+.hk{background:rgba(255,255,255,.08);border-radius:10px;padding:8px 8px 7px;}
+.hk .num{font-size:20px;font-weight:600;line-height:1;}
+.hk .num span{font-size:13px;color:rgba(255,255,255,.45);font-weight:500;}
+.hk .lbl{font-size:10px;color:rgba(255,255,255,.6);margin-top:4px;display:flex;align-items:center;gap:5px;}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.dot.v{background:var(--v);} .dot.e{background:var(--e);} .dot.d{background:var(--d);} .dot.g{background:var(--oro);}
 
-/* ATTENDED BADGE */
-.att-badge { font-size: 10px; font-weight: 600; color: #15803d; background: #dcfce7; border-radius: 10px; padding: 2px 7px; white-space: nowrap; align-self: center; width: 64px; text-align: center; display: inline-block; }
-.att-badge-no { font-size: 10px; font-weight: 600; color: #6b7280; background: #f3f4f6; border-radius: 10px; padding: 2px 7px; white-space: nowrap; align-self: center; width: 64px; text-align: center; display: inline-block; }
+/* TOOLBAR */
+.toolbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);padding:calc(10px + var(--safe-top)) 16px 10px;border-bottom:1px solid var(--line);}
+.tb-row{display:flex;gap:8px;align-items:center;}
+.seg{display:flex;background:var(--line);border-radius:10px;padding:2px;flex:1;}
+.seg button{flex:1;padding:7px 0;font-size:13px;font-weight:600;color:var(--text-2);border-radius:8px;transition:all .15s;}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+.search-btn{width:36px;height:36px;border-radius:10px;background:var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-2);}
+.search-btn.on{background:var(--azul);color:var(--oro);}
+.search{display:none;margin-top:8px;}
+.search.open{display:block;}
+.search input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:16px;outline:none;}
+.search input:focus{border-color:var(--azul-2);}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px -16px 0;padding:0 16px;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:500;color:var(--text-2);display:flex;align-items:center;gap:6px;}
+.chip.on{background:var(--azul);border-color:var(--azul);color:#fff;}
+.chip.on .dot{box-shadow:0 0 0 2px rgba(255,255,255,.25);}
 
-/* HEADER ROW with badge */
-.match-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.match-header-left { flex: 1; }
-.match-header-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+/* YEAR */
+.year{margin:14px 12px 0;background:var(--surface);border-radius:16px;overflow:hidden;border:1px solid var(--line);}
+.year-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;}
+.year-num{font-family:var(--num);font-size:28px;font-weight:700;line-height:1;}
+.year-info{flex:1;min-width:0;}
+.year-line{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:6px;}
+.year-line b{color:var(--text);font-weight:600;}
+.wdl{display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--line);gap:2px;}
+.wdl i{display:block;height:100%;}
+.wdl .v{background:var(--v);} .wdl .e{background:var(--e);} .wdl .d{background:var(--d);}
+.chev{color:var(--text-3);transition:transform .2s;flex-shrink:0;}
+.year.closed .chev{transform:rotate(-90deg);}
+.year.closed .year-body{display:none;}
+.tchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 16px 12px;}
+.tchips::-webkit-scrollbar{display:none;}
+.tchip{flex-shrink:0;padding:4px 10px;border-radius:999px;background:var(--bg);font-size:11px;font-weight:500;color:var(--text-2);}
+.tchip.on{background:var(--oro);color:var(--azul);}
 
+/* MATCH */
+.match{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid var(--line);cursor:pointer;}
+.match:active{background:var(--bg);}
+.stub{width:42px;flex-shrink:0;text-align:center;border-radius:9px;padding:5px 0 4px;border:1.5px dashed var(--line);color:var(--text-3);}
+.stub b{display:block;font-family:var(--num);font-size:20px;font-weight:700;line-height:1;}
+.stub span{display:block;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.match.fui .stub{background:var(--oro);border:1.5px solid var(--oro);color:var(--azul);}
+.mid{flex:1;min-width:0;}
+.rival{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.meta{font-size:12px;color:var(--text-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.meta .alt{color:var(--azul-2);font-weight:500;}
+@media (prefers-color-scheme:dark){.meta .alt{color:#7EA2FF;}}
+.match.nofui .rival{color:var(--text-2);font-weight:500;}
+.score{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.score .num{font-size:24px;font-weight:700;line-height:1;}
+.match.nofui .score .num{color:var(--text-3);font-weight:600;}
+.res{width:20px;height:20px;border-radius:6px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#fff;}
+.res.g{background:var(--v);} .res.e{background:var(--e);} .res.p{background:var(--d);}
+.match.nofui .res{opacity:.45;}
+.detail{padding:0 16px 14px 70px;font-size:13px;}
+.drow{display:flex;gap:10px;padding:5px 0;border-top:1px dashed var(--line);}
+.drow:first-child{border-top:none;}
+.dl{width:64px;flex-shrink:0;color:var(--text-3);font-size:12px;padding-top:1px;}
+.dv{flex:1;color:var(--text);line-height:1.4;}
+.gl{display:block;}
+.gl.rv{color:var(--text-2);}
+.empty{text-align:center;padding:60px 20px;color:var(--text-3);font-size:14px;}
 
-/* ATTENDANCE STAT BAR */
-.attendance-stat{background:rgba(255,255,255,0.08);border-radius:8px;margin-top:8px;padding:6px 16px;text-align:center;font-size:11px;color:rgba(255,255,255,0.7);display:none;}
-.attendance-stat span{color:#4ade80;font-weight:700;}
+/* PANELS (stats / goleadores) */
+.panel{margin:14px 12px 0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;}
+.panel h2{font-size:13px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 8px;}
+.kgrid .num{font-size:30px;font-weight:700;line-height:1;}
+.kgrid .lbl{font-size:11px;color:var(--text-3);margin-top:3px;display:flex;align-items:center;gap:5px;}
+.bars{display:flex;align-items:flex-end;gap:5px;height:140px;padding-top:18px;}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative;}
+.bar .track{width:100%;background:var(--line);border-radius:5px 5px 2px 2px;position:relative;display:flex;align-items:flex-end;}
+.bar .fill{width:100%;background:var(--oro);border-radius:5px 5px 2px 2px;}
+.bar .top{font-family:var(--num);font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:3px;}
+.bar .yr{font-family:var(--num);font-size:11px;color:var(--text-3);margin-top:5px;}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--text-3);margin-top:10px;}
+.legend span{display:flex;align-items:center;gap:5px;}
+.sq{width:9px;height:9px;border-radius:2px;display:inline-block;}
+.streaks{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.streak{background:var(--bg);border-radius:12px;padding:12px;}
+.streak .num{font-size:34px;font-weight:700;line-height:1;}
+.streak .lbl{font-size:12px;color:var(--text-2);margin-top:2px;}
+.streak .sub{font-size:11px;color:var(--text-3);margin-top:6px;line-height:1.35;}
+.list-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);}
+.list-row:first-of-type{border-top:none;}
+.lr-rank{width:22px;font-family:var(--num);font-size:15px;font-weight:600;color:var(--text-3);text-align:right;flex-shrink:0;}
+.lr-main{flex:1;min-width:0;}
+.lr-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lr-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
+.lr-bar{height:5px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden;}
+.lr-bar i{display:block;height:100%;background:var(--oro);border-radius:3px;}
+.lr-val{text-align:right;flex-shrink:0;}
+.lr-val .num{font-size:22px;font-weight:700;line-height:1;}
+.lr-val .num span{font-size:14px;color:var(--text-3);font-weight:500;}
+.lr-val small{display:block;font-size:10px;color:var(--text-3);margin-top:2px;}
+.more{width:100%;padding:12px 0 2px;font-size:13px;font-weight:600;color:var(--azul-2);}
+@media (prefers-color-scheme:dark){.more{color:#7EA2FF;}}
+.page-title{padding:calc(18px + var(--safe-top)) 20px 4px;}
+.page-title h2{font-size:26px;font-weight:700;}
+.page-title p{font-size:13px;color:var(--text-3);margin-top:2px;}
 
-
-
+/* TAB BAR */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);border-top:1px solid var(--line);padding-bottom:var(--safe-bottom);}
+.tabbar-in{max-width:560px;margin:0 auto;display:flex;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 7px;font-size:10px;font-weight:600;color:var(--text-3);}
+.tab svg{width:22px;height:22px;}
+.tab.on{color:var(--azul);}
+@media (prefers-color-scheme:dark){.tab.on{color:var(--oro);}}
+.view{display:none;} .view.on{display:block;}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="header-top">
-      <img src="escudo.svg" class="escudo" alt="Escudo Boca Juniors">
+
+<!-- PARTIDOS -->
+<section class="view on" id="v-partidos">
+  <header class="hero">
+    <div class="brand">
+      <img src="escudo.svg" alt="Boca Juniors">
+      <div><h1>Mi Bombonera</h1><p id="rango">Partidos de local</p></div>
+    </div>
+    <div class="hero-main">
+      <div class="ring">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="43" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="9"/><circle id="ring-arc" cx="50" cy="50" r="43" fill="none" stroke="#F5C518" stroke-width="9" stroke-linecap="round" stroke-dasharray="270.2" stroke-dashoffset="270.2"/></svg>
+        <div class="pct"><b class="num" id="h-pct">0%</b><small>asistencia</small></div>
+      </div>
       <div>
-        <h1>Mi Bombonera</h1>
-        <p>Partidos en La Bombonera · 2013–2026</p>
+        <div class="hero-big" id="h-fui">0<span>/ 0</span></div>
+        <div class="hero-cap">partidos en la cancha</div>
       </div>
     </div>
-    <div class="stats-mode-toggle">
-      <button class="mode-btn active" id="mode-boca" onclick="setStatsMode('boca')">Total</button>
-      <button class="mode-btn" id="mode-yo" onclick="setStatsMode('yo')">Mi asistencia</button>
+    <div class="hero-row" id="hero-row"></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tb-row">
+      <div class="seg" id="seg">
+        <button data-att="todos" class="on">Todos</button>
+        <button data-att="fui">Fui</button>
+        <button data-att="nofui">No fui</button>
+      </div>
+      <button class="search-btn" id="search-btn" aria-label="Buscar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
     </div>
-    <div class="stats-bar">
-      <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label" id="lbl-total">Partidos</div></div>
-      <div class="stat"><div class="stat-num" id="s-victorias">0</div><div class="stat-label" id="lbl-victorias">Victorias</div></div>
-      <div class="stat"><div class="stat-num" id="s-empates">0</div><div class="stat-label" id="lbl-empates">Empates</div></div>
-      <div class="stat"><div class="stat-num" id="s-derrotas">0</div><div class="stat-label" id="lbl-derrotas">Derrotas</div></div>
-      <div class="stat"><div class="stat-num" id="s-goles-boca">0</div><div class="stat-label">Goles</div></div>
-      <div class="stat"><div class="stat-num" id="s-goles-rival">0</div><div class="stat-label">En contra</div></div>
-    </div>
-    <div id="attendance-stat" class="attendance-stat"></div>
+    <div class="search" id="search"><input id="q" type="search" placeholder="Rival, torneo o año" autocomplete="off"></div>
+    <div class="chips" id="chips"></div>
   </div>
 
-  <div class="filters">
-    <button class="filter-btn active" onclick="setFilter('todos')">Todos</button>
-    <button class="filter-btn" onclick="setFilter('fui')">Fui</button>
-    <button class="filter-btn" onclick="setFilter('nofui')">No fui</button>
-    <button class="filter-btn" onclick="setFilter('victorias')">Victorias</button>
-    <button class="filter-btn" onclick="setFilter('empates')">Empates</button>
-    <button class="filter-btn" onclick="setFilter('derrotas')">Derrotas</button>
-    <button class="filter-btn" onclick="setFilter('superclasico')">Superclásico</button>
-    <button class="filter-btn" onclick="setFilter('clasicos')">Clásicos</button>
-    <button class="filter-btn" onclick="setFilter('libertadores')">Libertadores</button>
-    <button class="filter-btn" onclick="setFilter('sudamericana')">Sudamericana</button>
-    <button class="filter-btn" onclick="showGoleadores()">Goleadores</button>
-  </div>
-  <div class="search-wrap">
-    <input type="text" id="search-input" placeholder="🔍  Buscar rival, torneo, año..." oninput="renderAll()"
-      style="width:100%;padding:8px 14px;border:1px solid #d1d5db;border-radius:20px;font-size:14px;outline:none;background:#f9fafb;color:#111827;">
-    <div id="active-filter-chip" style="display:none;margin-top:8px;align-items:center;gap:6px;">
-      <span style="font-size:12px;color:#6b7280;">Filtro:</span>
-      <span id="active-filter-label" style="font-size:12px;font-weight:600;color:#1a3a6b;background:#e8eef7;border-radius:20px;padding:3px 10px;"></span>
-      <button onclick="setFilter('todos')" style="font-size:11px;color:#9ca3af;background:none;border:none;cursor:pointer;padding:0 2px;">✕ quitar</button>
+  <div id="list"></div>
+</section>
+
+<!-- ESTADÍSTICAS -->
+<section class="view" id="v-stats">
+  <div class="page-title"><h2>Estadísticas</h2><p id="stats-sub"></p></div>
+  <div id="stats"></div>
+</section>
+
+<!-- GOLEADORES -->
+<section class="view" id="v-goles">
+  <div class="page-title"><h2>Goleadores</h2><p>Goles de Boca en la Bombonera · dorado = los que viste</p></div>
+  <div class="toolbar" style="top:0;border-bottom:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding-top:8px;">
+    <div class="seg" id="seg-gol">
+      <button data-sort="total" class="on">Más goles</button>
+      <button data-sort="vi">Más vistos</button>
     </div>
   </div>
+  <div id="goles"></div>
+</section>
 
-  <div id="matches-container"></div>
 </div>
 
-
+<nav class="tabbar"><div class="tabbar-in">
+  <button class="tab on" data-view="partidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Partidos</button>
+  <button class="tab" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>Estadísticas</button>
+  <button class="tab" data-view="goles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 4.5h-5L8 10z"/></svg>Goleadores</button>
+</div></nav>
 
 <script>
 
@@ -489,328 +549,277 @@ MATCHES.forEach((m,i) => { m._id = m.date + '-' + m.rival.replace(/[^a-zA-Z0-9á
 
 const LIBERTADORES = ["Copa Libertadores 2013","Copa Libertadores 2015","Copa Libertadores 2016","Copa Libertadores 2018","Copa Libertadores 2019","Copa Libertadores 2022","Copa Libertadores 2023","Copa Libertadores 2025","Copa Libertadores 2026"];
 const SUDAMERICANA = ["Copa Sudamericana 2014","Copa Sudamericana 2024","Copa Sudamericana 2026"];
+const CLASICOS = ['River','Racing','Independiente','San Lorenzo'];
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
-let activeFilter = 'todos';
-let expandedId = null;
-let statsMode = 'boca';
+const fui = m => m.asistio !== false;
+const byDateDesc = (a,b) => b.date.localeCompare(a.date);
 
-// Initialize attended from inline asistio field on each match
-let attended = {};
-MATCHES.forEach(m => { attended[m._id] = m.asistio !== false; });
+let att = 'todos', cat = null, q = '', expandedId = null, golSort = 'total', golAll = false;
+const yearTorneo = {};
+const years = [...new Set(MATCHES.map(m => m.year))].sort((a,b) => b - a);
+const openYears = new Set([String(years[0])]);
 
+const CATS = [
+  {k:'v', label:'Victorias', dot:'v', fn:m => m.res === 'G'},
+  {k:'e', label:'Empates', dot:'e', fn:m => m.res === 'E'},
+  {k:'d', label:'Derrotas', dot:'d', fn:m => m.res === 'P'},
+  {k:'super', label:'Superclásico', fn:m => m.rival === 'River'},
+  {k:'clasicos', label:'Clásicos', fn:m => CLASICOS.includes(m.rival)},
+  {k:'liber', label:'Libertadores', fn:m => LIBERTADORES.includes(m.torneo)},
+  {k:'suda', label:'Sudamericana', fn:m => SUDAMERICANA.includes(m.torneo)},
+];
 
-// ── STATS MODE ──────────────────────────────────────────
-function setStatsMode(mode) {
-  statsMode = mode;
-  document.getElementById('mode-boca').classList.toggle('active', mode === 'boca');
-  document.getElementById('mode-yo').classList.toggle('active', mode === 'yo');
-  renderStats();
-  renderAll();
+// ── helpers ──────────────────────────────────────────
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function shortTorneo(t){
+  return t.replace(/\s+\d{4}(\/\d{4})?$/,'').replace(/^Torneo\s+/,'').replace(/^Copa (Libertadores|Sudamericana)$/,'$1');
 }
-
-function parseGoals(goleadoresStr) {
-  // Returns {boca: number, rival: number, scorers: [{name, count}]}
-  if (!goleadoresStr || goleadoresStr === '-') return {boca:0, rival:0, scorers:[]};
-  const parts = goleadoresStr.split(' / ');
-  const bocaPart = parts[0] || '';
-  const rivalPart = parts[1] || '';
-  const countGoals = str => {
-    if (!str || str.trim() === '-') return 0;
-    // Each goal is separated by ", " — count occurrences of "(" which mark each goal's minute
-    return (str.match(/\(/g) || []).length;
-  };
-  // Extract scorer names from Boca side for the goleadores table
+function parseGoals(str) {
+  if (!str || str === '-') return {boca:0, rival:0, scorers:[], bocaTxt:'', rivalTxt:''};
+  const [bocaPart = '', rivalPart = ''] = str.split(' / ');
+  const count = s => (!s || s.trim() === '-') ? 0 : (s.match(/\(/g) || []).length;
   const scorers = [];
   if (bocaPart && bocaPart.trim() !== '-') {
     bocaPart.split(', ').forEach(g => {
-      // Format: "Nombre (min')" or "Nombre -mod- (min')"
-      const match = g.match(/^([^(-]+)/);
-      if (match) {
-        const raw = match[1].trim();
-        // Remove modifiers like -cab-, -pen-, -TL-, -eg-
-        const name = raw.replace(/-[a-záéíóúñ]+(-\s*$)?/gi,'').trim();
-        if (name) scorers.push(name);
-      }
+      const mm = g.match(/^([^(-]+)/);
+      if (mm) { const name = mm[1].trim().replace(/-[a-záéíóúñ]+(-\s*$)?/gi,'').trim(); if (name) scorers.push(name); }
     });
   }
-  return {boca: countGoals(bocaPart), rival: countGoals(rivalPart), scorers};
+  return {boca:count(bocaPart), rival:count(rivalPart), scorers, bocaTxt:bocaPart.trim(), rivalTxt:rivalPart.trim()};
 }
+function prettyGoals(txt){
+  if (!txt || txt === '-') return '—';
+  return esc(txt).replace(/-pen-/g,'(p)').replace(/-cab-/g,'(c)').replace(/-TL-/g,'(tl)').replace(/-eg-/g,'(ec)');
+}
+function wdlBar(list){
+  const g = list.filter(m=>m.res==='G').length, e = list.filter(m=>m.res==='E').length, p = list.filter(m=>m.res==='P').length;
+  const t = g+e+p || 1;
+  return `<div class="wdl">${g?`<i class="v" style="width:${g/t*100}%"></i>`:''}${e?`<i class="e" style="width:${e/t*100}%"></i>`:''}${p?`<i class="d" style="width:${p/t*100}%"></i>`:''}</div>`;
+}
+const chevron = '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
 
-function buildGoleadoresTable(matchSet) {
-  const tally = {};
-  matchSet.forEach(m => {
-    const {scorers} = parseGoals(m.goleadores);
-    scorers.forEach(name => { tally[name] = (tally[name]||0) + 1; });
+// ── HERO ─────────────────────────────────────────────
+function renderHero(){
+  const total = MATCHES.length, mine = MATCHES.filter(fui);
+  const pct = Math.round(mine.length / total * 100);
+  document.getElementById('rango').textContent = `Partidos de local · ${Math.min(...years)}–${Math.max(...years)}`;
+  document.getElementById('h-pct').textContent = pct + '%';
+  document.getElementById('h-fui').innerHTML = `${mine.length}<span>/ ${total}</span>`;
+  const C = 270.2;
+  requestAnimationFrame(() => {
+    const arc = document.getElementById('ring-arc');
+    arc.style.transition = 'stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)';
+    arc.style.strokeDashoffset = C * (1 - mine.length / total);
   });
-  return Object.entries(tally).sort((a,b)=>b[1]-a[1]);
+  const cnt = (l,r) => l.filter(m => m.res === r).length;
+  let golesVi = 0; mine.forEach(m => golesVi += parseGoals(m.goleadores).boca);
+  const k = (n, of, lbl, dot) => `<div class="hk"><div class="num">${n}<span>/${of}</span></div><div class="lbl"><i class="dot ${dot}"></i>${lbl}</div></div>`;
+  let golesTot = 0; MATCHES.forEach(m => golesTot += parseGoals(m.goleadores).boca);
+  document.getElementById('hero-row').innerHTML =
+    k(cnt(mine,'G'), cnt(MATCHES,'G'), 'Victorias', 'v') +
+    k(cnt(mine,'E'), cnt(MATCHES,'E'), 'Empates', 'e') +
+    k(cnt(mine,'P'), cnt(MATCHES,'P'), 'Derrotas', 'd') +
+    k(golesVi, golesTot, 'Goles', 'g');
 }
 
-function renderStats() {
-  const allG = MATCHES.filter(m => m.res === 'G').length;
-  const allE = MATCHES.filter(m => m.res === 'E').length;
-  const allP = MATCHES.filter(m => m.res === 'P').length;
-  const allTotal = MATCHES.length;
-
-  let totalBocaGoals = 0, totalRivalGoals = 0;
-  MATCHES.forEach(m => {
-    const {boca, rival} = parseGoals(m.goleadores);
-    totalBocaGoals += boca; totalRivalGoals += rival;
-  });
-
-  if (statsMode === 'boca') {
-    document.getElementById('s-total').textContent = allTotal;
-    document.getElementById('s-victorias').textContent = allG;
-    document.getElementById('s-empates').textContent = allE;
-    document.getElementById('s-derrotas').textContent = allP;
-    document.getElementById('lbl-total').textContent = 'Partidos';
-    document.getElementById('lbl-victorias').textContent = 'Victorias';
-    document.getElementById('lbl-empates').textContent = 'Empates';
-    document.getElementById('lbl-derrotas').textContent = 'Derrotas';
-    document.getElementById('s-goles-boca').textContent = totalBocaGoals;
-    document.getElementById('s-goles-rival').textContent = totalRivalGoals;
-    document.getElementById('attendance-stat').style.display = 'none';
-  } else {
-    const myMs = MATCHES.filter(m => attended[m._id]);
-    const myTotal = myMs.length;
-    const pct = allTotal > 0 ? Math.round(myTotal / allTotal * 100) : 0;
-    const myG = myMs.filter(m => m.res === 'G').length;
-    const myE = myMs.filter(m => m.res === 'E').length;
-    const myP = myMs.filter(m => m.res === 'P').length;
-    let myBocaGoals = 0, myRivalGoals = 0;
-    myMs.forEach(m => {
-      const {boca, rival} = parseGoals(m.goleadores);
-      myBocaGoals += boca; myRivalGoals += rival;
-    });
-    document.getElementById('s-total').textContent = myTotal + '/' + allTotal;
-    document.getElementById('s-victorias').textContent = myG + '/' + allG;
-    document.getElementById('s-empates').textContent = myE + '/' + allE;
-    document.getElementById('s-derrotas').textContent = myP + '/' + allP;
-    document.getElementById('lbl-total').textContent = pct + '% asistencia';
-    document.getElementById('lbl-victorias').textContent = 'V que vi';
-    document.getElementById('lbl-empates').textContent = 'E que vi';
-    document.getElementById('lbl-derrotas').textContent = 'D que vi';
-    document.getElementById('s-goles-boca').textContent = myBocaGoals + '/' + totalBocaGoals;
-    document.getElementById('s-goles-rival').textContent = myRivalGoals + '/' + totalRivalGoals;
-    const pctG = allG > 0 ? Math.round(myG/allG*100) : 0;
-    const pctE = allE > 0 ? Math.round(myE/allE*100) : 0;
-    const pctP = allP > 0 ? Math.round(myP/allP*100) : 0;
-    const attEl = document.getElementById('attendance-stat');
-    attEl.style.display = 'block';
-    attEl.innerHTML = 'Vi el <span>' + pctG + '%</span> de las victorias · <span>' + pctE + '%</span> de los empates · <span>' + pctP + '%</span> de las derrotas';
-  }
+// ── FILTERS ──────────────────────────────────────────
+function renderChips(){
+  document.getElementById('chips').innerHTML = CATS.map(c =>
+    `<button class="chip${cat===c.k?' on':''}" data-cat="${c.k}">${c.dot?`<i class="dot ${c.dot}"></i>`:''}${c.label}</button>`).join('');
 }
-
-function setFilter(f) {
-  activeFilter = f;
-  const labels = {todos:'Todos',fui:'Fui',nofui:'No fui',victorias:'Victorias',empates:'Empates',derrotas:'Derrotas',superclasico:'Superclásico',clasicos:'Clásicos',libertadores:'Libertadores',sudamericana:'Sudamericana'};
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.trim() === labels[f]);
-  });
-  const chip = document.getElementById('active-filter-chip');
-  if (f !== 'todos') {
-    chip.style.display = 'flex';
-    document.getElementById('active-filter-label').textContent = labels[f];
-  } else {
-    chip.style.display = 'none';
-  }
-  renderAll();
-}
-
-function getFiltered() {
-  const q = (document.getElementById('search-input') ? document.getElementById('search-input').value : '').toLowerCase().trim();
-  const CLASICOS_RIVALS = ['River','Racing','Independiente','San Lorenzo'];
+function filtered(){
+  const qq = q.toLowerCase().trim();
+  const cf = cat ? CATS.find(c => c.k === cat).fn : null;
   return MATCHES.filter(m => {
-    if (q && !m.rival.toLowerCase().includes(q) && !m.torneo.toLowerCase().includes(q) && !String(m.year).includes(q)) return false;
-    if (activeFilter === 'fui') return attended[m._id];
-    if (activeFilter === 'nofui') return !attended[m._id];
-    if (activeFilter === 'victorias') return m.res === 'G';
-    if (activeFilter === 'empates') return m.res === 'E';
-    if (activeFilter === 'derrotas') return m.res === 'P';
-    if (activeFilter === 'superclasico') return m.rival === 'River';
-    if (activeFilter === 'clasicos') return CLASICOS_RIVALS.includes(m.rival);
-    if (activeFilter === 'libertadores') return LIBERTADORES.includes(m.torneo);
-    if (activeFilter === 'sudamericana') return SUDAMERICANA.includes(m.torneo);
+    if (att === 'fui' && !fui(m)) return false;
+    if (att === 'nofui' && fui(m)) return false;
+    if (cf && !cf(m)) return false;
+    if (qq && !m.rival.toLowerCase().includes(qq) && !m.torneo.toLowerCase().includes(qq) && !String(m.year).includes(qq)) return false;
     return true;
   });
 }
 
-function formatDate(d) {
-  const dt = new Date(d + 'T12:00:00');
-  return dt.toLocaleDateString('es-AR', {weekday:'short', day:'numeric', month:'long', year:'numeric'});
-}
-
-function renderAll() {
-  renderStats();
-  const filtered = getFiltered();
-  const container = document.getElementById('matches-container');
-
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div>No hay partidos con este filtro</div>';
-    return;
+// ── LIST ─────────────────────────────────────────────
+function matchHTML(m){
+  const d = new Date(m.date + 'T12:00:00');
+  const isFui = fui(m), isExp = expandedId === m._id;
+  const resL = m.res === 'G' ? 'V' : m.res === 'E' ? 'E' : 'D';
+  const score = m.score.replace('-', '–');
+  const meta = `${esc(shortTorneo(m.torneo))} · ${esc(m.fecha)}${m.cancha_alt ? ` · <span class="alt">en ${esc(m.cancha_alt)}</span>` : ''}`;
+  let html = `<div class="match ${isFui ? 'fui' : 'nofui'}" data-id="${m._id}">
+    <div class="stub"><b>${d.getDate()}</b><span>${MESES[d.getMonth()]}</span></div>
+    <div class="mid"><div class="rival">${esc(m.rival)}</div><div class="meta">${meta}</div></div>
+    <div class="score"><span class="num">${score}</span><span class="res ${m.res.toLowerCase()}">${resL}</span></div>
+  </div>`;
+  if (isExp) {
+    const g = parseGoals(m.goleadores);
+    const fecha = d.toLocaleDateString('es-AR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    html += `<div class="detail">
+      <div class="drow"><span class="dl">Fecha</span><span class="dv">${fecha}</span></div>
+      <div class="drow"><span class="dl">Goles</span><span class="dv"><span class="gl">Boca: ${prettyGoals(g.bocaTxt)}</span><span class="gl rv">${esc(m.rival)}: ${prettyGoals(g.rivalTxt)}</span></span></div>
+      <div class="drow"><span class="dl">DT Boca</span><span class="dv">${esc(m.dt_boca || 'N/D')}</span></div>
+      <div class="drow"><span class="dl">DT rival</span><span class="dv">${esc(m.dt_rival || 'N/D')}</span></div>
+      ${m.nota ? `<div class="drow"><span class="dl">Memo</span><span class="dv" style="font-style:italic;color:var(--text-2)">${esc(m.nota)}</span></div>` : ''}
+      <div class="drow"><span class="dl">Yo</span><span class="dv">${isFui ? 'Estuve en la cancha' : 'No fui'}</span></div>
+    </div>`;
   }
+  return html;
+}
 
+function renderList(){
+  const list = filtered();
+  const box = document.getElementById('list');
+  if (!list.length) { box.innerHTML = '<div class="empty">No hay partidos con estos filtros</div>'; return; }
+  const forceOpen = !!(q.trim() || cat || att !== 'todos');
   const byYear = {};
-  filtered.forEach(m => {
-    if (!byYear[m.year]) byYear[m.year] = [];
-    byYear[m.year].push(m);
-  });
-
-  let html = '';
-  Object.keys(byYear).sort((a,b)=>b-a).forEach(yr => {
-    const yMs = byYear[yr].sort((a,b)=>new Date(b.date)-new Date(a.date));
-
-    // Tournament filter buttons for this year
-    const torneos = [...new Set(yMs.map(m=>m.torneo))];
-    const activeTorneo = yearTorneoFilter[yr] || null;
-
-    // Apply per-year torneo filter
-    const yMsFiltered = activeTorneo ? yMs.filter(m => m.torneo === activeTorneo) : yMs;
-
-    const yG = yMsFiltered.filter(m=>m.res==='G').length;
-    const yE = yMsFiltered.filter(m=>m.res==='E').length;
-    const yP = yMsFiltered.filter(m=>m.res==='P').length;
-    const yAtt = yMsFiltered.filter(m => attended[m._id]).length;
-    const yAttPct = yMsFiltered.length > 0 ? Math.round(yAtt / yMsFiltered.length * 100) : 0;
-    const isCollapsed = collapsedYears.has(String(yr));
-
-    html += `<div class="year-header${isCollapsed?' collapsed':''}" onclick="toggleYear('${yr}')">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:15px;font-weight:600;color:#111827;">${yr}</span>
-        <span class="year-chevron">▼</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-        ${statsMode === 'yo' ? `<span class="year-att">${yAtt}/${yMsFiltered.length}<span class="att-pct"> ${yAttPct}%</span></span>` : ''}
-        <div class="year-balance"><span style="color:#15803d;font-weight:600">${yG}G</span><span style="color:#854d0e;font-weight:600">${yE}E</span><span style="color:#b91c1c;font-weight:600">${yP}P</span></div>
-        <span class="year-badge">${yMsFiltered.length} partidos</span>
-      </div>
-    </div>
-    <div id="year-${yr}" style="display:${isCollapsed?'none':'block'}">`;
-
-    if (!isCollapsed && torneos.length > 1) {
-      html += `<div class="year-torneo-filters">`;
-      torneos.forEach(t => {
-        const isActive = activeTorneo === t;
-        const tEsc = t.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-        html += `<button class="year-torneo-btn${isActive?' active':''}" onclick="setYearTorneo('${yr}','${tEsc}',event)">${t}</button>`;
-      });
-      html += `</div>`;
-    }
-
-    yMsFiltered.forEach(m => {
-      const isExp = expandedId === m._id;
-      const ex = m.dt_boca ? { dt_boca: m.dt_boca, dt_rival: m.dt_rival || 'N/D', goleadores: m.goleadores || '-', nota: m.nota || '' } : { dt_boca: 'Próximamente', dt_rival: 'Próximamente', goleadores: 'Próximamente' };
-      const resLabel = m.res==='G'?'V':m.res==='E'?'E':'D';
-      const isAtt = attended[m._id];
-
-      html += `<div class="match-card ${isAtt ? 'attended-' + m.res.toLowerCase() : 'not-attended'}" onclick="handleCardClick('${m._id}')">
-        <div class="match-body">
-          <div class="match-header">
-            <span class="match-rival">Boca vs ${m.rival}${m.cancha_alt ? '<span class="cancha-alt-badge" title="Jugado en ' + m.cancha_alt + '">★ ' + m.cancha_alt + '</span>' : ''}</span>
-            <div class="match-header-right">
-              ${isAtt ? `<span class="att-badge">✓ Fui</span>` : `<span class="att-badge-no">✗ No fui</span>`}
-              <span class="score-badge score-${m.res.toLowerCase()}">${m.score} ${resLabel}</span>
-            </div>
-          </div>
-          <div class="match-meta">${formatDate(m.date)}</div>
-          <div class="match-torneo">${m.torneo} · ${m.fecha}</div>
-          ${isExp ? `<div class="match-detail">
-              <div class="match-detail-row"><span class="detail-label">DT Boca</span><span class="detail-val">${ex.dt_boca||'N/D'}</span></div>
-              <div class="match-detail-row"><span class="detail-label">DT Rival</span><span class="detail-val">${ex.dt_rival||'N/D'}</span></div>
-              <div class="match-detail-row"><span class="detail-label">Goles</span><span class="detail-val">${ex.goleadores||'-'}</span></div>
-              ${m.cancha_alt?`<div class="match-detail-row"><span class="detail-label">Cancha</span><span class="detail-val" style="color:#7c3aed;">${m.cancha_alt}</span></div>`:''}
-              ${ex.nota?`<div class="match-detail-row"><span class="detail-label">Memo</span><span class="detail-val memo-text">${ex.nota}</span></div>`:''}
-          </div>` : ''}
+  list.forEach(m => (byYear[m.year] = byYear[m.year] || []).push(m));
+  box.innerHTML = Object.keys(byYear).sort((a,b) => b - a).map(yr => {
+    const all = byYear[yr].sort(byDateDesc);
+    const torneos = [...new Set(all.map(m => m.torneo))];
+    const t = yearTorneo[yr];
+    const ms = t ? all.filter(m => m.torneo === t) : all;
+    const n = ms.filter(fui).length;
+    const open = openYears.has(yr) || (forceOpen && Object.keys(byYear).length <= 3);
+    return `<div class="year${open ? '' : ' closed'}">
+      <div class="year-head" data-year="${yr}">
+        <div class="year-num">${yr}</div>
+        <div class="year-info">
+          <div class="year-line"><span>Fui a <b>${n}</b> de ${ms.length}</span><span>${ms.filter(m=>m.res==='G').length}V · ${ms.filter(m=>m.res==='E').length}E · ${ms.filter(m=>m.res==='P').length}D</span></div>
+          ${wdlBar(ms)}
         </div>
-      </div>`;
-    });
-    html += '</div>';
-  });
-
-  container.innerHTML = html;
+        ${chevron}
+      </div>
+      <div class="year-body">
+        ${torneos.length > 1 ? `<div class="tchips">${torneos.map(tt => `<button class="tchip${t === tt ? ' on' : ''}" data-yr="${yr}" data-t="${esc(tt)}">${esc(shortTorneo(tt))}</button>`).join('')}</div>` : ''}
+        ${ms.map(matchHTML).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// Collapse all years except the most recent
-const mostRecentYear = String(Math.max(...MATCHES.map(m=>m.year)));
-const collapsedYears = new Set(MATCHES.map(m=>String(m.year)).filter(y => y !== mostRecentYear));
-const yearTorneoFilter = {};
+// ── STATS ────────────────────────────────────────────
+function renderStats(){
+  const asc = [...MATCHES].sort((a,b) => a.date.localeCompare(b.date));
+  const mine = asc.filter(fui);
+  let gf = 0, gc = 0; MATCHES.forEach(m => { const g = parseGoals(m.goleadores); gf += g.boca; gc += g.rival; });
+  const cnt = r => MATCHES.filter(m => m.res === r).length;
+  document.getElementById('stats-sub').textContent = `${MATCHES.length} partidos de local · ${Math.min(...years)}–${Math.max(...years)}`;
 
-function toggleYear(yr) {
-  if (collapsedYears.has(yr)) collapsedYears.delete(yr);
-  else collapsedYears.add(yr);
-  renderAll();
-}
+  // streaks
+  let best = 0, bestEnd = -1, cur = 0;
+  asc.forEach((m,i) => { if (fui(m)) { cur++; if (cur > best) { best = cur; bestEnd = i; } } else cur = 0; });
+  let now = 0; for (let i = asc.length - 1; i >= 0 && fui(asc[i]); i--) now++;
+  const fmt = m => { const d = new Date(m.date + 'T12:00:00'); return `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`; };
+  const bestRange = best ? `${fmt(asc[bestEnd - best + 1])} → ${fmt(asc[bestEnd])}` : '';
+  let unbeaten = 0, ub = 0; mine.forEach(m => { if (m.res !== 'P') { ub++; unbeaten = Math.max(unbeaten, ub); } else ub = 0; });
 
-function setYearTorneo(yr, torneo, event) {
-  event.stopPropagation();
-  if (yearTorneoFilter[yr] === torneo) delete yearTorneoFilter[yr];
-  else yearTorneoFilter[yr] = torneo;
-  renderAll();
-}
-
-function showGoleadores() {
-  // Reset active filter button visual
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('.filter-btn[onclick="showGoleadores()"]').classList.add('active');
-
-  const allTable = buildGoleadoresTable(MATCHES);
-  const myMs = MATCHES.filter(m => attended[m._id]);
-  const myTable = buildGoleadoresTable(myMs);
-  const myMap = Object.fromEntries(myTable);
-
-  const container = document.getElementById('matches-container');
-  const rows = allTable.slice(0, 50).map(([ name, total ], i) => {
-    const mine = myMap[name] || 0;
-    const bar = total > 0 ? Math.round(mine / total * 100) : 0;
-    return `<tr>
-      <td style="padding:8px 12px;font-size:13px;color:#374151;font-weight:${i<3?'700':'400'}">${i+1}. ${name}</td>
-      <td style="padding:8px 12px;text-align:center;font-size:14px;font-weight:600;color:#1a3a6b;">${total}</td>
-      <td style="padding:8px 12px;text-align:center;font-size:13px;color:#15803d;font-weight:600;">${mine}</td>
-      <td style="padding:8px 16px;">
-        <div style="background:#e5e7eb;border-radius:4px;height:6px;width:100%;">
-          <div style="background:#1a3a6b;border-radius:4px;height:6px;width:${bar}%;"></div>
-        </div>
-      </td>
-    </tr>`;
+  // por año
+  const yAsc = [...years].sort((a,b) => a - b);
+  const maxN = Math.max(...yAsc.map(y => MATCHES.filter(m => m.year === y).length));
+  const bars = yAsc.map(y => {
+    const all = MATCHES.filter(m => m.year === y), f = all.filter(fui).length;
+    return `<div class="bar"><div class="top">${f}</div><div class="track" style="height:${all.length / maxN * 100}%"><div class="fill" style="height:${all.length ? f / all.length * 100 : 0}%"></div></div><div class="yr">'${String(y).slice(2)}</div></div>`;
   }).join('');
 
-  container.innerHTML = `
-    <div style="padding:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <span style="font-size:15px;font-weight:700;color:#111827;">Goleadores de Boca</span>
-        <button onclick="setFilter('todos')" style="font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;">← Volver</button>
-      </div>
-      <div style="font-size:12px;color:#9ca3af;margin-bottom:14px;">Goles en todos los partidos · en verde los que presencié</div>
-      <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;">
-        <thead>
-          <tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb;">
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:600;">Jugador</th>
-            <th style="padding:8px 12px;text-align:center;font-size:11px;color:#9ca3af;font-weight:600;">Total</th>
-            <th style="padding:8px 12px;text-align:center;font-size:11px;color:#9ca3af;font-weight:600;">Vi</th>
-            <th style="padding:8px 16px;text-align:left;font-size:11px;color:#9ca3af;font-weight:600;">% que vi</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>
-      <div style="font-size:11px;color:#d1d5db;text-align:center;margin-top:12px;">Top 50 · ${allTable.length} jugadores en total</div>
-    </div>`;
+  // rivales
+  const riv = {};
+  MATCHES.forEach(m => { const r = riv[m.rival] = riv[m.rival] || {n:0, f:0, g:0, e:0, p:0}; r.n++; if (fui(m)) { r.f++; r[m.res.toLowerCase()]++; } });
+  const rivRows = Object.entries(riv).sort((a,b) => b[1].f - a[1].f || b[1].n - a[1].n).slice(0, 8).map(([name, r], i) =>
+    `<div class="list-row"><div class="lr-rank">${i+1}</div><div class="lr-main"><div class="lr-name">${esc(name)}</div><div class="lr-sub">Viste ${r.g}V · ${r.e}E · ${r.p}D</div></div><div class="lr-val"><div class="num">${r.f}<span>/${r.n}</span></div></div></div>`).join('');
+
+  const clas = CLASICOS.map(c => { const r = riv[c] || {n:0,f:0,g:0,e:0,p:0};
+    return `<div class="list-row"><div class="lr-main"><div class="lr-name">${c === 'River' ? 'River · Superclásico' : c}</div><div class="lr-sub">Viste ${r.g}V · ${r.e}E · ${r.p}D</div><div class="lr-bar"><i style="width:${r.n ? r.f / r.n * 100 : 0}%"></i></div></div><div class="lr-val"><div class="num">${r.f}<span>/${r.n}</span></div><small>fuiste</small></div></div>`; }).join('');
+
+  document.getElementById('stats').innerHTML = `
+    <div class="panel"><h2>Boca de local</h2><div class="kgrid">
+      <div><div class="num">${MATCHES.length}</div><div class="lbl">Partidos</div></div>
+      <div><div class="num">${gf}</div><div class="lbl">Goles a favor</div></div>
+      <div><div class="num">${gc}</div><div class="lbl">Goles en contra</div></div>
+      <div><div class="num">${cnt('G')}</div><div class="lbl"><i class="dot v"></i>Victorias</div></div>
+      <div><div class="num">${cnt('E')}</div><div class="lbl"><i class="dot e"></i>Empates</div></div>
+      <div><div class="num">${cnt('P')}</div><div class="lbl"><i class="dot d"></i>Derrotas</div></div>
+    </div><div style="margin-top:14px">${wdlBar(MATCHES)}</div></div>
+
+    <div class="panel"><h2>Asistencia por año</h2><div class="bars">${bars}</div>
+      <div class="legend"><span><i class="sq" style="background:var(--oro)"></i>Fui</span><span><i class="sq" style="background:var(--line)"></i>Total del año</span></div></div>
+
+    <div class="panel"><h2>Rachas</h2><div class="streaks">
+      <div class="streak"><div class="num">${best}</div><div class="lbl">seguidos en la cancha</div><div class="sub">${bestRange}</div></div>
+      <div class="streak"><div class="num">${now}</div><div class="lbl">racha actual</div><div class="sub">partidos seguidos hasta el último</div></div>
+      <div class="streak"><div class="num">${unbeaten}</div><div class="lbl">sin ver una derrota</div><div class="sub">partidos que fuiste, en fila</div></div>
+      <div class="streak"><div class="num">${mine.length ? fmt(mine[0]).split(' ').pop() : '-'}</div><div class="lbl">primer partido</div><div class="sub">${mine.length ? `${esc(mine[0].rival)} · ${fmt(mine[0])}` : ''}</div></div>
+    </div></div>
+
+    <div class="panel"><h2>Clásicos</h2>${clas}</div>
+    <div class="panel" style="margin-bottom:14px"><h2>Rivales que más viste</h2>${rivRows}</div>`;
 }
 
-
-function handleCardClick(id) {
-  toggleExpand(id);
+// ── GOLEADORES ───────────────────────────────────────
+function renderGoles(){
+  const tally = {};
+  MATCHES.forEach(m => { const f = fui(m); parseGoals(m.goleadores).scorers.forEach(n => { const t = tally[n] = tally[n] || {t:0, v:0}; t.t++; if (f) t.v++; }); });
+  const rows = Object.entries(tally).sort((a,b) => golSort === 'vi' ? b[1].v - a[1].v || b[1].t - a[1].t : b[1].t - a[1].t || b[1].v - a[1].v);
+  const max = rows.length ? Math.max(...rows.map(r => r[1].t)) : 1;
+  const shown = golAll ? rows : rows.slice(0, 25);
+  document.getElementById('goles').innerHTML = `<div class="panel" style="margin-bottom:14px">${shown.map(([n, r], i) => {
+    const main = golSort === 'vi' ? r.v : r.t, other = golSort === 'vi' ? `de ${r.t}` : `viste ${r.v}`;
+    return `<div class="list-row"><div class="lr-rank">${i+1}</div><div class="lr-main"><div class="lr-name">${esc(n)}</div>
+      <div class="lr-bar" style="width:${r.t / max * 100}%"><i style="width:${r.v / r.t * 100}%"></i></div></div>
+      <div class="lr-val"><div class="num">${main}</div><small>${other}</small></div></div>`;
+  }).join('')}${!golAll && rows.length > 25 ? `<button class="more" id="gol-more">Ver los ${rows.length} goleadores</button>` : ''}</div>`;
 }
 
-function toggleExpand(id) {
-  if (expandedId === id) { expandedId = null; renderAll(); return; }
-  expandedId = id;
-  renderAll();
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  renderAll();
+// ── EVENTS ───────────────────────────────────────────
+document.getElementById('seg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  att = b.dataset.att;
+  document.querySelectorAll('#seg button').forEach(x => x.classList.toggle('on', x === b));
+  renderList();
 });
+document.getElementById('chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  cat = cat === b.dataset.cat ? null : b.dataset.cat;
+  renderChips(); renderList();
+});
+document.getElementById('search-btn').addEventListener('click', () => {
+  const s = document.getElementById('search'), btn = document.getElementById('search-btn');
+  const open = s.classList.toggle('open'); btn.classList.toggle('on', open);
+  if (open) document.getElementById('q').focus(); else { q = ''; document.getElementById('q').value = ''; renderList(); }
+});
+document.getElementById('q').addEventListener('input', e => { q = e.target.value; renderList(); });
+document.getElementById('list').addEventListener('click', e => {
+  const yh = e.target.closest('.year-head');
+  if (yh) { const y = yh.dataset.year; openYears.has(y) ? openYears.delete(y) : openYears.add(y); renderList(); return; }
+  const tc = e.target.closest('.tchip');
+  if (tc) { const y = tc.dataset.yr, t = tc.dataset.t; yearTorneo[y] === t ? delete yearTorneo[y] : yearTorneo[y] = t; renderList(); return; }
+  const mc = e.target.closest('.match');
+  if (mc) { expandedId = expandedId === mc.dataset.id ? null : mc.dataset.id; renderList(); }
+});
+document.getElementById('seg-gol').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  golSort = b.dataset.sort;
+  document.querySelectorAll('#seg-gol button').forEach(x => x.classList.toggle('on', x === b));
+  renderGoles();
+});
+document.getElementById('goles').addEventListener('click', e => { if (e.target.id === 'gol-more') { golAll = true; renderGoles(); } });
+
+const VIEWS = {partidos:'v-partidos', stats:'v-stats', goles:'v-goles'};
+function showView(v){
+  if (!VIEWS[v]) v = 'partidos';
+  Object.entries(VIEWS).forEach(([k, id]) => document.getElementById(id).classList.toggle('on', k === v));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.view === v));
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  const v = t.dataset.view;
+  if (location.hash !== '#' + v) location.hash = v === 'partidos' ? '' : v;
+  showView(v);
+}));
+window.addEventListener('hashchange', () => showView(location.hash.slice(1)));
+
+renderHero(); renderChips(); renderList(); renderStats(); renderGoles();
+showView(location.hash.slice(1));
 </script>
 </body>
 </html>
