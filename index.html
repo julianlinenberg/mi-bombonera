@@ -174,7 +174,8 @@ body:not([data-view="partidos"]) .hero{display:none;}
   .app{max-width:none;display:grid;grid-template-columns:340px 1fr;padding-bottom:0;}
   .main > section{max-width:1080px;}
   .side{display:flex;flex-direction:column;position:sticky;top:0;height:100vh;background:var(--azul);overflow-y:auto;}
-  .hero{padding:32px 28px 24px;}
+  .hero{padding:32px 28px 24px;flex-shrink:0;overflow:visible;}
+  .tabbar{flex-shrink:0;}
   .brand img{width:38px;height:46px;}
   .brand h1{font-size:18px;}
   .brand p{font-size:12px;}
@@ -218,6 +219,22 @@ body:not([data-view="partidos"]) .hero{display:none;}
   #goles .list-row:nth-child(2){border-top:none;}
   #goles .more{grid-column:1/-1;}
   #v-goles .toolbar{margin:0;padding:8px 0 0;max-width:360px;}
+}
+@media (min-width:960px) and (max-height:820px){
+  .hero{padding:22px 24px 18px;}
+  .hero-main{flex-direction:row;align-items:center;gap:16px;margin-top:20px;}
+  .ring{width:84px;height:84px;}
+  .ring .pct b{font-size:22px;}
+  .ring .pct small{font-size:8px;}
+  .hero-big{font-size:52px;}
+  .hero-big span{font-size:20px;}
+  .hero-cap{font-size:12px;}
+  .hero-row{margin-top:16px;gap:8px;}
+  .hk{padding:8px 10px;}
+  .hk .num{font-size:21px;}
+  .hk .lbl{font-size:11px;}
+  .tabbar{padding:8px 12px 12px;}
+  .tab{padding:9px 12px;}
 }
 </style>
 </head>
@@ -751,7 +768,7 @@ function renderList(){
       <div class="year-head" data-year="${yr}">
         <div class="year-num">${yr}</div>
         <div class="year-info">
-          <div class="year-line"><span>Fui a <b>${n}</b> de ${ms.length}</span><span>${ms.filter(m=>m.res==='G').length}V · ${ms.filter(m=>m.res==='E').length}E · ${ms.filter(m=>m.res==='P').length}D</span></div>
+          <div class="year-line"><span>${att === 'todos' ? `Fui a <b>${n}</b> de ${ms.length}` : `<b>${ms.length}</b> partido${ms.length === 1 ? '' : 's'}`}</span><span>${ms.filter(m=>m.res==='G').length}V · ${ms.filter(m=>m.res==='E').length}E · ${ms.filter(m=>m.res==='P').length}D</span></div>
           ${wdlBar(ms)}
         </div>
         ${chevron}
