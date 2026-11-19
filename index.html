@@ -32,7 +32,6 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
 
 /* HERO */
 .hero{background:var(--azul);color:#fff;padding:calc(16px + var(--safe-top)) 20px 20px;position:relative;overflow:hidden;}
-.hero::after{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(245,197,24,.07);pointer-events:none;}
 .brand{display:flex;align-items:center;gap:10px;}
 .brand img{width:30px;height:36px;object-fit:contain;}
 .brand h1{font-size:15px;font-weight:600;letter-spacing:.2px;}
@@ -164,13 +163,67 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
 .tab.on{color:var(--azul);}
 @media (prefers-color-scheme:dark){.tab.on{color:var(--oro);}}
 .view{display:none;} .view.on{display:block;}
+
+.side{display:contents;}
+.page-title.desk{display:none;}
+body:not([data-view="partidos"]) .hero{display:none;}
+
+/* DESKTOP */
+@media (min-width:960px){
+  body:not([data-view="partidos"]) .hero{display:block;}
+  .app{max-width:none;display:grid;grid-template-columns:340px 1fr;padding-bottom:0;}
+  .main > section{max-width:1080px;}
+  .side{display:flex;flex-direction:column;position:sticky;top:0;height:100vh;background:var(--azul);overflow-y:auto;}
+  .hero{padding:32px 28px 24px;}
+  .brand img{width:38px;height:46px;}
+  .brand h1{font-size:18px;}
+  .brand p{font-size:12px;}
+  .hero-main{flex-direction:column;align-items:flex-start;gap:18px;margin-top:32px;}
+  .ring{width:120px;height:120px;}
+  .ring .pct b{font-size:32px;}
+  .hero-big{font-size:72px;}
+  .hero-row{grid-template-columns:1fr 1fr;gap:10px;margin-top:24px;}
+  .hk{padding:12px 12px 10px;}
+  .hk .num{font-size:26px;}
+  .hk .lbl{font-size:12px;}
+  .tabbar{position:static;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-top:1px solid rgba(255,255,255,.1);padding:14px 16px 24px;margin-top:auto;}
+  .tabbar-in{flex-direction:column;gap:2px;max-width:none;}
+  .tab{flex-direction:row;justify-content:flex-start;gap:12px;padding:11px 14px;border-radius:10px;font-size:14px;color:rgba(255,255,255,.6);}
+  .tab svg{width:20px;height:20px;}
+  .tab:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .tab.on,.tab.on:hover{background:rgba(245,197,24,.14);color:var(--oro);}
+  .main{min-width:0;padding:0 32px 40px;}
+  .page-title,.page-title.desk{display:block;padding:36px 4px 6px;}
+  .page-title h2{font-size:30px;}
+  .toolbar{top:0;margin:0 -32px;padding:12px 36px;}
+  .tb-row{max-width:520px;}
+  .search.open{max-width:520px;}
+  .chips{margin:10px -36px 0;padding:0 36px;flex-wrap:wrap;overflow:visible;}
+  .year{margin:16px 0 0;}
+  .year-head{padding:16px 22px;}
+  .year-num{font-size:32px;}
+  .match{padding:12px 22px;gap:16px;}
+  .match:hover{background:var(--bg);}
+  .rival{font-size:16px;}
+  .detail{padding:2px 22px 16px 80px;max-width:760px;}
+  .tchips{padding:0 22px 14px;}
+  .panel{margin:16px 0 0;padding:20px;}
+  #stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+  #stats .panel{margin:0;}
+  #stats .panel.wide{grid-column:1/-1;order:3;}
+  #stats .panel.p-rachas{order:2;} #stats .panel.p-clas{order:4;} #stats .panel.p-riv{order:5;}
+  #stats .bars{height:200px;}
+  #v-stats .page-title{padding-bottom:20px;}
+  #goles .panel{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;}
+  #goles .list-row:nth-child(2){border-top:none;}
+  #goles .more{grid-column:1/-1;}
+  #v-goles .toolbar{margin:0;padding:8px 0 0;max-width:360px;}
+}
 </style>
 </head>
 <body>
 <div class="app">
-
-<!-- PARTIDOS -->
-<section class="view on" id="v-partidos">
+<aside class="side">
   <header class="hero">
     <div class="brand">
       <img src="escudo.svg" alt="Boca Juniors">
@@ -188,6 +241,17 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
     </div>
     <div class="hero-row" id="hero-row"></div>
   </header>
+<nav class="tabbar"><div class="tabbar-in">
+  <button class="tab on" data-view="partidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Partidos</button>
+  <button class="tab" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>Estadísticas</button>
+  <button class="tab" data-view="goles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 4.5h-5L8 10z"/></svg>Goleadores</button>
+</div></nav>
+</aside>
+<main class="main">
+
+<!-- PARTIDOS -->
+<section class="view on" id="v-partidos">
+  <div class="page-title desk"><h2>Partidos</h2><p>Tocá un partido para ver goles y técnicos</p></div>
 
   <div class="toolbar">
     <div class="tb-row">
@@ -225,13 +289,9 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
   <div id="goles"></div>
 </section>
 
+</main>
 </div>
 
-<nav class="tabbar"><div class="tabbar-in">
-  <button class="tab on" data-view="partidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Partidos</button>
-  <button class="tab" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>Estadísticas</button>
-  <button class="tab" data-view="goles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 4.5h-5L8 10z"/></svg>Goleadores</button>
-</div></nav>
 
 <script>
 
@@ -661,7 +721,6 @@ function matchHTML(m){
       <div class="drow"><span class="dl">DT Boca</span><span class="dv">${esc(m.dt_boca || 'N/D')}</span></div>
       <div class="drow"><span class="dl">DT rival</span><span class="dv">${esc(m.dt_rival || 'N/D')}</span></div>
       ${m.nota ? `<div class="drow"><span class="dl">Memo</span><span class="dv" style="font-style:italic;color:var(--text-2)">${esc(m.nota)}</span></div>` : ''}
-      <div class="drow"><span class="dl">Yo</span><span class="dv">${isFui ? 'Estuve en la cancha' : 'No fui'}</span></div>
     </div>`;
   }
   return html;
@@ -741,18 +800,18 @@ function renderStats(){
       <div><div class="num">${cnt('P')}</div><div class="lbl"><i class="dot d"></i>Derrotas</div></div>
     </div><div style="margin-top:14px">${wdlBar(MATCHES)}</div></div>
 
-    <div class="panel"><h2>Asistencia por año</h2><div class="bars">${bars}</div>
+    <div class="panel wide"><h2>Asistencia por año</h2><div class="bars">${bars}</div>
       <div class="legend"><span><i class="sq" style="background:var(--oro)"></i>Fui</span><span><i class="sq" style="background:var(--line)"></i>Total del año</span></div></div>
 
-    <div class="panel"><h2>Rachas</h2><div class="streaks">
+    <div class="panel p-rachas"><h2>Rachas</h2><div class="streaks">
       <div class="streak"><div class="num">${best}</div><div class="lbl">seguidos en la cancha</div><div class="sub">${bestRange}</div></div>
       <div class="streak"><div class="num">${now}</div><div class="lbl">racha actual</div><div class="sub">partidos seguidos hasta el último</div></div>
       <div class="streak"><div class="num">${unbeaten}</div><div class="lbl">sin ver una derrota</div><div class="sub">partidos que fuiste, en fila</div></div>
       <div class="streak"><div class="num">${mine.length ? fmt(mine[0]).split(' ').pop() : '-'}</div><div class="lbl">primer partido</div><div class="sub">${mine.length ? `${esc(mine[0].rival)} · ${fmt(mine[0])}` : ''}</div></div>
     </div></div>
 
-    <div class="panel"><h2>Clásicos</h2>${clas}</div>
-    <div class="panel" style="margin-bottom:14px"><h2>Rivales que más viste</h2>${rivRows}</div>`;
+    <div class="panel p-clas"><h2>Clásicos</h2>${clas}</div>
+    <div class="panel p-riv" style="margin-bottom:14px"><h2>Rivales que más viste</h2>${rivRows}</div>`;
 }
 
 // ── GOLEADORES ───────────────────────────────────────
@@ -809,6 +868,7 @@ function showView(v){
   if (!VIEWS[v]) v = 'partidos';
   Object.entries(VIEWS).forEach(([k, id]) => document.getElementById(id).classList.toggle('on', k === v));
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.view === v));
+  document.body.dataset.view = v;
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
