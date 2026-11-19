@@ -652,6 +652,13 @@ function prettyGoals(txt){
   if (!txt || txt === '-') return '—';
   return esc(txt).replace(/-pen-/g,'(p)').replace(/-cab-/g,'(c)').replace(/-TL-/g,'(tl)').replace(/-eg-/g,'(ec)');
 }
+function goalsHTML(g, rival){
+  const has = t => t && t !== '-';
+  const lines = [];
+  if (has(g.bocaTxt)) lines.push(`<span class="gl">Boca: ${prettyGoals(g.bocaTxt)}</span>`);
+  if (has(g.rivalTxt)) lines.push(`<span class="gl rv">${esc(rival)}: ${prettyGoals(g.rivalTxt)}</span>`);
+  return lines.length ? lines.join('') : 'Sin goles';
+}
 function wdlBar(list){
   const g = list.filter(m=>m.res==='G').length, e = list.filter(m=>m.res==='E').length, p = list.filter(m=>m.res==='P').length;
   const t = g+e+p || 1;
@@ -717,7 +724,7 @@ function matchHTML(m){
     const fecha = d.toLocaleDateString('es-AR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
     html += `<div class="detail">
       <div class="drow"><span class="dl">Fecha</span><span class="dv">${fecha}</span></div>
-      <div class="drow"><span class="dl">Goles</span><span class="dv"><span class="gl">Boca: ${prettyGoals(g.bocaTxt)}</span><span class="gl rv">${esc(m.rival)}: ${prettyGoals(g.rivalTxt)}</span></span></div>
+      <div class="drow"><span class="dl">Goles</span><span class="dv">${goalsHTML(g, m.rival)}</span></div>
       <div class="drow"><span class="dl">DT Boca</span><span class="dv">${esc(m.dt_boca || 'N/D')}</span></div>
       <div class="drow"><span class="dl">DT rival</span><span class="dv">${esc(m.dt_rival || 'N/D')}</span></div>
       ${m.nota ? `<div class="drow"><span class="dl">Memo</span><span class="dv" style="font-style:italic;color:var(--text-2)">${esc(m.nota)}</span></div>` : ''}
